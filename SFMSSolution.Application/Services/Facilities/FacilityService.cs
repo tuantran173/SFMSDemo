@@ -38,13 +38,14 @@ namespace SFMSSolution.Application.Services.Facilities
         public async Task<bool> CreateFacilityAsync(FacilityCreateRequestDto request)
         {
             var facility = _mapper.Map<Facility>(request);
-            facility.Status = "Active"; // Đặt trạng thái mặc định là Active
-            var result = await _unitOfWork.FacilityRepository.AddAsync(facility);
-            if (result)
-            {
-                await _unitOfWork.CompleteAsync();
-            }
-            return result;
+
+            // Thêm mới facility vào DB (không gọi SaveChangesAsync tại đây)
+            await _unitOfWork.FacilityRepository.AddAsync(facility);
+
+            // Gọi SaveChangesAsync từ UnitOfWork
+            await _unitOfWork.CompleteAsync();
+
+            return true;
         }
 
         public async Task<bool> UpdateFacilityAsync(Guid id, FacilityUpdateRequestDto request)
@@ -58,27 +59,26 @@ namespace SFMSSolution.Application.Services.Facilities
             facility.Location = request.Location;
             facility.Capacity = request.Capacity;
             facility.Images = request.Images;
-            if (!string.IsNullOrEmpty(request.Status))
-            {
-                facility.Status = request.Status;
-            }
             facility.UpdatedDate = DateTime.UtcNow;
-            var result = await _unitOfWork.FacilityRepository.UpdateAsync(facility);
-            if (result)
-            {
-                await _unitOfWork.CompleteAsync();
-            }
-            return result;
+
+            // Cập nhật facility (không gọi SaveChangesAsync tại đây)
+            await _unitOfWork.FacilityRepository.UpdateAsync(facility);
+
+            // Gọi SaveChangesAsync từ UnitOfWork
+            await _unitOfWork.CompleteAsync();
+
+            return true;
         }
 
         public async Task<bool> DeleteFacilityAsync(Guid id)
         {
-            var result = await _unitOfWork.FacilityRepository.DeleteAsync(id);
-            if (result)
-            {
-                await _unitOfWork.CompleteAsync();
-            }
-            return result;
+            // Xóa facility (không gọi SaveChangesAsync tại đây)
+            await _unitOfWork.FacilityRepository.DeleteAsync(id);
+
+            // Gọi SaveChangesAsync từ UnitOfWork
+            await _unitOfWork.CompleteAsync();
+
+            return true;
         }
     }
 }

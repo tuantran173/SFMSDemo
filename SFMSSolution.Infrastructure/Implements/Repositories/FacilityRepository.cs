@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SFMS.Infrastructure.Repositories;
 using SFMSSolution.Domain.Entities;
 using SFMSSolution.Infrastructure.Database.AppDbContext;
 using SFMSSolution.Infrastructure.Implements.Interfaces;
@@ -10,44 +11,18 @@ using System.Threading.Tasks;
 
 namespace SFMSSolution.Infrastructure.Implements.Repositories
 {
-    public class FacilityRepository : IFacilityRepository
+    public class FacilityRepository : GenericRepository<Facility>, IFacilityRepository
     {
-        private readonly SFMSDbContext _context;
+        public FacilityRepository(SFMSDbContext context) : base(context) { }
 
-        public FacilityRepository(SFMSDbContext context)
+        public async Task<Facility?> GetFacilityByIdAsync(Guid id)
         {
-            _context = context;
+            return await GetByIdAsync(id);
         }
 
-        public async Task<Facility> GetByIdAsync(Guid id)
+        public async Task<IEnumerable<Facility>> GetAllFacilitiesAsync()
         {
-            return await _context.Facilities.FirstOrDefaultAsync(f => f.Id == id);
-        }
-
-        public async Task<IEnumerable<Facility>> GetAllAsync()
-        {
-            return await _context.Facilities.ToListAsync();
-        }
-
-        public async Task<bool> AddAsync(Facility facility)
-        {
-            _context.Facilities.Add(facility);
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<bool> UpdateAsync(Facility facility)
-        {
-            _context.Facilities.Update(facility);
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<bool> DeleteAsync(Guid id)
-        {
-            var facility = await _context.Facilities.FirstOrDefaultAsync(f => f.Id == id);
-            if (facility == null)
-                return false;
-            _context.Facilities.Remove(facility);
-            return await _context.SaveChangesAsync() > 0;
+            return await GetAllAsync();
         }
     }
 }

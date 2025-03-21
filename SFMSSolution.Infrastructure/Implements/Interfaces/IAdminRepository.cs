@@ -1,4 +1,5 @@
-﻿using SFMSSolution.Domain.Entities;
+﻿using SFMS.Infrastructure.Repositories;
+using SFMSSolution.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,12 +8,10 @@ using System.Threading.Tasks;
 
 namespace SFMSSolution.Infrastructure.Implements.Interfaces
 {
-    public interface IAdminRepository
+    public interface IAdminRepository : IGenericRepository<User>
     {
-        Task<List<User>> GetAllUsersAsync();
-        Task<User?> GetUserByIdAsync(Guid userId);
-        Task<bool> UpdateUserAsync(User user);
-        Task<bool> ChangeUserRoleAsync(Guid userId, Guid newRoleId);
-        Task<bool> DeleteUserAsync(Guid userId);
+        Task<List<User>> GetAllUsersWithRolesAsync();
+        Task<User?> GetUserByIdWithRolesAsync(Guid userId);
+        Task ChangeUserRoleAsync(Guid userId, Guid newRoleId);
     }
 }

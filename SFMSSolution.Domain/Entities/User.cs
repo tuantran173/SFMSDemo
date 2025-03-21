@@ -16,15 +16,11 @@ namespace SFMSSolution.Domain.Entities
         public string Phone { get; set; } = string.Empty;
         public string PasswordHash { get; set; } = string.Empty;
         public Gender Gender { get; set; }
+        public string AvatarUrl { get; set; } = string.Empty;
         public EntityStatus Status { get; set; } = EntityStatus.Active;
-        public bool Deleted { get; set; } = false;
-        public string RefreshToken { get; set; }
-        public DateTime? RefreshTokenExpiry { get; set; }
-
-        public string ResetPasswordToken { get; set; } = string.Empty;
-        public DateTime? ResetPasswordTokenExpiry { get; set; }
-        // Navigation property cho mối quan hệ nhiều-nhiều với Role thông qua bảng UserRole
-        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
-        
+        public string Address { get; set; } = string.Empty;
+        public Guid RoleId { get; set; }  // Khóa ngoại đến Role
+        public Role Role { get; set; }  // Navigation Property
+        public ICollection<UserToken> UserTokens { get; set; } = new List<UserToken>();
     }
 }

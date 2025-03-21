@@ -15,7 +15,7 @@ namespace SFMSSolution.Domain.Entities
         // Thời gian bắt đầu và kết thúc của booking
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-
+        public string Note { get; set; }
         // Khóa ngoại tới Facility và User (người đặt)
         public Guid FacilityId { get; set; }
         public Guid UserId { get; set; }

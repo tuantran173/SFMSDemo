@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SFMSSolution.Application.DataTransferObjects.Auth;
 using SFMSSolution.Application.DataTransferObjects.Auth.Request;
 using SFMSSolution.Application.Services.Auth;
-using System.Threading.Tasks;
 
 namespace SFMSSolution.API.Controllers
 {
@@ -40,16 +38,28 @@ namespace SFMSSolution.API.Controllers
             });
         }
 
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout([FromQuery] Guid userId)
+        {
+            var result = await _authService.LogoutAsync(userId);
+            if (!result)
+                return BadRequest(new { message = "Failed to logout user." });
+
+            return Ok(new { message = "Logout successful." });
+        }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
         {
-            var success = await _authService.RegisterAsync(request);
-            if (!success)
-                return BadRequest(new { message = "User already exists" });
+            var response = await _authService.RegisterAsync(request);
+            if (!response.Success)
+            {
+                return BadRequest(new { message = response.Message });
+            }
 
             return Ok(new { message = "Registration successful" });
         }
+
 
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDto request)
@@ -57,6 +67,17 @@ namespace SFMSSolution.API.Controllers
             var result = await _authService.ForgotPasswordAsync(request.Email);
             if (!result.Success)
                 return BadRequest(new { message = result.Message });
+            return Ok(new { message = result.Message });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPasswordWithOTP([FromBody] ResetPasswordRequestDto request)
+        {
+            var result = await _authService.ResetPasswordWithOTPAsync(request.Email, request.OTP, request.NewPassword);
+
+            if (!result.Success)
+                return BadRequest(new { message = result.Message });
+
             return Ok(new { message = result.Message });
         }
     }

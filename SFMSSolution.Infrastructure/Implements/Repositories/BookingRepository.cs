@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SFMS.Infrastructure.Repositories;
 using SFMSSolution.Domain.Entities;
 using SFMSSolution.Infrastructure.Database.AppDbContext;
 using SFMSSolution.Infrastructure.Implements.Interfaces;
@@ -10,50 +11,18 @@ using System.Threading.Tasks;
 
 namespace SFMSSolution.Infrastructure.Implements.Repositories
 {
-    public class BookingRepository : IBookingRepository
+    public class BookingRepository : GenericRepository<Booking>, IBookingRepository
     {
-        private readonly SFMSDbContext _context;
+        public BookingRepository(SFMSDbContext context) : base(context) { }
 
-        public BookingRepository(SFMSDbContext context)
+        public async Task<Booking?> GetBookingByIdWithDetailsAsync(Guid id)
         {
-            _context = context;
+            return await GetByIdWithIncludesAsync(id, b => b.Facility, b => b.User);
         }
 
-        public async Task<Booking> GetByIdAsync(Guid id)
+        public async Task<IEnumerable<Booking>> GetAllBookingsWithDetailsAsync()
         {
-            return await _context.Bookings
-                .Include(b => b.Facility)
-                .Include(b => b.User)
-                .FirstOrDefaultAsync(b => b.Id == id);
-        }
-
-        public async Task<IEnumerable<Booking>> GetAllAsync()
-        {
-            return await _context.Bookings
-                .Include(b => b.Facility)
-                .Include(b => b.User)
-                .ToListAsync();
-        }
-
-        public async Task<bool> AddAsync(Booking booking)
-        {
-            _context.Bookings.Add(booking);
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<bool> UpdateAsync(Booking booking)
-        {
-            _context.Bookings.Update(booking);
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<bool> DeleteAsync(Guid id)
-        {
-            var booking = await _context.Bookings.FirstOrDefaultAsync(b => b.Id == id);
-            if (booking == null)
-                return false;
-            _context.Bookings.Remove(booking);
-            return await _context.SaveChangesAsync() > 0;
+            return await GetAllWithIncludesAsync(b => b.Facility, b => b.User);
         }
     }
 }

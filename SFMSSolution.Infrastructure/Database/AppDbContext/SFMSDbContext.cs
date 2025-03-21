@@ -11,17 +11,28 @@ namespace SFMSSolution.Infrastructure.Database.AppDbContext
 
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Facility> Facilities { get; set; }
         public DbSet<Booking> Bookings { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<UserToken> UserTokens { get; set; }
+        public DbSet<Event> Events { get; set; }
+        public DbSet<FacilityTimeSlot> FacilityTimeSlots { get; set; }
+        public DbSet<BookingSchedule> BookingSchedules { get; set; }
+        public DbSet<FacilityPrice> FacilityPrices { get; set; }
+        public DbSet<Price> Prices { get; set; }
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new RoleConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
-            modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
             modelBuilder.ApplyConfiguration(new FacilityConfiguration());
             modelBuilder.ApplyConfiguration(new BookingConfiguration());
+            modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+            modelBuilder.ApplyConfiguration(new FacilityPriceConfiguration());
+            modelBuilder.ApplyConfiguration(new FacilityTimeSlotConfiguration());
+            modelBuilder.ApplyConfiguration(new PriceConfiguration());
+            modelBuilder.ApplyConfiguration(new BookingScheduleConfiguration());
 
             // Gọi phương thức Seed từ SFMSDbInitializer
             SFMSDbInitializer.Seed(modelBuilder);

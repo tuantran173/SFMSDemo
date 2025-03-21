@@ -2,11 +2,6 @@
 using SFMSSolution.Application.DataTransferObjects.Auth;
 using SFMSSolution.Application.DataTransferObjects.Auth.Request;
 using SFMSSolution.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFMSSolution.Application.Mapping.MappingProfiles
 {
@@ -15,14 +10,12 @@ namespace SFMSSolution.Application.Mapping.MappingProfiles
         public AuthProfile()
         {
             CreateMap<User, AuthResponseDto>()
-                .ForMember(dest => dest.Role, opt => opt.MapFrom(src =>
-                    src.UserRoles != null && src.UserRoles.Any()
-                        ? src.UserRoles.First().Role.Name
-                        : string.Empty));
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role != null ? src.Role.Name : string.Empty));
 
             CreateMap<RegisterRequestDto, User>()
                 .ForMember(dest => dest.PasswordHash, opt => opt.Ignore()) // Hash mật khẩu sau
-                .ForMember(dest => dest.Id, opt => opt.Ignore()); // ID tự động sinh
+                .ForMember(dest => dest.Id, opt => opt.Ignore()) // ID tự động sinh
+                .ForMember(dest => dest.RoleId, opt => opt.Ignore()); // RoleId có thể được set sau
         }
     }
 }

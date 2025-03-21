@@ -16,8 +16,7 @@ namespace SFMSSolution.Application.Mapping.MappingProfiles
         {
             CreateMap<Facility, FacilityDto>();
             CreateMap<FacilityCreateRequestDto, Facility>();
-            CreateMap<FacilityUpdateRequestDto, Facility>()
-                .ForMember(dest => dest.Status, opt => opt.Ignore()); // Xử lý update status riêng trong service
+            
         }
 
     }

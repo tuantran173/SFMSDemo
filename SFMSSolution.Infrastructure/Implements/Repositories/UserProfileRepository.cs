@@ -19,8 +19,7 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
         public async Task<User?> GetUserByIdAsync(Guid userId)
         {
             return await _context.Users
-                .Include(u => u.UserRoles)
-                    .ThenInclude(ur => ur.Role)
+                .Include(u => u.Role) // Bao gồm Role thay vì UserRoles
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
 

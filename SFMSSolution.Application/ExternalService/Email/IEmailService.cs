@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SFMSSolution.Application.Services.Email
+namespace SFMSSolution.Application.ExternalService.Email
 {
     public interface IEmailService
     {

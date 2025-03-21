@@ -5,7 +5,7 @@ using SFMSSolution.Application.Services.Facilities;
 
 namespace SFMSSolution.API.Controllers
 {
-    [Authorize(Roles = "Facility Owner")]
+    [Authorize(Roles = "Owner")]
     [ApiController]
     [Route("api/[controller]")]
     public class FacilityController : ControllerBase
@@ -17,7 +17,7 @@ namespace SFMSSolution.API.Controllers
             _facilityService = facilityService;
         }
 
-        [HttpGet("{id:Guid}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetFacility(Guid id)
         {
             var facility = await _facilityService.GetFacilityAsync(id);
@@ -26,6 +26,7 @@ namespace SFMSSolution.API.Controllers
             return Ok(facility);
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAllFacilities()
         {
@@ -42,7 +43,7 @@ namespace SFMSSolution.API.Controllers
             return Ok("Facility created successfully.");
         }
 
-        [HttpPut("{id:Guid}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateFacility(Guid id, [FromBody] FacilityUpdateRequestDto request)
         {
             var result = await _facilityService.UpdateFacilityAsync(id, request);
@@ -51,7 +52,7 @@ namespace SFMSSolution.API.Controllers
             return Ok("Facility updated successfully.");
         }
 
-        [HttpDelete("{id:Guid}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteFacility(Guid id)
         {
             var result = await _facilityService.DeleteFacilityAsync(id);

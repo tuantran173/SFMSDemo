@@ -39,14 +39,17 @@ namespace SFMSSolution.Application.Services.Bookings
         public async Task<bool> CreateBookingAsync(BookingCreateRequestDto request)
         {
             var booking = _mapper.Map<Booking>(request);
+
             // Đặt trạng thái mặc định là Pending
             booking.Status = BookingStatus.Pending;
-            var result = await _unitOfWork.BookingRepository.AddAsync(booking);
-            if (result)
-            {
-                await _unitOfWork.CompleteAsync();
-            }
-            return result;
+
+            // Thêm mới booking vào DB (không gọi SaveChangesAsync tại đây)
+            await _unitOfWork.BookingRepository.AddAsync(booking);
+
+            // Gọi SaveChangesAsync từ UnitOfWork
+            await _unitOfWork.CompleteAsync();
+
+            return true;
         }
 
         public async Task<bool> UpdateBookingAsync(Guid id, BookingUpdateRequestDto request)
@@ -58,29 +61,33 @@ namespace SFMSSolution.Application.Services.Bookings
             existingBooking.BookingDate = request.BookingDate;
             existingBooking.StartTime = request.StartTime;
             existingBooking.EndTime = request.EndTime;
+
             if (!string.IsNullOrEmpty(request.Status) &&
                 Enum.TryParse<BookingStatus>(request.Status, true, out var status))
             {
                 existingBooking.Status = status;
             }
+
             existingBooking.UpdatedDate = DateTime.UtcNow;
 
-            var result = await _unitOfWork.BookingRepository.UpdateAsync(existingBooking);
-            if (result)
-            {
-                await _unitOfWork.CompleteAsync();
-            }
-            return result;
+            // Cập nhật booking (không gọi SaveChangesAsync tại đây)
+            await _unitOfWork.BookingRepository.UpdateAsync(existingBooking);
+
+            // Gọi SaveChangesAsync từ UnitOfWork
+            await _unitOfWork.CompleteAsync();
+
+            return true;
         }
 
         public async Task<bool> DeleteBookingAsync(Guid id)
         {
-            var result = await _unitOfWork.BookingRepository.DeleteAsync(id);
-            if (result)
-            {
-                await _unitOfWork.CompleteAsync();
-            }
-            return result;
+            // Xóa booking (không gọi SaveChangesAsync tại đây)
+            await _unitOfWork.BookingRepository.DeleteAsync(id);
+
+            // Gọi SaveChangesAsync từ UnitOfWork
+            await _unitOfWork.CompleteAsync();
+
+            return true;
         }
     }
 }

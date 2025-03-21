@@ -1,61 +1,50 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SFMS.Infrastructure.Repositories;
 using SFMSSolution.Domain.Entities;
 using SFMSSolution.Infrastructure.Database.AppDbContext;
 using SFMSSolution.Infrastructure.Implements.Interfaces;
-using System;
-using System.Threading.Tasks;
 
 namespace SFMSSolution.Infrastructure.Implements.Repositories
 {
-    public class AuthRepository : IAuthRepository
+    public class AuthRepository : GenericRepository<User>, IAuthRepository
     {
-        private readonly SFMSDbContext _context;
+        public AuthRepository(SFMSDbContext context) : base(context) { }
 
-        public AuthRepository(SFMSDbContext context)
+        public async Task<User?> GetUserByIdAsync(Guid userId)
         {
-            _context = context;
+            return await GetByIdWithIncludesAsync(userId, u => u.Role, u => u.UserTokens);
         }
 
         public async Task<User?> GetUserByEmailAsync(string email)
         {
             return await _context.Users
-                .Include(u => u.UserRoles)
-                    .ThenInclude(ur => ur.Role)
+                .Include(u => u.Role)
+                .Include(u => u.UserTokens)
                 .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
         }
 
         public async Task<User?> GetUserByRefreshTokenAsync(string refreshToken)
         {
             return await _context.Users
-                .Include(u => u.UserRoles)
-                    .ThenInclude(ur => ur.Role)
-                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+                .Include(u => u.Role)
+                .Include(u => u.UserTokens)
+                .FirstOrDefaultAsync(u => u.UserTokens.Any(t => t.Token == refreshToken && t.TokenType == "Refresh"));
         }
 
-        public async Task<bool> RegisterUserAsync(User user)
+        public async Task RegisterUserAsync(User user)
         {
-            _context.Users.Add(user);
-            return await _context.SaveChangesAsync() > 0;
+            await AddAsync(user);  // Không gọi SaveChangesAsync ở đây
         }
 
-        public async Task<bool> UpdateUserAsync(User user)
+        public async Task UpdateUserAsync(User user)
         {
-            // Lấy user hiện tại từ DB kèm các UserRoles
-            var existingUser = await _context.Users
-                .Include(u => u.UserRoles)
-                .FirstOrDefaultAsync(u => u.Id == user.Id);
+            var existingUser = await GetByIdWithIncludesAsync(user.Id, u => u.Role, u => u.UserTokens);
             if (existingUser == null)
-            {
-                return false;
-            }
+                throw new Exception("User not found.");
 
-            // Cập nhật các thuộc tính scalar từ 'user' sang 'existingUser'
             _context.Entry(existingUser).CurrentValues.SetValues(user);
 
-            // Nếu có thay đổi đối với các navigation property (UserRoles),
-            // bạn cần xử lý riêng (ví dụ: xóa, thêm mới). Ở đây, ta chỉ cập nhật scalar values.
-
-            return await _context.SaveChangesAsync() > 0;
+            // Không gọi SaveChangesAsync ở đây
         }
     }
 }

@@ -14,12 +14,11 @@ namespace SFMSSolution.Application.Mapping.MappingProfiles
     {
         public UserProfileProfile()
         {
+            // ✅ Map từ User -> ProfileResponseDto
             CreateMap<User, ProfileResponseDto>()
-                .ForMember(dest => dest.Role, opt => opt.MapFrom(src =>
-                    src.UserRoles != null && src.UserRoles.Any()
-                        ? src.UserRoles.First().Role.Name
-                        : string.Empty));
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role != null ? src.Role.Name : string.Empty));
 
+            // ✅ Map từ UpdateProfileRequestDto -> User
             CreateMap<UpdateProfileRequestDto, User>();
         }
     }

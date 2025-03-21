@@ -28,7 +28,7 @@ namespace SFMSSolution.API.Controllers
             return Ok(user);
         }
 
-        [HttpGet]
+        [HttpGet("get-all-user")]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _adminUserService.GetAllUsersAsync();

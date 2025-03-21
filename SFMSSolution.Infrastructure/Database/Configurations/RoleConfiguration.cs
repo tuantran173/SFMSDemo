@@ -13,6 +13,8 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
     {
         public void Configure(EntityTypeBuilder<Role> builder)
         {
+            builder.ToTable("Roles");
+
             // Khóa chính từ BaseEntity (Id)
             builder.HasKey(r => r.Id);
 

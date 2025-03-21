@@ -1,4 +1,5 @@
-﻿using SFMSSolution.Domain.Entities;
+﻿using SFMS.Infrastructure.Repositories;
+using SFMSSolution.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,18 +8,21 @@ using System.Threading.Tasks;
 
 namespace SFMSSolution.Infrastructure.Implements.Interfaces
 {
-    public interface IAuthRepository
+    public interface IAuthRepository : IGenericRepository<User>
     {
-        // Lấy user theo email (đã chuyển về lowercase)
+        // ✅ Lấy User theo ID
+        Task<User?> GetUserByIdAsync(Guid userId);
+
+        // ✅ Lấy User theo email (đã chuyển về lowercase)
         Task<User?> GetUserByEmailAsync(string email);
 
-        // Lấy user theo refresh token (sử dụng cho việc làm mới token)
+        // ✅ Lấy User theo refresh token (sử dụng cho việc làm mới token)
         Task<User?> GetUserByRefreshTokenAsync(string refreshToken);
 
-        // Đăng ký user mới
-        Task<bool> RegisterUserAsync(User user);
+        // ✅ Đăng ký User mới (Không cần trả về bool, không gọi SaveChangesAsync)
+        Task RegisterUserAsync(User user);
 
-        // Cập nhật thông tin user (ví dụ: khi thay đổi token hoặc mật khẩu)
-        Task<bool> UpdateUserAsync(User user);
+        // ✅ Cập nhật thông tin User (Không cần trả về bool, không gọi SaveChangesAsync)
+        Task UpdateUserAsync(User user);
     }
 }

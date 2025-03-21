@@ -13,7 +13,7 @@ using SFMSSolution.Application.DataTransferObjects.Auth.Request;
 using SFMSSolution.Response;
 using SFMSSolution.Domain.Enums;
 using SFMSSolution.Infrastructure.Implements.UnitOfWorks;
-using SFMSSolution.Application.Services.Email;
+using SFMSSolution.Application.ExternalService.Email;
 
 namespace SFMSSolution.Application.Services.Auth
 {
@@ -38,79 +38,104 @@ namespace SFMSSolution.Application.Services.Auth
 
         public async Task<AuthResponseDto?> AuthenticateAsync(AuthRequestDto request)
         {
+            // Lấy User theo email
             var user = await _unitOfWork.AuthRepository.GetUserByEmailAsync(request.Email.ToLower());
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
                 return null;
 
-            // Kiểm tra trạng thái
+            // Kiểm tra trạng thái của tài khoản
             if (user.Status != EntityStatus.Active)
                 throw new Exception("Account has been deactivated.");
 
-            if (user.UserRoles == null)
+            // Kiểm tra xem người dùng có được gán Role không
+            if (user.Role == null)
                 throw new Exception("User does not have an assigned role.");
 
+            // Ánh xạ User sang AuthResponseDto
             var response = _mapper.Map<AuthResponseDto>(user);
-            response.Token = GenerateJwtToken(user);
+            response.Token = GenerateJwtToken(user); // Tạo JWT Token cho người dùng
 
             return response;
         }
 
-        public async Task<bool> RegisterAsync(RegisterRequestDto request)
+
+        public async Task<ApiResponse<string>> RegisterAsync(RegisterRequestDto request)
         {
             if (!string.Equals(request.Password, request.ConfirmPassword))
-                return false;
+                return new ApiResponse<string>("Password and Confirm Password do not match.");
 
             var existingUser = await _unitOfWork.AuthRepository.GetUserByEmailAsync(request.Email.ToLower());
             if (existingUser != null)
-                return false;
+                return new ApiResponse<string>("User with this email already exists.");
 
-            // Thay vì _context.Roles, bạn có thể dùng _unitOfWork.RoleRepository
-            // hoặc UnitOfWork cho phép _unitOfWork.Context.Roles
-            // Ở đây giả sử có IRoleRepository
             var customerRole = await _unitOfWork.RoleRepository.GetRoleByCodeAsync("CUS");
             if (customerRole == null)
-                throw new Exception("Role 'Customer' does not exist in the database.");
+                return new ApiResponse<string>("Role 'Customer' does not exist in the database.");
 
             var newUser = _mapper.Map<User>(request);
             newUser.Email = newUser.Email.ToLower();
             newUser.PasswordHash = HashPassword(request.Password);
-            newUser.UserRoles.Add(new UserRole
-            {
-                UserId = newUser.Id,
-                RoleId = customerRole.Id
-            });
+            newUser.RoleId = customerRole.Id;
 
-            // Thay vì authRepository.RegisterUserAsync(newUser),
-            // ta gọi method add user (ví dụ: AddUserAsync)
-            var result = await _unitOfWork.AuthRepository.RegisterUserAsync(newUser);
-            if (result)
+            await _unitOfWork.AuthRepository.RegisterUserAsync(newUser);
+            var saveResult = await _unitOfWork.CompleteAsync();
+
+            if (saveResult > 0)
             {
-                // Commit transaction
-                await _unitOfWork.CompleteAsync();
-                return true;
+                // Gửi email thông báo đăng ký thành công
+                var subject = "Registration Successful";
+                var body = $@"
+                    <p>Thân gửi {newUser.FullName},</p>
+                    <p>Bạn đã đăng ký tài khoản thành công trên nền tảng của chúng tôi. 
+                       Bây giờ bạn có thể đăng nhập bằng email đã đăng ký.</p>
+                    <p>Nếu bạn gặp bất kỳ sự cố nào, vui lòng liên hệ với nhóm hỗ trợ của chúng tôi.
+                       </p>
+                   
+                    <p>Trân trọng,<br>Sport Facility Management System Team</p>";
+
+                var emailSent = await _emailService.SendEmailAsync(newUser.Email, subject, body);
+
+                if (!emailSent)
+                    return new ApiResponse<string>("Registration successful, but failed to send confirmation email.");
+
+                return new ApiResponse<string>(string.Empty, "Registration successful. A confirmation email has been sent.");
             }
-            return false;
+            else
+            {
+                return new ApiResponse<string>("Failed to save user to the database.");
+            }
         }
+
 
         public async Task<ApiResponse<AuthResponseDto>> RefreshTokenAsync(string refreshToken)
         {
-            var user = await _unitOfWork.AuthRepository.GetUserByRefreshTokenAsync(refreshToken);
-            if (user == null)
+            var userToken = await _unitOfWork.UserTokenRepository.GetTokenAsyncByValue(refreshToken, "Refresh");
+            if (userToken == null)
                 return new ApiResponse<AuthResponseDto>("Invalid refresh token.");
 
-            if (user.RefreshTokenExpiry == null || user.RefreshTokenExpiry < DateTime.UtcNow)
+            if (userToken.Expiry < DateTime.UtcNow)
                 return new ApiResponse<AuthResponseDto>("Refresh token has expired.");
+
+            var user = await _unitOfWork.AuthRepository.GetUserByIdAsync(userToken.UserId);
+            if (user == null)
+                return new ApiResponse<AuthResponseDto>("User not found.");
 
             var newJwtToken = GenerateJwtToken(user);
             var newRefreshToken = GenerateRefreshToken();
 
-            user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
-            var updateResult = await _unitOfWork.AuthRepository.UpdateUserAsync(user);
-            if (updateResult)
+            // Xóa token cũ và tạo token mới
+            await _unitOfWork.UserTokenRepository.DeleteAsync(userToken);
+            var newUserToken = new UserToken
             {
+                UserId = user.Id,
+                Token = newRefreshToken,
+                Expiry = DateTime.UtcNow.AddDays(7),
+                TokenType = "Refresh"
+            };
+
+            var addResult = await _unitOfWork.UserTokenRepository.AddAsync(newUserToken);
+            if (addResult)
                 await _unitOfWork.CompleteAsync();
-            }
 
             var responseDto = _mapper.Map<AuthResponseDto>(user);
             responseDto.Token = newJwtToken;
@@ -119,43 +144,85 @@ namespace SFMSSolution.Application.Services.Auth
             return new ApiResponse<AuthResponseDto>(responseDto, "Token refreshed successfully.");
         }
 
+        public async Task<bool> LogoutAsync(Guid userId)
+        {
+            var tokens = await _unitOfWork.UserTokenRepository.GetTokensByUserIdAndTypeAsync(userId, "Refresh");
+            if (tokens != null && tokens.Count != 0)
+            {
+                foreach (var token in tokens)
+                {
+                    await _unitOfWork.UserTokenRepository.DeleteAsync(token);
+                }
+                await _unitOfWork.CompleteAsync();
+            }
+            return true;
+        }
+
+        // Forgot Password: gửi OTP
         public async Task<ApiResponse<string>> ForgotPasswordAsync(string email)
         {
-            // 1. Tìm user theo email
             var user = await _unitOfWork.AuthRepository.GetUserByEmailAsync(email.ToLower());
-
-            // 2. Để bảo mật, nếu không tìm thấy user, trả về thông báo giống nhau
             if (user == null)
-                return new ApiResponse<string>(string.Empty, "If an account with that email exists, a reset link has been sent.");
+                return new ApiResponse<string>(string.Empty, "If an account with that email exists, an OTP has been sent.");
 
-            // 3. Sinh token reset mật khẩu và thiết lập thời gian hết hạn (ví dụ: 1 giờ)
-            var token = Guid.NewGuid().ToString();
-            user.ResetPasswordToken = token;
-            user.ResetPasswordTokenExpiry = DateTime.UtcNow.AddHours(1);
+            // Xóa OTP cũ nếu có
+            var existingOtp = await _unitOfWork.UserTokenRepository.GetTokenAsync(user.Id, "ResetPasswordOTP");
+            if (existingOtp != null)
+                await _unitOfWork.UserTokenRepository.DeleteAsync(existingOtp);
 
-            // 4. Cập nhật user với thông tin token (lưu vào DB)
-            var updateResult = await _unitOfWork.AuthRepository.UpdateUserAsync(user);
-            if (!updateResult)
+            // Sinh OTP 6 chữ số
+            var otp = new Random().Next(100000, 999999).ToString();
+            var otpExpiry = DateTime.UtcNow.AddMinutes(3);
+
+            var otpToken = new UserToken
+            {
+                UserId = user.Id,
+                Token = otp,
+                Expiry = otpExpiry,
+                TokenType = "ResetPasswordOTP"
+            };
+
+            var addResult = await _unitOfWork.UserTokenRepository.AddAsync(otpToken);
+            if (!addResult)
                 return new ApiResponse<string>("An error occurred while processing your request.");
 
-            // 5. Tạo link reset mật khẩu, lấy URL frontend từ cấu hình
-            var frontendUrl = _configuration["Frontend:BaseUrl"]; // Ví dụ: "https://yourdomain.com"
-            var resetLink = $"{frontendUrl}/reset-password?token={token}&email={email}";
+            await _unitOfWork.CompleteAsync();
 
-            // 6. Soạn email reset mật khẩu
-            var subject = "Reset Your Password";
-            var body = $"<p>Hello {user.FullName},</p>" +
-                       $"<p>You requested a password reset. Please click the link below to reset your password:</p>" +
-                       $"<p><a href='{resetLink}'>Reset Password</a></p>" +
-                       "<p>If you did not request a password reset, please ignore this email.</p>";
+            var subject = "Mã OTP để đặt lại mật khẩu của bạn";
+            var body = $"<p>Xin chào {user.FullName},</p>" +
+                       $"<p>Mã OTP để đặt lại mật khẩu là: <strong>{otp}</strong></p>" +
+                       $"<p>Mã OTP sẽ có hiệu lực trong vòng 3 phút.</p>" +
+                       "<p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua mail này</p>";
 
-            // 7. Gửi email sử dụng IEmailService (MailKit)
             var emailSent = await _emailService.SendEmailAsync(email, subject, body);
             if (!emailSent)
-                return new ApiResponse<string>("Failed to send password reset email.");
+                return new ApiResponse<string>("Failed to send OTP email.");
 
-            // 8. Trả về thông báo thành công (giống nhau để bảo mật)
-            return new ApiResponse<string>(string.Empty, "If an account with that email exists, a reset link has been sent.");
+            return new ApiResponse<string>(string.Empty, "If an account with that email exists, an OTP has been sent.");
+        }
+
+        // Reset password with OTP
+        public async Task<ApiResponse<string>> ResetPasswordWithOTPAsync(string email, string otp, string newPassword)
+        {
+            var user = await _unitOfWork.AuthRepository.GetUserByEmailAsync(email.ToLower());
+            if (user == null)
+                return new ApiResponse<string>("Invalid email.");
+
+            var otpToken = await _unitOfWork.UserTokenRepository.GetTokenAsync(user.Id, "ResetPasswordOTP");
+            if (otpToken == null || otpToken.Token != otp || otpToken.Expiry < DateTime.UtcNow)
+                return new ApiResponse<string>("Invalid or expired OTP.");
+
+            // Mã OTP hợp lệ, tiến hành đặt lại mật khẩu
+            user.PasswordHash = HashPassword(newPassword);
+
+            // Xóa mã OTP sau khi sử dụng
+            await _unitOfWork.UserTokenRepository.DeleteAsync(otpToken);
+
+            // Cập nhật thông tin người dùng
+            await _unitOfWork.AuthRepository.UpdateUserAsync(user);
+            await _unitOfWork.CompleteAsync();
+
+            return new ApiResponse<string>(string.Empty, "Password reset successfully.");
         }
 
         #region Private Helpers
@@ -171,11 +238,12 @@ namespace SFMSSolution.Application.Services.Auth
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.FullName ?? string.Empty),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.UserRoles.FirstOrDefault()?.Role.Name ?? "User")
-            };
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Name, user.FullName ?? string.Empty),
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.Role, user.Role != null ? user.Role.Name : "User"),  // Lấy trực tiếp Role.Name
+        new Claim("RoleId", user.RoleId.ToString())  // Thêm RoleId vào token
+    };
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

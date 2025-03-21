@@ -8,9 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MimeKit;
 using MailKit.Security;
-using SFMSSolution.Application.Services.Email;
 
-namespace SFMSSolution.Application.Services.Email
+namespace SFMSSolution.Application.ExternalService.Email
 {
     public class EmailService : IEmailService
     {

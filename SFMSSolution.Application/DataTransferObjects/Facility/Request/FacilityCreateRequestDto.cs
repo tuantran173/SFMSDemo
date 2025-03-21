@@ -9,7 +9,6 @@ namespace SFMSSolution.Application.DataTransferObjects.Facility.Request
 {
     public class FacilityCreateRequestDto
     {
-        [Required]
         public string Name { get; set; } = string.Empty;
 
         public string Description { get; set; } = string.Empty;
@@ -21,6 +20,7 @@ namespace SFMSSolution.Application.DataTransferObjects.Facility.Request
         public string Capacity { get; set; } = string.Empty;
 
         public string Images { get; set; } = string.Empty;
+        public Guid CategoryId { get; set; }
     }
 
 }

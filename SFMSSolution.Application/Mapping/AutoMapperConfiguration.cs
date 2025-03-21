@@ -3,13 +3,16 @@ using SFMSSolution.Application.Mapping.MappingProfiles;
 using SFMSSolution.Application.Services.Admin;
 using SFMSSolution.Application.Services.Auth;
 using SFMSSolution.Application.Services.Bookings;
-using SFMSSolution.Application.Services.Email;
 using SFMSSolution.Application.Services.Facilities;
-using SFMSSolution.Application.Services.Email;
 using SFMSSolution.Application.Services.UserProfile;
 using SFMSSolution.Infrastructure.Implements.Interfaces;
 using SFMSSolution.Infrastructure.Implements.Repositories;
 using SFMSSolution.Infrastructure.Implements.UnitOfWorks;
+using SFMSSolution.Application.Services.Events;
+using SFMSSolution.Application.ExternalService.Email;
+using SFMSSolution.Application.ExternalService.CDN;
+using SFMSSolution.Application.Services.FacilityPrices;
+using SFMSSolution.Application.Services.Reports;
 
 namespace SFMSSolution.Application.Mapping
 {
@@ -27,11 +30,9 @@ namespace SFMSSolution.Application.Mapping
                 cfg.AddProfile<UserProfileProfile>();
                 cfg.AddProfile<FacilityProfile>();
                 cfg.AddProfile<BookingProfile>();
+                cfg.AddProfile<EventProfile>();
+                cfg.AddProfile<FacilityPriceProfile>();
             });
-            //var config = new MapperConfiguration(cfg =>
-            //{
-            //    // Tự động scan tất cả Profile trong assembly này
-            //    cfg.AddMaps(Assembly.GetExecutingAssembly());
             
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -42,20 +43,13 @@ namespace SFMSSolution.Application.Mapping
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IFacilityService, FacilityService>();
             services.AddScoped<IBookingService, BookingService>();
-
+            services.AddScoped<IEventService, EventService>();
+            services.AddScoped<ICloudinaryService, CloudinaryService>();
+            services.AddScoped<IFacilityPriceService, FacilityPriceService>();
+            services.AddScoped<IReportService, ReportService>();
 
             return services;
         }
 
-        //public static IMapper InitializeAutoMapper()
-        //{
-        //    var config = new MapperConfiguration(cfg =>
-        //    {
-        //        // Tự động scan tất cả Profile trong assembly này
-        //        cfg.AddMaps(Assembly.GetExecutingAssembly());
-        //    });
-
-        //    return config.CreateMapper();
-        //}
     }
 }

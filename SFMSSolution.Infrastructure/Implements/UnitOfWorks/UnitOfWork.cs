@@ -20,6 +20,10 @@ namespace SFMSSolution.Infrastructure.Implements.UnitOfWorks
         private IFacilityRepository _facilityRepository;
         private IRoleRepository _roleRepository;
         private IUserProfileRepository _userProfileRepository;
+        private IUserTokenRepository _userTokenRepository;
+        private IEventRepository _eventRepository;
+        private IFacilityPriceRepository _facilityPriceRepository;
+        private IPriceRepository _priceRepository;
 
         public UnitOfWork(SFMSDbContext context)
         {
@@ -44,6 +48,14 @@ namespace SFMSSolution.Infrastructure.Implements.UnitOfWorks
 
         public IUserProfileRepository UserProfileRepository
             => _userProfileRepository ??= new UserProfileRepository(_context);
+        public IUserTokenRepository UserTokenRepository
+           => _userTokenRepository ??= new UserTokenRepository(_context);
+        public IEventRepository EventRepository
+           => _eventRepository ??= new EventRepository(_context);
+        public IFacilityPriceRepository FacilityPriceRepository
+            => _facilityPriceRepository ??= new FacilityPriceRepository(_context);
+        public IPriceRepository PriceRepository
+            => _priceRepository ??= new PriceRepository(_context);
 
         // Triển khai phương thức CompleteAsync
         public async Task<int> CompleteAsync()

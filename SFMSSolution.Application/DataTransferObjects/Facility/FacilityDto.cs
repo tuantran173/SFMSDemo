@@ -10,7 +10,6 @@ namespace SFMSSolution.Application.DataTransferObjects.Facility
         public string Location { get; set; } = string.Empty;
         public string Capacity { get; set; } = string.Empty;
         public string Images { get; set; } = string.Empty;
-        public string Status { get; set; } = string.Empty;
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
     }

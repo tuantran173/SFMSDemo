@@ -15,8 +15,11 @@ namespace SFMSSolution.Domain.Entities
         public string Description { get; set; } = string.Empty;
         public string Capacity { get; set; } = string.Empty;
         public string Images { get; set; } = string.Empty;
-        public string Status { get; set; } = "Available";
-        public decimal Price { get; set; }
-      
+
+        // Thêm liên kết đến Category
+        public Guid CategoryId { get; set; }
+        public Category Category { get; set; } = null!;
+
     }
+
 }

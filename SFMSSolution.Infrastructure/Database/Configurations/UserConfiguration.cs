@@ -10,46 +10,53 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            // Khóa chính
+            builder.ToTable("Users");
+
             builder.HasKey(u => u.Id);
 
-            // FullName: bắt buộc, tối đa 100 ký tự
             builder.Property(u => u.FullName)
                    .IsRequired()
                    .HasMaxLength(100);
 
-            // Email: bắt buộc, tối đa 255 ký tự, tạo index duy nhất
             builder.Property(u => u.Email)
                    .IsRequired()
                    .HasMaxLength(255);
             builder.HasIndex(u => u.Email).IsUnique();
 
-            // Phone: tùy chọn, tối đa 50 ký tự
             builder.Property(u => u.Phone)
                    .HasMaxLength(50);
 
-            // PasswordHash: bắt buộc
             builder.Property(u => u.PasswordHash)
-                   .IsRequired();
+                   .IsRequired()
+                   .HasMaxLength(255);
 
-            // Status: bắt buộc
+            builder.Property(u => u.Address)
+                   .HasMaxLength(500);
+            builder.Property(u => u.AvatarUrl)
+                   .HasMaxLength(500);
             builder.Property(u => u.Status)
                    .IsRequired();
 
-            // RefreshToken: tối đa 500 ký tự (nếu có)
-            builder.Property(u => u.RefreshToken)
-                   .HasMaxLength(500);
+            // Khai báo thuộc tính RoleId
+            builder.Property(u => u.RoleId)
+                   .IsRequired();
 
-            // ResetPasswordToken: tối đa 500 ký tự (nếu có)
-            builder.Property(u => u.ResetPasswordToken)
-                   .HasMaxLength(500);
+            // Cấu hình mối quan hệ với bảng Role
+            builder.HasOne(u => u.Role)
+                   .WithMany() // Nếu Role không có danh sách Users thì để trống
+                   .HasForeignKey(u => u.RoleId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            // CreatedDate: mặc định GETUTCDATE()
+            builder.HasMany(u => u.UserTokens)
+                   .WithOne(ut => ut.User)
+                   .HasForeignKey(ut => ut.UserId)
+                   .OnDelete(DeleteBehavior.Cascade); // Xóa User thì xóa luôn Token
+
             builder.Property(u => u.CreatedDate)
                    .HasDefaultValueSql("GETUTCDATE()");
 
-            // UpdatedDate: có thể null
-            builder.Property(u => u.UpdatedDate);
+            builder.Property(u => u.UpdatedDate)
+                   .IsRequired(false);
         }
     }
 }

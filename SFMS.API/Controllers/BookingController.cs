@@ -5,7 +5,7 @@ using SFMSSolution.Application.Services.Bookings;
 
 namespace SFMSSolution.API.Controllers
 {
-    [Authorize]
+    [Authorize(Roles ="Owner")]
     [ApiController]
     [Route("api/[controller]")]
     public class BookingController : ControllerBase
@@ -17,7 +17,7 @@ namespace SFMSSolution.API.Controllers
             _bookingService = bookingService;
         }
 
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id:Guid}")]
         public async Task<IActionResult> GetBooking(Guid id)
         {
             var booking = await _bookingService.GetBookingAsync(id);
@@ -26,6 +26,7 @@ namespace SFMSSolution.API.Controllers
             return Ok(booking);
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAllBookings()
         {
@@ -42,7 +43,7 @@ namespace SFMSSolution.API.Controllers
             return Ok("Booking created successfully.");
         }
 
-        [HttpPut("{id:guid}")]
+        [HttpPut("{id:Guid}")]
         public async Task<IActionResult> UpdateBooking(Guid id, [FromBody] BookingUpdateRequestDto request)
         {
             var result = await _bookingService.UpdateBookingAsync(id, request);
@@ -51,7 +52,7 @@ namespace SFMSSolution.API.Controllers
             return Ok("Booking updated successfully.");
         }
 
-        [HttpDelete("{id:guid}")]
+        [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> DeleteBooking(Guid id)
         {
             var result = await _bookingService.DeleteBookingAsync(id);

@@ -1,4 +1,5 @@
 ﻿using SFMSSolution.Infrastructure.Implements.Interfaces;
+using SFMSSolution.Infrastructure.Implements.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,10 @@ namespace SFMSSolution.Infrastructure.Implements.UnitOfWorks
         IFacilityRepository FacilityRepository { get; }
         IRoleRepository RoleRepository { get; }
         IUserProfileRepository UserProfileRepository { get; }
+        IUserTokenRepository UserTokenRepository { get; }
+        IEventRepository EventRepository { get; }
+        IFacilityPriceRepository FacilityPriceRepository { get; }
+        IPriceRepository PriceRepository { get; }
 
         // Phương thức commit transaction
         Task<int> CompleteAsync();

@@ -24,77 +24,64 @@ namespace SFMSSolution.Application.Services.Admin
 
         public async Task<List<UserResponseDto>> GetAllUsersAsync()
         {
-            var users = await _unitOfWork.AdminRepository.GetAllUsersAsync();
-            // Loại bỏ tài khoản admin dựa trên collection UserRoles
-            var filteredUsers = users.Where(u => !u.UserRoles.Any(ur => ur.Role.Name == "Admin")).ToList();
+            var users = await _unitOfWork.AdminRepository.GetAllWithIncludesAsync(u => u.Role);
+            var filteredUsers = users.Where(u => u.Role.Name != "Admin").ToList();
             return _mapper.Map<List<UserResponseDto>>(filteredUsers);
         }
 
         public async Task<UserResponseDto?> GetUserByIdAsync(Guid userId)
         {
-            var user = await _unitOfWork.AdminRepository.GetUserByIdAsync(userId);
-            // Nếu user có role Admin, trả về null
-            if (user != null && user.UserRoles.Any(ur => ur.Role.Name == "Admin"))
-            {
+            var user = await _unitOfWork.AdminRepository.GetByIdWithIncludesAsync(userId, u => u.Role);
+            if (user == null || user.Role.Name == "Admin")
                 return null;
-            }
-            return user != null ? _mapper.Map<UserResponseDto>(user) : null;
+            return _mapper.Map<UserResponseDto>(user);
         }
 
         public async Task<bool> UpdateUserAsync(Guid userId, UpdateUserRequestDto request)
         {
-            var user = await _unitOfWork.AdminRepository.GetUserByIdAsync(userId);
-            if (user == null)
+            var user = await _unitOfWork.AdminRepository.GetByIdWithIncludesAsync(userId, u => u.Role);
+            if (user == null || user.Role.Name == "Admin")
                 return false;
 
-            // Không cho phép cập nhật tài khoản admin
-            if (user.UserRoles.Any(ur => ur.Role.Name == "Admin"))
-                return false;
-
-            // Map các thuộc tính từ request sang user
             _mapper.Map(request, user);
 
-            var result = await _unitOfWork.AdminRepository.UpdateUserAsync(user);
-            if (result)
-            {
-                await _unitOfWork.CompleteAsync();
-            }
-            return result;
+            // Gọi phương thức UpdateUserAsync thay vì trả về bool từ Repository
+            await _unitOfWork.AdminRepository.UpdateAsync(user);
+            await _unitOfWork.CompleteAsync();
+
+            return true;
         }
 
+        // ✅ Thay đổi vai trò User ngoại trừ Admin
         public async Task<bool> ChangeUserRoleAsync(ChangeUserRoleRequestDto request)
         {
-            var user = await _unitOfWork.AdminRepository.GetUserByIdAsync(request.UserId);
-            // Không cho phép thay đổi role của tài khoản admin
-            if (user != null && user.UserRoles.Any(ur => ur.Role.Name == "Admin"))
+            var user = await _unitOfWork.AdminRepository.GetByIdWithIncludesAsync(request.UserId, u => u.Role);
+            if (user == null || user.Role.Name == "Admin")
                 return false;
 
-            var result = await _unitOfWork.AdminRepository.ChangeUserRoleAsync(request.UserId, request.NewRoleId);
-            if (result)
-            {
-                await _unitOfWork.CompleteAsync();
-            }
-            return result;
+            user.RoleId = request.NewRoleId; // Cập nhật RoleId trực tiếp
+
+            // Gọi phương thức UpdateUserAsync thay vì trả về bool từ Repository
+            await _unitOfWork.AdminRepository.UpdateAsync(user);
+            await _unitOfWork.CompleteAsync();
+
+            return true;
         }
 
+        // ✅ Xóa User bằng cách vô hiệu hóa (Inactive) ngoại trừ Admin
         public async Task<bool> DeleteUserAsync(Guid userId)
         {
-            var user = await _unitOfWork.AdminRepository.GetUserByIdAsync(userId);
-            if (user == null)
+            var user = await _unitOfWork.AdminRepository.GetByIdWithIncludesAsync(userId, u => u.Role);
+            if (user == null || user.Role.Name == "Admin")
                 return false;
 
-            // Không cho phép xóa tài khoản admin
-            if (user.UserRoles.Any(ur => ur.Role.Name == "Admin"))
-                return false;
-
-            // Thay vì xóa, chuyển trạng thái tài khoản sang Inactive
             user.Status = EntityStatus.Inactive;
-            var result = await _unitOfWork.AdminRepository.UpdateUserAsync(user);
-            if (result)
-            {
-                await _unitOfWork.CompleteAsync();
-            }
-            return result;
+
+            // Gọi phương thức UpdateUserAsync thay vì trả về bool từ Repository
+            await _unitOfWork.AdminRepository.UpdateAsync(user);
+            await _unitOfWork.CompleteAsync();
+
+            return true;
         }
     }
 }

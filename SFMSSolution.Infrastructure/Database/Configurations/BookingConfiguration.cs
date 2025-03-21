@@ -14,6 +14,8 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
     {
         public void Configure(EntityTypeBuilder<Booking> builder)
         {
+            builder.ToTable("Bookings");
+
             // Khoá chính (đã có trong BaseEntity, nhưng xác nhận lại)
             builder.HasKey(b => b.Id);
 
@@ -26,6 +28,9 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
 
             builder.Property(b => b.EndTime)
                    .IsRequired();
+
+            builder.Property(b => b.Note)
+                .HasMaxLength(1000);
 
             // Cấu hình trạng thái booking: chuyển enum sang string để dễ đọc trong DB
             builder.Property(b => b.Status)
