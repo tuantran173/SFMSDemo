@@ -17,7 +17,7 @@ namespace SFMSSolution.API.Controllers
             _facilityService = facilityService;
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:Guid}")]
         public async Task<IActionResult> GetFacility(Guid id)
         {
             var facility = await _facilityService.GetFacilityAsync(id);
@@ -26,12 +26,64 @@ namespace SFMSSolution.API.Controllers
             return Ok(facility);
         }
 
+        [HttpGet("filter")]
+        public async Task<IActionResult> FilterFacilities(
+            [FromQuery] Guid? categoryId,
+            [FromQuery] string? location,
+            [FromQuery] string? startTime,
+            [FromQuery] string? endTime,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            TimeSpan? parsedStartTime = null;
+            TimeSpan? parsedEndTime = null;
+
+            if (!string.IsNullOrWhiteSpace(startTime) && TimeSpan.TryParse(startTime, out var sTime))
+                parsedStartTime = sTime;
+
+            if (!string.IsNullOrWhiteSpace(endTime) && TimeSpan.TryParse(endTime, out var eTime))
+                parsedEndTime = eTime;
+
+            var (facilities, totalCount) = await _facilityService.FilterFacilitiesAsync(
+                categoryId, location, parsedStartTime, parsedEndTime, pageNumber, pageSize);
+
+            return Ok(new
+            {
+                Data = facilities,
+                TotalCount = totalCount,
+                CurrentPage = pageNumber,
+                PageSize = pageSize
+            });
+        }
+
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAllFacilities()
+        public async Task<IActionResult> GetAllFacilities([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var facilities = await _facilityService.GetAllFacilitiesAsync();
-            return Ok(facilities);
+            var (facilities, totalCount) = await _facilityService.GetAllFacilitiesAsync(pageNumber, pageSize);
+            return Ok(new
+            {
+                Data = facilities,
+                TotalCount = totalCount,
+                CurrentPage = pageNumber,
+                PageSize = pageSize
+            });
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchFacilitiesByName(
+            [FromQuery] string name,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            var (facilities, totalCount) = await _facilityService.SearchFacilitiesByNameAsync(name, pageNumber, pageSize);
+            return Ok(new
+            {
+                Data = facilities,
+                TotalCount = totalCount,
+                CurrentPage = pageNumber,
+                PageSize = pageSize
+            });
         }
 
         [HttpPost]
@@ -43,7 +95,7 @@ namespace SFMSSolution.API.Controllers
             return Ok("Facility created successfully.");
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:Guid}")]
         public async Task<IActionResult> UpdateFacility(Guid id, [FromBody] FacilityUpdateRequestDto request)
         {
             var result = await _facilityService.UpdateFacilityAsync(id, request);
@@ -52,7 +104,7 @@ namespace SFMSSolution.API.Controllers
             return Ok("Facility updated successfully.");
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> DeleteFacility(Guid id)
         {
             var result = await _facilityService.DeleteFacilityAsync(id);
@@ -61,5 +113,4 @@ namespace SFMSSolution.API.Controllers
             return Ok("Facility deleted successfully.");
         }
     }
-
 }

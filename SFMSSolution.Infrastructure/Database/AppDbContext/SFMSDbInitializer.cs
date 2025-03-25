@@ -43,9 +43,9 @@ namespace SFMSSolution.Infrastructure.Database.SFMSDbContext
             );
 
             // Khai báo ID cho các User
-            var adminUserId = Guid.NewGuid();
-            var ownerUserId = Guid.NewGuid();
-            var customerUserId = Guid.NewGuid();
+            var adminUserId = Guid.Parse("A1234568-1234-1234-1234-1234567810AB");
+            var ownerUserId = Guid.Parse("A1234368-1234-1234-1234-1234567830AB");
+            var customerUserId = Guid.Parse("A1934568-1234-1234-1234-1234562810AB");
 
             // Seed dữ liệu cho bảng Users
             modelBuilder.Entity<User>().HasData(

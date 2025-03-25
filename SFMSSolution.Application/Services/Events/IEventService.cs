@@ -11,10 +11,10 @@ namespace SFMSSolution.Application.Services.Events
     public interface IEventService
     {
         Task<EventDto?> GetEventByIdAsync(Guid id);
-        Task<List<EventDto>> GetAllEventsAsync();
+        Task<(List<EventDto> Events, int TotalCount)> GetAllEventsAsync(int pageNumber, int pageSize);
+        Task<(List<EventDto> Events, int TotalCount)> SearchEventsByTitleAsync(string title, int pageNumber, int pageSize);
         Task<bool> CreateEventAsync(EventCreateRequestDto request);
         Task<bool> UpdateEventAsync(Guid id, EventUpdateRequestDto request);
         Task<bool> DeleteEventAsync(Guid id);
-        Task<List<EventDto>> SearchEventsByTitleAsync(string title);
     }
 }

@@ -9,18 +9,12 @@ namespace SFMSSolution.Application.DataTransferObjects.Event.Request
 {
     public class EventUpdateRequestDto
     {
-        [Required]
         public string Title { get; set; } = string.Empty;
 
         public string Description { get; set; } = string.Empty;
-
-        [Required]
+        public string Images {  get; set; } = string.Empty;
         public DateTime StartTime { get; set; }
-
-        [Required]
         public DateTime EndTime { get; set; }
-
-        [Required]
         public string Status { get; set; } = string.Empty;
     }
 }

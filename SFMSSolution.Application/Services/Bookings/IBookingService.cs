@@ -11,7 +11,7 @@ namespace SFMSSolution.Application.Services.Bookings
     public interface IBookingService
     {
         Task<BookingDto> GetBookingAsync(Guid id);
-        Task<IEnumerable<BookingDto>> GetAllBookingsAsync();
+        Task<(IEnumerable<BookingDto> Bookings, int TotalCount)> GetAllBookingsAsync(int pageNumber, int pageSize);
         Task<bool> CreateBookingAsync(BookingCreateRequestDto request);
         Task<bool> UpdateBookingAsync(Guid id, BookingUpdateRequestDto request);
         Task<bool> DeleteBookingAsync(Guid id);

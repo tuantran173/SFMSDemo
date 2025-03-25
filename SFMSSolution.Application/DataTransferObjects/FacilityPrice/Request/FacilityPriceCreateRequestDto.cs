@@ -13,5 +13,6 @@ namespace SFMSSolution.Application.DataTransferObjects.FacilityPrice.Request
         public decimal Coefficient { get; set; }
         public string StartTime { get; set; }
         public string EndTime { get; set; }
+        public bool IsWeekend { get; set; }
     }
 }

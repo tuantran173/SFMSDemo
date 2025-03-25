@@ -17,9 +17,9 @@ namespace SFMSSolution.Infrastructure.Database.AppDbContext
         public DbSet<UserToken> UserTokens { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<FacilityTimeSlot> FacilityTimeSlots { get; set; }
-        public DbSet<BookingSchedule> BookingSchedules { get; set; }
         public DbSet<FacilityPrice> FacilityPrices { get; set; }
         public DbSet<Price> Prices { get; set; }
+        public DbSet<EmailTemplate> Emails {  get; set; }  
         
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -29,10 +29,10 @@ namespace SFMSSolution.Infrastructure.Database.AppDbContext
             modelBuilder.ApplyConfiguration(new FacilityConfiguration());
             modelBuilder.ApplyConfiguration(new BookingConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+            modelBuilder.ApplyConfiguration(new EventConfiguration());
             modelBuilder.ApplyConfiguration(new FacilityPriceConfiguration());
             modelBuilder.ApplyConfiguration(new FacilityTimeSlotConfiguration());
             modelBuilder.ApplyConfiguration(new PriceConfiguration());
-            modelBuilder.ApplyConfiguration(new BookingScheduleConfiguration());
 
             // Gọi phương thức Seed từ SFMSDbInitializer
             SFMSDbInitializer.Seed(modelBuilder);

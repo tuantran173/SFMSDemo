@@ -11,6 +11,9 @@ namespace SFMSSolution.Infrastructure.Implements.Interfaces
     public interface IFacilityRepository : IGenericRepository<Facility>
     {
         Task<Facility?> GetFacilityByIdAsync(Guid id);
-        Task<IEnumerable<Facility>> GetAllFacilitiesAsync();
+        Task<IEnumerable<Facility>> GetAllFacilitiesAsync(int? pageNumber = null, int? pageSize = null);
+        Task<IEnumerable<Facility>> GetFacilitiesWithDetailsAsync(int? pageNumber = null, int? pageSize = null);
+        Task<IEnumerable<Facility>> GetFacilitiesByNameAsync(string name, int? pageNumber = null, int? pageSize = null);
     }
+
 }

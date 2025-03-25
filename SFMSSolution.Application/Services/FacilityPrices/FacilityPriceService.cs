@@ -64,6 +64,7 @@ namespace SFMSSolution.Application.Services.FacilityPrices
                 facilityPrice.StartTime = parsedStartTime;
                 facilityPrice.EndTime = parsedEndTime;
 
+
                 await _unitOfWork.FacilityPriceRepository.UpdateAsync(facilityPrice);
             }
 

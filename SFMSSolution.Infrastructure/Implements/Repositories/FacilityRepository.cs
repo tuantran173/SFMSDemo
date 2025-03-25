@@ -17,12 +17,22 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
 
         public async Task<Facility?> GetFacilityByIdAsync(Guid id)
         {
-            return await GetByIdAsync(id);
+            return await GetByIdWithIncludesAsync(id, f => f.Category, f => f.FacilityTimeSlots);
         }
 
-        public async Task<IEnumerable<Facility>> GetAllFacilitiesAsync()
+        public async Task<IEnumerable<Facility>> GetAllFacilitiesAsync(int? pageNumber = null, int? pageSize = null)
         {
-            return await GetAllAsync();
+            return await GetAllAsync(pageNumber, pageSize);
+        }
+
+        public async Task<IEnumerable<Facility>> GetFacilitiesWithDetailsAsync(int? pageNumber = null, int? pageSize = null)
+        {
+            return await GetAllWithIncludesAsync(pageNumber, pageSize, f => f.Category, f => f.FacilityTimeSlots);
+        }
+
+        public async Task<IEnumerable<Facility>> GetFacilitiesByNameAsync(string name, int? pageNumber = null, int? pageSize = null)
+        {
+            return await GetByNameAsync(name, pageNumber, pageSize);
         }
     }
 }

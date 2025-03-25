@@ -26,14 +26,15 @@ namespace SFMSSolution.Application.Services.Bookings
 
         public async Task<BookingDto> GetBookingAsync(Guid id)
         {
-            var booking = await _unitOfWork.BookingRepository.GetByIdAsync(id);
+            var booking = await _unitOfWork.BookingRepository.GetBookingByIdWithDetailsAsync(id);
             return _mapper.Map<BookingDto>(booking);
         }
 
-        public async Task<IEnumerable<BookingDto>> GetAllBookingsAsync()
+        public async Task<(IEnumerable<BookingDto> Bookings, int TotalCount)> GetAllBookingsAsync(int pageNumber, int pageSize)
         {
-            var bookings = await _unitOfWork.BookingRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<BookingDto>>(bookings);
+            var (bookings, totalCount) = await _unitOfWork.BookingRepository.GetAllBookingsWithDetailsAsync(pageNumber, pageSize);
+            var bookingDtos = _mapper.Map<IEnumerable<BookingDto>>(bookings);
+            return (bookingDtos, totalCount);
         }
 
         public async Task<bool> CreateBookingAsync(BookingCreateRequestDto request)

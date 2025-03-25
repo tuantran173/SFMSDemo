@@ -20,6 +20,7 @@ namespace SFMSSolution.Domain.Entities
         public Guid CategoryId { get; set; }
         public Category Category { get; set; } = null!;
 
+        public ICollection<FacilityTimeSlot> FacilityTimeSlots { get; set; } = new List<FacilityTimeSlot>();
     }
 
 }

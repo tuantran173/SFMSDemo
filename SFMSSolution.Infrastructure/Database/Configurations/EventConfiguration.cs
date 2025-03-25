@@ -24,6 +24,9 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
             builder.Property(e => e.Description)
                 .HasMaxLength(1000);
 
+            builder.Property(f => f.Images)
+                   .HasMaxLength(500);
+            
             builder.Property(e => e.Status)
                 .IsRequired()
                 .HasMaxLength(50);

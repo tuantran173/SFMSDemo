@@ -11,6 +11,7 @@ namespace SFMSSolution.Infrastructure.Implements.Interfaces
     public interface IEventRepository : IGenericRepository<Event>
     {
         Task<Event?> GetEventByIdAsync(Guid id);
-        Task<List<Event>> SearchEventsByTitleAsync(string title);
+        Task<List<Event>> SearchEventsByTitleAsync(string title, int pageNumber = 1, int pageSize = 10);
+        Task<int> CountEventsByTitleAsync(string title);
     }
 }

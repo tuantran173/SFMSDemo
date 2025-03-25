@@ -28,20 +28,29 @@ namespace SFMSSolution.Application.Services.Events
             return ev == null ? null : _mapper.Map<EventDto>(ev);
         }
 
-        public async Task<List<EventDto>> GetAllEventsAsync()
+        public async Task<(List<EventDto> Events, int TotalCount)> GetAllEventsAsync(int pageNumber, int pageSize)
         {
-            var events = await _unitOfWork.EventRepository.GetAllAsync();
-            return _mapper.Map<List<EventDto>>(events);
+            var events = await _unitOfWork.EventRepository.GetAllAsync(pageNumber, pageSize);
+            var totalCount = await _unitOfWork.EventRepository.CountAsync();
+
+            var mappedEvents = _mapper.Map<List<EventDto>>(events);
+            return (mappedEvents, totalCount);
+        }
+
+        public async Task<(List<EventDto> Events, int TotalCount)> SearchEventsByTitleAsync(string title, int pageNumber, int pageSize)
+        {
+            var events = await _unitOfWork.EventRepository.SearchEventsByTitleAsync(title, pageNumber, pageSize);
+            var totalCount = await _unitOfWork.EventRepository.CountEventsByTitleAsync(title);
+
+            var mappedEvents = _mapper.Map<List<EventDto>>(events);
+            return (mappedEvents, totalCount);
         }
 
         public async Task<bool> CreateEventAsync(EventCreateRequestDto request)
         {
             var ev = _mapper.Map<Event>(request);
 
-            // Thêm event vào DB (không gọi SaveChangesAsync tại đây)
             await _unitOfWork.EventRepository.AddAsync(ev);
-
-            // Gọi SaveChangesAsync từ UnitOfWork
             await _unitOfWork.CompleteAsync();
 
             return true;
@@ -55,10 +64,7 @@ namespace SFMSSolution.Application.Services.Events
 
             _mapper.Map(request, existingEvent);
 
-            // Cập nhật event (không gọi SaveChangesAsync tại đây)
             await _unitOfWork.EventRepository.UpdateAsync(existingEvent);
-
-            // Gọi SaveChangesAsync từ UnitOfWork
             await _unitOfWork.CompleteAsync();
 
             return true;
@@ -66,19 +72,10 @@ namespace SFMSSolution.Application.Services.Events
 
         public async Task<bool> DeleteEventAsync(Guid id)
         {
-            // Xóa event (không gọi SaveChangesAsync tại đây)
             await _unitOfWork.EventRepository.DeleteAsync(id);
-
-            // Gọi SaveChangesAsync từ UnitOfWork
             await _unitOfWork.CompleteAsync();
 
             return true;
-        }
-
-        public async Task<List<EventDto>> SearchEventsByTitleAsync(string title)
-        {
-            var events = await _unitOfWork.EventRepository.SearchEventsByTitleAsync(title);
-            return _mapper.Map<List<EventDto>>(events);
         }
     }
 }

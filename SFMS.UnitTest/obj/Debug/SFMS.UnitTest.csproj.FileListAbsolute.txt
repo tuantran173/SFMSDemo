@@ -1,0 +1,15 @@
+D:\SFMSGithub\SFMS.UnitTest\bin\Debug\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+D:\SFMSGithub\SFMS.UnitTest\bin\Debug\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+D:\SFMSGithub\SFMS.UnitTest\bin\Debug\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+D:\SFMSGithub\SFMS.UnitTest\bin\Debug\Microsoft.TestPlatform.AdapterUtilities.dll
+D:\SFMSGithub\SFMS.UnitTest\bin\Debug\SFMS.UnitTest.dll
+D:\SFMSGithub\SFMS.UnitTest\bin\Debug\SFMS.UnitTest.pdb
+D:\SFMSGithub\SFMS.UnitTest\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.dll
+D:\SFMSGithub\SFMS.UnitTest\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll
+D:\SFMSGithub\SFMS.UnitTest\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.xml
+D:\SFMSGithub\SFMS.UnitTest\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml
+D:\SFMSGithub\SFMS.UnitTest\obj\Debug\SFMS.UnitTest.csproj.AssemblyReference.cache
+D:\SFMSGithub\SFMS.UnitTest\obj\Debug\SFMS.UnitTest.csproj.CoreCompileInputs.cache
+D:\SFMSGithub\SFMS.UnitTest\obj\Debug\SFMS.UnitTest.csproj.CopyComplete
+D:\SFMSGithub\SFMS.UnitTest\obj\Debug\SFMS.UnitTest.dll
+D:\SFMSGithub\SFMS.UnitTest\obj\Debug\SFMS.UnitTest.pdb

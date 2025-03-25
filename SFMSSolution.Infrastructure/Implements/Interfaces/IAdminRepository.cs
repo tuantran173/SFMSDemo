@@ -10,7 +10,7 @@ namespace SFMSSolution.Infrastructure.Implements.Interfaces
 {
     public interface IAdminRepository : IGenericRepository<User>
     {
-        Task<List<User>> GetAllUsersWithRolesAsync();
+        Task<(List<User> Users, int TotalCount)> GetAllUsersWithRolesAsync(int pageNumber, int pageSize);
         Task<User?> GetUserByIdWithRolesAsync(Guid userId);
         Task ChangeUserRoleAsync(Guid userId, Guid newRoleId);
     }

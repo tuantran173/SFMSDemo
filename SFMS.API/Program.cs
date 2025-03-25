@@ -2,20 +2,18 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SFMSSolution.API.Hubs;
 using SFMSSolution.Application.Mapping;
 using SFMSSolution.Infrastructure.Database.AppDbContext;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 🚀 *Cấu hình Database Context*
 builder.Services.AddDbContext<SFMSDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 🚀 *Đăng ký các Services từ Infrastructure*
 builder.Services.AddInfrastructure();
 
-// 🚀 *Cấu hình JWT Authentication*
 var secretKey = builder.Configuration["JwtSettings:Secret"];
 if (string.IsNullOrEmpty(secretKey))
 {
@@ -32,33 +30,30 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(keyBytes), // ✅ Sử dụng keyBytes
+            IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidateLifetime = true
         };
     });
 
-// 🚀 *Cấu hình CORS*
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp",
         policy => policy
-            .WithOrigins("http://localhost:4200") // ✅ Đảm bảo đây là đúng Angular URL
+            .WithOrigins("http://localhost:4200")
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .SetIsOriginAllowed(_ => true) // ✅ Chấp nhận mọi Origin trong phát triển
-            .AllowCredentials()); // ❗ Chỉ bật nếu bạn DÙNG COOKIES
+            .SetIsOriginAllowed(_ => true)
+            .AllowCredentials());
 });
 
-// 🚀 *Cấu hình Controller & JSON Options*
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
     options.JsonSerializerOptions.WriteIndented = true;
 });
 
-// 🚀 *Cấu hình Swagger để hỗ trợ JWT Authorization*
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -85,6 +80,7 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -95,18 +91,22 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// 🚀 *Đảm bảo phục vụ file tĩnh nếu Angular build nằm trong API*
 app.UseStaticFiles();
 app.UseDefaultFiles();
 
 app.UseHttpsRedirection();
 
-// 🚀 *Bật CORS cho Angular (Đưa lên trước Authentication)*
+app.UseRouting();
+
 app.UseCors("AllowAngularApp");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapHub<BookingHub>("/bookingHub");
+});
 
 app.Run();

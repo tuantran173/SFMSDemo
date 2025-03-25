@@ -17,12 +17,26 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
 
         public async Task<Booking?> GetBookingByIdWithDetailsAsync(Guid id)
         {
-            return await GetByIdWithIncludesAsync(id, b => b.Facility, b => b.User);
+            return await _dbSet
+                .Include(b => b.Facility)
+                .Include(b => b.User)
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
 
-        public async Task<IEnumerable<Booking>> GetAllBookingsWithDetailsAsync()
+        public async Task<(IEnumerable<Booking> Bookings, int TotalCount)> GetAllBookingsWithDetailsAsync(int pageNumber, int pageSize)
         {
-            return await GetAllWithIncludesAsync(b => b.Facility, b => b.User);
+            var query = _dbSet
+                .Include(b => b.Facility)
+                .Include(b => b.User);
+
+            var totalCount = await query.CountAsync();
+
+            var bookings = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (bookings, totalCount);
         }
     }
 }

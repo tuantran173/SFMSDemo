@@ -17,21 +17,22 @@ namespace SFMSSolution.API.Controllers
             _eventService = eventService;
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:Guid}")]
         public async Task<IActionResult> GetEvent(Guid id)
         {
             var ev = await _eventService.GetEventByIdAsync(id);
             if (ev == null)
-                return NotFound();
+                return NotFound(new { message = "Event not found." });
+
             return Ok(ev);
         }
 
         [AllowAnonymous]
-        [HttpGet]
-        public async Task<IActionResult> GetAllEvents()
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllEvents([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var events = await _eventService.GetAllEventsAsync();
-            return Ok(events);
+            var (events, totalCount) = await _eventService.GetAllEventsAsync(pageNumber, pageSize);
+            return Ok(new { TotalCount = totalCount, Events = events });
         }
 
         [HttpPost]
@@ -43,10 +44,11 @@ namespace SFMSSolution.API.Controllers
             var result = await _eventService.CreateEventAsync(request);
             if (!result)
                 return BadRequest(new { message = "Failed to create event." });
+
             return Ok(new { message = "Event created successfully." });
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:Guid}")]
         public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] EventUpdateRequestDto request)
         {
             if (!ModelState.IsValid)
@@ -55,24 +57,29 @@ namespace SFMSSolution.API.Controllers
             var result = await _eventService.UpdateEventAsync(id, request);
             if (!result)
                 return BadRequest(new { message = "Failed to update event." });
+
             return Ok(new { message = "Event updated successfully." });
         }
 
-        [AllowAnonymous]
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> DeleteEvent(Guid id)
         {
             var result = await _eventService.DeleteEventAsync(id);
             if (!result)
                 return BadRequest(new { message = "Failed to delete event." });
+
             return Ok(new { message = "Event deleted successfully." });
         }
 
-        [HttpGet("search/{title}")]
-        public async Task<IActionResult> SearchEvents(string title)
+        [AllowAnonymous]
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchEvents(
+            [FromQuery] string title,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var events = await _eventService.SearchEventsByTitleAsync(title);
-            return Ok(events);
+            var (events, totalCount) = await _eventService.SearchEventsByTitleAsync(title, pageNumber, pageSize);
+            return Ok(new { TotalCount = totalCount, Events = events });
         }
     }
 }

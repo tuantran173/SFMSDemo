@@ -10,7 +10,7 @@ namespace SFMSSolution.Application.Services.Admin
 {
     public interface IAdminService
     {
-        Task<List<UserResponseDto>> GetAllUsersAsync();
+        Task<(List<UserResponseDto> Users, int TotalCount)> GetAllUsersAsync(int pageNumber, int pageSize);
         Task<UserResponseDto?> GetUserByIdAsync(Guid userId);
         Task<bool> UpdateUserAsync(Guid userId, UpdateUserRequestDto request);
         Task<bool> ChangeUserRoleAsync(ChangeUserRoleRequestDto request);
