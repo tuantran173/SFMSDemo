@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Sue7/7kcVyW/nRQEQd5HMzHTHhOcOD6Fdb9jin8VkEf36tBHQNgf0oHUyISjgR0K7be2Ot6ACIdTopwziWba5A==",
+  "dgSpecHash": "PSjjm2HH7Ut1Imki/mbORsEMzLk36aXpxorbk14x9cI2+uxcYwX/ioMZd4KKimRMg9JFLMJMdNxH0PnssWZDOg==",
   "success": true,
-  "projectFilePath": "D:\\SEP490_G46\\SFMS.API\\SFMSSolution.API.csproj",
+  "projectFilePath": "D:\\SFMSGithub\\SFMS.API\\SFMSSolution.API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Asus\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\Asus\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",

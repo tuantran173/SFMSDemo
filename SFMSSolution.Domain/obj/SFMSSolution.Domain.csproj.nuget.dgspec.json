@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\SEP490_G46\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj": {}
+    "D:\\SFMSGithub\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj": {}
   },
   "projects": {
-    "D:\\SEP490_G46\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj": {
+    "D:\\SFMSGithub\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\SEP490_G46\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj",
+        "projectUniqueName": "D:\\SFMSGithub\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj",
         "projectName": "SFMSSolution.Domain",
-        "projectPath": "D:\\SEP490_G46\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj",
+        "projectPath": "D:\\SFMSGithub\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj",
         "packagesPath": "C:\\Users\\Asus\\.nuget\\packages\\",
-        "outputPath": "D:\\SEP490_G46\\SFMSSolution.Domain\\obj\\",
+        "outputPath": "D:\\SFMSGithub\\SFMSSolution.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Asus\\AppData\\Roaming\\NuGet\\NuGet.Config",
