@@ -11,9 +11,9 @@ namespace SFMSSolution.Domain.Entities
     public class Facility: BaseEntity
     {
         public string Name { get; set; } = string.Empty;
-        public string Location { get; set; } = string.Empty; // => nên là url map
+        public string Location { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public string Capacity { get; set; } = string.Empty; // => int
+        public string Capacity { get; set; } = string.Empty;
         public string Images { get; set; } = string.Empty;
 
         // Thêm liên kết đến Category

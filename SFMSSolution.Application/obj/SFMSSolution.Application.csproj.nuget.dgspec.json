@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\SFMSGithub\\SFMSSolution.Application\\SFMSSolution.Application.csproj": {}
+    "D:\\SEP490_G46\\SFMSSolution.Application\\SFMSSolution.Application.csproj": {}
   },
   "projects": {
-    "D:\\SFMSGithub\\SFMSSolution.Application\\SFMSSolution.Application.csproj": {
+    "D:\\SEP490_G46\\SFMSSolution.Application\\SFMSSolution.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\SFMSGithub\\SFMSSolution.Application\\SFMSSolution.Application.csproj",
+        "projectUniqueName": "D:\\SEP490_G46\\SFMSSolution.Application\\SFMSSolution.Application.csproj",
         "projectName": "SFMSSolution.Application",
-        "projectPath": "D:\\SFMSGithub\\SFMSSolution.Application\\SFMSSolution.Application.csproj",
+        "projectPath": "D:\\SEP490_G46\\SFMSSolution.Application\\SFMSSolution.Application.csproj",
         "packagesPath": "C:\\Users\\Asus\\.nuget\\packages\\",
-        "outputPath": "D:\\SFMSGithub\\SFMSSolution.Application\\obj\\",
+        "outputPath": "D:\\SEP490_G46\\SFMSSolution.Application\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Asus\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -28,11 +28,11 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\SFMSGithub\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj": {
-                "projectPath": "D:\\SFMSGithub\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj"
+              "D:\\SEP490_G46\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj": {
+                "projectPath": "D:\\SEP490_G46\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj"
               },
-              "D:\\SFMSGithub\\SFMSSolution.Infrastructure\\SFMSSolution.Infrastructure.csproj": {
-                "projectPath": "D:\\SFMSGithub\\SFMSSolution.Infrastructure\\SFMSSolution.Infrastructure.csproj"
+              "D:\\SEP490_G46\\SFMSSolution.Infrastructure\\SFMSSolution.Infrastructure.csproj": {
+                "projectPath": "D:\\SEP490_G46\\SFMSSolution.Infrastructure\\SFMSSolution.Infrastructure.csproj"
               }
             }
           }
@@ -86,6 +86,10 @@
             "MimeKit": {
               "target": "Package",
               "version": "[4.10.0, )"
+            },
+            "OpenIddict.AspNetCore": {
+              "target": "Package",
+              "version": "[5.8.0, )"
             }
           },
           "imports": [
@@ -108,14 +112,14 @@
         }
       }
     },
-    "D:\\SFMSGithub\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj": {
+    "D:\\SEP490_G46\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\SFMSGithub\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj",
+        "projectUniqueName": "D:\\SEP490_G46\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj",
         "projectName": "SFMSSolution.Domain",
-        "projectPath": "D:\\SFMSGithub\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj",
+        "projectPath": "D:\\SEP490_G46\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj",
         "packagesPath": "C:\\Users\\Asus\\.nuget\\packages\\",
-        "outputPath": "D:\\SFMSGithub\\SFMSSolution.Domain\\obj\\",
+        "outputPath": "D:\\SEP490_G46\\SFMSSolution.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Asus\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -143,6 +147,12 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.12, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -163,14 +173,14 @@
         }
       }
     },
-    "D:\\SFMSGithub\\SFMSSolution.Infrastructure\\SFMSSolution.Infrastructure.csproj": {
+    "D:\\SEP490_G46\\SFMSSolution.Infrastructure\\SFMSSolution.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\SFMSGithub\\SFMSSolution.Infrastructure\\SFMSSolution.Infrastructure.csproj",
+        "projectUniqueName": "D:\\SEP490_G46\\SFMSSolution.Infrastructure\\SFMSSolution.Infrastructure.csproj",
         "projectName": "SFMSSolution.Infrastructure",
-        "projectPath": "D:\\SFMSGithub\\SFMSSolution.Infrastructure\\SFMSSolution.Infrastructure.csproj",
+        "projectPath": "D:\\SEP490_G46\\SFMSSolution.Infrastructure\\SFMSSolution.Infrastructure.csproj",
         "packagesPath": "C:\\Users\\Asus\\.nuget\\packages\\",
-        "outputPath": "D:\\SFMSGithub\\SFMSSolution.Infrastructure\\obj\\",
+        "outputPath": "D:\\SEP490_G46\\SFMSSolution.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Asus\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -187,8 +197,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\SFMSGithub\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj": {
-                "projectPath": "D:\\SFMSGithub\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj"
+              "D:\\SEP490_G46\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj": {
+                "projectPath": "D:\\SEP490_G46\\SFMSSolution.Domain\\SFMSSolution.Domain.csproj"
               }
             }
           }
@@ -228,6 +238,14 @@
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
               "version": "[8.0.12, )"
+            },
+            "OpenIddict.AspNetCore": {
+              "target": "Package",
+              "version": "[5.8.0, )"
+            },
+            "OpenIddict.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[5.8.0, )"
             }
           },
           "imports": [

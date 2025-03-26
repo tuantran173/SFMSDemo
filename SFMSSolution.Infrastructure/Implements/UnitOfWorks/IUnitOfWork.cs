@@ -11,13 +11,9 @@ namespace SFMSSolution.Infrastructure.Implements.UnitOfWorks
     public interface IUnitOfWork : IDisposable
     {
         // Khai báo các repository property
-        IAdminRepository AdminRepository { get; }
-        IAuthRepository AuthRepository { get; }
+        IUserRepository AdminRepository { get; }
         IBookingRepository BookingRepository { get; }
         IFacilityRepository FacilityRepository { get; }
-        IRoleRepository RoleRepository { get; }
-        IUserProfileRepository UserProfileRepository { get; }
-        IUserTokenRepository UserTokenRepository { get; }
         IEventRepository EventRepository { get; }
         IFacilityPriceRepository FacilityPriceRepository { get; }
         IPriceRepository PriceRepository { get; }

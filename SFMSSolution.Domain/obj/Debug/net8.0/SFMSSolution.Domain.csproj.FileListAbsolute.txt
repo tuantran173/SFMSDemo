@@ -13,6 +13,7 @@ D:\SFMSGithub\SFMSSolution.Domain\obj\Debug\net8.0\ref\SFMSSolution.Domain.dll
 D:\SEP490_G46\SFMSSolution.Domain\bin\Debug\net8.0\SFMSSolution.Domain.deps.json
 D:\SEP490_G46\SFMSSolution.Domain\bin\Debug\net8.0\SFMSSolution.Domain.dll
 D:\SEP490_G46\SFMSSolution.Domain\bin\Debug\net8.0\SFMSSolution.Domain.pdb
+D:\SEP490_G46\SFMSSolution.Domain\obj\Debug\net8.0\SFMSSolution.Domain.csproj.AssemblyReference.cache
 D:\SEP490_G46\SFMSSolution.Domain\obj\Debug\net8.0\SFMSSolution.Domain.GeneratedMSBuildEditorConfig.editorconfig
 D:\SEP490_G46\SFMSSolution.Domain\obj\Debug\net8.0\SFMSSolution.Domain.AssemblyInfoInputs.cache
 D:\SEP490_G46\SFMSSolution.Domain\obj\Debug\net8.0\SFMSSolution.Domain.AssemblyInfo.cs

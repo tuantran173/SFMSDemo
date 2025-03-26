@@ -16,6 +16,12 @@ D:\SFMSGithub\SFMSSolution.Application\obj\Debug\net8.0\SFMSSolution.Application
 D:\SFMSGithub\SFMSSolution.Application\obj\Debug\net8.0\refint\SFMSSolution.Application.dll
 D:\SFMSGithub\SFMSSolution.Application\obj\Debug\net8.0\SFMSSolution.Application.pdb
 D:\SFMSGithub\SFMSSolution.Application\obj\Debug\net8.0\ref\SFMSSolution.Application.dll
+D:\SEP490_G46\SFMSSolution.Application\obj\Debug\net8.0\SFMSSolution.Application.csproj.AssemblyReference.cache
+D:\SEP490_G46\SFMSSolution.Application\obj\Debug\net8.0\SFMSSolution.Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\SEP490_G46\SFMSSolution.Application\obj\Debug\net8.0\SFMSSolution.Application.AssemblyInfoInputs.cache
+D:\SEP490_G46\SFMSSolution.Application\obj\Debug\net8.0\SFMSSolution.Application.AssemblyInfo.cs
+D:\SEP490_G46\SFMSSolution.Application\obj\Debug\net8.0\SFMSSolution.Application.csproj.CoreCompileInputs.cache
+D:\SEP490_G46\SFMSSolution.Application\obj\Debug\net8.0\SFMSSolution.Application.sourcelink.json
 D:\SEP490_G46\SFMSSolution.Application\bin\Debug\net8.0\SFMSSolution.Application.deps.json
 D:\SEP490_G46\SFMSSolution.Application\bin\Debug\net8.0\SFMSSolution.Application.dll
 D:\SEP490_G46\SFMSSolution.Application\bin\Debug\net8.0\SFMSSolution.Application.pdb
@@ -23,12 +29,6 @@ D:\SEP490_G46\SFMSSolution.Application\bin\Debug\net8.0\SFMSSolution.Domain.dll
 D:\SEP490_G46\SFMSSolution.Application\bin\Debug\net8.0\SFMSSolution.Infrastructure.dll
 D:\SEP490_G46\SFMSSolution.Application\bin\Debug\net8.0\SFMSSolution.Domain.pdb
 D:\SEP490_G46\SFMSSolution.Application\bin\Debug\net8.0\SFMSSolution.Infrastructure.pdb
-D:\SEP490_G46\SFMSSolution.Application\obj\Debug\net8.0\SFMSSolution.Application.csproj.AssemblyReference.cache
-D:\SEP490_G46\SFMSSolution.Application\obj\Debug\net8.0\SFMSSolution.Application.GeneratedMSBuildEditorConfig.editorconfig
-D:\SEP490_G46\SFMSSolution.Application\obj\Debug\net8.0\SFMSSolution.Application.AssemblyInfoInputs.cache
-D:\SEP490_G46\SFMSSolution.Application\obj\Debug\net8.0\SFMSSolution.Application.AssemblyInfo.cs
-D:\SEP490_G46\SFMSSolution.Application\obj\Debug\net8.0\SFMSSolution.Application.csproj.CoreCompileInputs.cache
-D:\SEP490_G46\SFMSSolution.Application\obj\Debug\net8.0\SFMSSolution.Application.sourcelink.json
 D:\SEP490_G46\SFMSSolution.Application\obj\Debug\net8.0\SFMSSolution.Application.csproj.CopyComplete
 D:\SEP490_G46\SFMSSolution.Application\obj\Debug\net8.0\SFMSSolution.Application.dll
 D:\SEP490_G46\SFMSSolution.Application\obj\Debug\net8.0\refint\SFMSSolution.Application.dll

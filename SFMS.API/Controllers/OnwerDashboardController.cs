@@ -24,7 +24,7 @@ namespace SFMSSolution.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("facility/{facilityId}")]
+        [HttpGet("facility-report/{facilityId}")]
         public async Task<IActionResult> GetFacilityReport(Guid facilityId)
         {
             var result = await _reportService.GetFacilityReportAsync(facilityId);

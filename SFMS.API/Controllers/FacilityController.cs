@@ -17,7 +17,8 @@ namespace SFMSSolution.API.Controllers
             _facilityService = facilityService;
         }
 
-        [HttpGet("{id:Guid}")]
+        [AllowAnonymous]
+        [HttpGet("get-facility-by-id/{id:Guid}")]
         public async Task<IActionResult> GetFacility(Guid id)
         {
             var facility = await _facilityService.GetFacilityAsync(id);
@@ -26,7 +27,8 @@ namespace SFMSSolution.API.Controllers
             return Ok(facility);
         }
 
-        [HttpGet("filter")]
+        [AllowAnonymous]
+        [HttpGet("filter-facility")]
         public async Task<IActionResult> FilterFacilities(
             [FromQuery] Guid? categoryId,
             [FromQuery] string? location,
@@ -57,7 +59,7 @@ namespace SFMSSolution.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("get-all-facilities")]
         public async Task<IActionResult> GetAllFacilities([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             var (facilities, totalCount) = await _facilityService.GetAllFacilitiesAsync(pageNumber, pageSize);
@@ -70,7 +72,8 @@ namespace SFMSSolution.API.Controllers
             });
         }
 
-        [HttpGet("search")]
+        [AllowAnonymous]
+        [HttpGet("search-facility")]
         public async Task<IActionResult> SearchFacilitiesByName(
             [FromQuery] string name,
             [FromQuery] int pageNumber = 1,
@@ -86,7 +89,7 @@ namespace SFMSSolution.API.Controllers
             });
         }
 
-        [HttpPost]
+        [HttpPost("create-facility")]
         public async Task<IActionResult> CreateFacility([FromBody] FacilityCreateRequestDto request)
         {
             var result = await _facilityService.CreateFacilityAsync(request);
@@ -95,7 +98,7 @@ namespace SFMSSolution.API.Controllers
             return Ok("Facility created successfully.");
         }
 
-        [HttpPut("{id:Guid}")]
+        [HttpPut("update-facility/{id:Guid}")]
         public async Task<IActionResult> UpdateFacility(Guid id, [FromBody] FacilityUpdateRequestDto request)
         {
             var result = await _facilityService.UpdateFacilityAsync(id, request);
@@ -104,7 +107,7 @@ namespace SFMSSolution.API.Controllers
             return Ok("Facility updated successfully.");
         }
 
-        [HttpDelete("{id:Guid}")]
+        [HttpDelete("delete-facility/{id:Guid}")]
         public async Task<IActionResult> DeleteFacility(Guid id)
         {
             var result = await _facilityService.DeleteFacilityAsync(id);

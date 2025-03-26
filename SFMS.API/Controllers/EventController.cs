@@ -17,7 +17,8 @@ namespace SFMSSolution.API.Controllers
             _eventService = eventService;
         }
 
-        [HttpGet("{id:Guid}")]
+        [AllowAnonymous]
+        [HttpGet("get-event-by-id/{id:Guid}")]
         public async Task<IActionResult> GetEvent(Guid id)
         {
             var ev = await _eventService.GetEventByIdAsync(id);
@@ -28,14 +29,14 @@ namespace SFMSSolution.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("all")]
+        [HttpGet("get-all-events")]
         public async Task<IActionResult> GetAllEvents([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             var (events, totalCount) = await _eventService.GetAllEventsAsync(pageNumber, pageSize);
             return Ok(new { TotalCount = totalCount, Events = events });
         }
 
-        [HttpPost]
+        [HttpPost("create-event")]
         public async Task<IActionResult> CreateEvent([FromBody] EventCreateRequestDto request)
         {
             if (!ModelState.IsValid)
@@ -48,7 +49,7 @@ namespace SFMSSolution.API.Controllers
             return Ok(new { message = "Event created successfully." });
         }
 
-        [HttpPut("{id:Guid}")]
+        [HttpPut("update-event/{id:Guid}")]
         public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] EventUpdateRequestDto request)
         {
             if (!ModelState.IsValid)
@@ -61,7 +62,7 @@ namespace SFMSSolution.API.Controllers
             return Ok(new { message = "Event updated successfully." });
         }
 
-        [HttpDelete("{id:Guid}")]
+        [HttpDelete("delete/event{id:Guid}")]
         public async Task<IActionResult> DeleteEvent(Guid id)
         {
             var result = await _eventService.DeleteEventAsync(id);
@@ -72,7 +73,7 @@ namespace SFMSSolution.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("search")]
+        [HttpGet("search-event")]
         public async Task<IActionResult> SearchEvents(
             [FromQuery] string title,
             [FromQuery] int pageNumber = 1,

@@ -4,7 +4,6 @@ using SFMSSolution.Application.Services.Admin;
 using SFMSSolution.Application.Services.Auth;
 using SFMSSolution.Application.Services.Bookings;
 using SFMSSolution.Application.Services.Facilities;
-using SFMSSolution.Application.Services.UserProfile;
 using SFMSSolution.Infrastructure.Implements.Interfaces;
 using SFMSSolution.Infrastructure.Implements.Repositories;
 using SFMSSolution.Infrastructure.Implements.UnitOfWorks;
@@ -25,9 +24,7 @@ namespace SFMSSolution.Application.Mapping
             // Đăng ký AutoMapper Profiles
             services.AddAutoMapper(cfg =>
             {
-                cfg.AddProfile<AuthProfile>();
-                cfg.AddProfile<AdminProfile>();
-                cfg.AddProfile<UserProfileProfile>();
+                cfg.AddProfile<UserProfile>();
                 cfg.AddProfile<FacilityProfile>();
                 cfg.AddProfile<BookingProfile>();
                 cfg.AddProfile<EventProfile>();
@@ -38,8 +35,7 @@ namespace SFMSSolution.Application.Mapping
 
             // Đăng ký Services
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IAdminService, AdminService>();
-            services.AddScoped<IUserProfileService, UserProfileService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IFacilityService, FacilityService>();
             services.AddScoped<IBookingService, BookingService>();

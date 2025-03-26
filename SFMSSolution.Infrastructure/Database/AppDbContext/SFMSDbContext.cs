@@ -1,30 +1,31 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SFMSSolution.Domain.Entities;
 using SFMSSolution.Infrastructure.Database.Configurations;
+using Microsoft.AspNetCore.Identity;
 using SFMSSolution.Infrastructure.Database.SFMSDbContext;
 
 namespace SFMSSolution.Infrastructure.Database.AppDbContext
 {
-    public class SFMSDbContext : DbContext
+    public class SFMSDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid> // Kế thừa từ IdentityDbContext
     {
         public SFMSDbContext(DbContextOptions<SFMSDbContext> options) : base(options) { }
 
-        public DbSet<User> Users { get; set; }
-        public DbSet<Role> Roles { get; set; }
+        // Các DbSet cho entity tùy chỉnh
         public DbSet<Facility> Facilities { get; set; }
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<UserToken> UserTokens { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<FacilityTimeSlot> FacilityTimeSlots { get; set; }
         public DbSet<FacilityPrice> FacilityPrices { get; set; }
         public DbSet<Price> Prices { get; set; }
-        public DbSet<EmailTemplate> Emails {  get; set; }  
-        
+        public DbSet<EmailTemplate> Emails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new RoleConfiguration());
+            base.OnModelCreating(modelBuilder); // Gọi base để cấu hình Identity
+            modelBuilder.UseOpenIddict();
+            // Áp dụng các configuration cho entity
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new FacilityConfiguration());
             modelBuilder.ApplyConfiguration(new BookingConfiguration());

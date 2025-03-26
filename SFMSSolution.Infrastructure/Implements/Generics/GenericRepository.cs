@@ -71,6 +71,7 @@ namespace SFMS.Infrastructure.Repositories
             // Không gọi SaveChangesAsync() ở đây
         }
 
+        // ✅ Lấy theo Id kèm theo các include (Lazy Load)
         public async Task<T?> GetByIdWithIncludesAsync(Guid id, params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = _dbSet;
@@ -81,6 +82,7 @@ namespace SFMS.Infrastructure.Repositories
             return await query.FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == id);
         }
 
+        // ✅ Lấy tất cả kèm theo các include và phân trang
         public async Task<IEnumerable<T>> GetAllWithIncludesAsync(int? pageNumber = null, int? pageSize = null, params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = _dbSet;

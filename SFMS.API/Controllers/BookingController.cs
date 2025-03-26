@@ -21,7 +21,8 @@ namespace SFMSSolution.API.Controllers
             _hubContext = hubContext;
         }
 
-        [HttpGet("{id:Guid}")]
+        [AllowAnonymous]
+        [HttpGet("get-booking-by-id/{id:Guid}")]
         public async Task<IActionResult> GetBooking(Guid id)
         {
             var booking = await _bookingService.GetBookingAsync(id);
@@ -31,14 +32,15 @@ namespace SFMSSolution.API.Controllers
             return Ok(booking);
         }
 
-        [HttpGet("all")]
+        [AllowAnonymous]
+        [HttpGet("get-all-booking")]
         public async Task<IActionResult> GetAllBookings([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             var (bookings, totalCount) = await _bookingService.GetAllBookingsAsync(pageNumber, pageSize);
             return Ok(new { TotalCount = totalCount, Bookings = bookings });
         }
 
-        [HttpPost]
+        [HttpPost("create-booking")]
         public async Task<IActionResult> CreateBooking([FromBody] BookingCreateRequestDto request)
         {
             var result = await _bookingService.CreateBookingAsync(request);
@@ -50,7 +52,7 @@ namespace SFMSSolution.API.Controllers
             return Ok("Booking created successfully.");
         }
 
-        [HttpPut("{id:Guid}")]
+        [HttpPut("update-booking/{id:Guid}")]
         public async Task<IActionResult> UpdateBooking(Guid id, [FromBody] BookingUpdateRequestDto request)
         {
             var result = await _bookingService.UpdateBookingAsync(id, request);
@@ -62,7 +64,7 @@ namespace SFMSSolution.API.Controllers
             return Ok("Booking updated successfully.");
         }
 
-        [HttpDelete("{id:Guid}")]
+        [HttpDelete("delete/booking{id:Guid}")]
         public async Task<IActionResult> DeleteBooking(Guid id)
         {
             var result = await _bookingService.DeleteBookingAsync(id);

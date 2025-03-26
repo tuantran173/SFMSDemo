@@ -22,6 +22,348 @@ namespace SFMSSolution.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreApplication", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ApplicationType")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ClientId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ClientSecret")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClientType")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ConcurrencyToken")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ConsentType")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayNames")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JsonWebKeySet")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Permissions")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostLogoutRedirectUris")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RedirectUris")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Requirements")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Settings")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId")
+                        .IsUnique()
+                        .HasFilter("[ClientId] IS NOT NULL");
+
+                    b.ToTable("OpenIddictApplications", (string)null);
+                });
+
+            modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreAuthorization", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ApplicationId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConcurrencyToken")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Scopes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Subject")
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId", "Status", "Subject", "Type");
+
+                    b.ToTable("OpenIddictAuthorizations", (string)null);
+                });
+
+            modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreScope", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConcurrencyToken")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Descriptions")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayNames")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Resources")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasFilter("[Name] IS NOT NULL");
+
+                    b.ToTable("OpenIddictScopes", (string)null);
+                });
+
+            modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreToken", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ApplicationId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AuthorizationId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConcurrencyToken")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ExpirationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Payload")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RedemptionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReferenceId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Subject")
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorizationId");
+
+                    b.HasIndex("ReferenceId")
+                        .IsUnique()
+                        .HasFilter("[ReferenceId] IS NOT NULL");
+
+                    b.HasIndex("ApplicationId", "Status", "Subject", "Type");
+
+                    b.ToTable("OpenIddictTokens", (string)null);
+                });
+
             modelBuilder.Entity("SFMSSolution.Domain.Entities.Booking", b =>
                 {
                     b.Property<Guid>("Id")
@@ -110,24 +452,59 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("a1234567-1234-1234-1234-1234567890ab"),
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 24, 59, DateTimeKind.Utc).AddTicks(6422),
+                            CreatedDate = new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(3936),
                             Description = "Sân bóng đá 5-a-side, 7-a-side, 11-a-side",
                             Name = "Sân bóng"
                         },
                         new
                         {
                             Id = new Guid("b1234567-1234-1234-1234-1234567890bc"),
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 24, 59, DateTimeKind.Utc).AddTicks(6424),
+                            CreatedDate = new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(3939),
                             Description = "Sân cầu lông đơn và đôi",
                             Name = "Sân cầu lông"
                         },
                         new
                         {
                             Id = new Guid("c1234567-1234-1234-1234-1234567890cd"),
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 24, 59, DateTimeKind.Utc).AddTicks(6425),
+                            CreatedDate = new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(3940),
                             Description = "Sân Pickleball chuẩn quốc tế",
                             Name = "Sân Pickleball"
                         });
+                });
+
+            modelBuilder.Entity("SFMSSolution.Domain.Entities.EmailTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TemplateName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Emails");
                 });
 
             modelBuilder.Entity("SFMSSolution.Domain.Entities.Event", b =>
@@ -241,7 +618,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                             Id = new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"),
                             Capacity = "10",
                             CategoryId = new Guid("a1234567-1234-1234-1234-1234567890ab"),
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 24, 59, DateTimeKind.Utc).AddTicks(6482),
+                            CreatedDate = new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4134),
                             Description = "Sân bóng đá 5 người",
                             Images = "image1.jpg",
                             Location = "Thạch Thất, Hòa Lạc",
@@ -252,7 +629,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                             Id = new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"),
                             Capacity = "4",
                             CategoryId = new Guid("b1234567-1234-1234-1234-1234567890bc"),
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 24, 59, DateTimeKind.Utc).AddTicks(6485),
+                            CreatedDate = new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4137),
                             Description = "Sân cầu lông đơn/đôi",
                             Images = "image2.jpg",
                             Location = "Thạch Thất, Hòa Lạc",
@@ -345,7 +722,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("1b05b57c-6d02-4c06-b0b5-a96139825346"),
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 24, 59, DateTimeKind.Utc).AddTicks(6644),
+                            CreatedDate = new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4228),
                             EndTime = new TimeSpan(0, 9, 30, 0, 0),
                             FacilityId = new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"),
                             IsWeekend = false,
@@ -354,7 +731,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("907b662c-5a2c-4a90-b96b-81b603b27e57"),
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 24, 59, DateTimeKind.Utc).AddTicks(6645),
+                            CreatedDate = new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4230),
                             EndTime = new TimeSpan(0, 11, 0, 0, 0),
                             FacilityId = new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"),
                             IsWeekend = false,
@@ -363,7 +740,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("1a2c6a93-97cd-4493-a1fc-9b5819ac6e17"),
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 24, 59, DateTimeKind.Utc).AddTicks(6647),
+                            CreatedDate = new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4231),
                             EndTime = new TimeSpan(0, 12, 30, 0, 0),
                             FacilityId = new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"),
                             IsWeekend = false,
@@ -372,7 +749,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("d75d092a-7da6-4cc3-88c9-69ac5c82652c"),
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 24, 59, DateTimeKind.Utc).AddTicks(6648),
+                            CreatedDate = new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4233),
                             EndTime = new TimeSpan(0, 15, 30, 0, 0),
                             FacilityId = new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"),
                             IsWeekend = false,
@@ -381,7 +758,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("1b7ea0d1-c743-47d7-b3f1-02860dbd9806"),
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 24, 59, DateTimeKind.Utc).AddTicks(6649),
+                            CreatedDate = new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4235),
                             EndTime = new TimeSpan(0, 17, 0, 0, 0),
                             FacilityId = new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"),
                             IsWeekend = false,
@@ -390,7 +767,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("bb9299e1-518a-4730-9797-6ec37c5dd03f"),
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 24, 59, DateTimeKind.Utc).AddTicks(6651),
+                            CreatedDate = new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4236),
                             EndTime = new TimeSpan(0, 9, 30, 0, 0),
                             FacilityId = new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"),
                             IsWeekend = false,
@@ -399,7 +776,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("b03366d1-b1cc-4c0e-8e61-6fff1651755d"),
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 24, 59, DateTimeKind.Utc).AddTicks(6657),
+                            CreatedDate = new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4238),
                             EndTime = new TimeSpan(0, 11, 0, 0, 0),
                             FacilityId = new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"),
                             IsWeekend = false,
@@ -408,7 +785,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("ffa61f3b-58a0-4881-ae97-61332f81fc4f"),
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 24, 59, DateTimeKind.Utc).AddTicks(6658),
+                            CreatedDate = new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4239),
                             EndTime = new TimeSpan(0, 12, 30, 0, 0),
                             FacilityId = new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"),
                             IsWeekend = false,
@@ -449,81 +826,17 @@ namespace SFMSSolution.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("9e7b0e37-d746-4b36-8d5f-4f6f001dfac9"),
+                            Id = new Guid("4b2a1c6c-4eeb-4ddc-975f-2fe31d791ded"),
                             BasePrice = 400000m,
                             CategoryId = new Guid("a1234567-1234-1234-1234-1234567890ab"),
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 24, 59, DateTimeKind.Utc).AddTicks(6577)
+                            CreatedDate = new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4192)
                         },
                         new
                         {
-                            Id = new Guid("14f15154-3616-43f5-8097-14c87b18e67f"),
+                            Id = new Guid("bcf67ba8-46d3-4499-9874-b924a2b53f7b"),
                             BasePrice = 200000m,
                             CategoryId = new Guid("b1234567-1234-1234-1234-1234567890bc"),
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 24, 59, DateTimeKind.Utc).AddTicks(6579)
-                        });
-                });
-
-            modelBuilder.Entity("SFMSSolution.Domain.Entities.Role", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("RoleCode")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Roles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("6bf8ddbb-4aac-40fb-8972-c91718401175"),
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 23, 705, DateTimeKind.Utc).AddTicks(2272),
-                            Name = "Admin",
-                            RoleCode = "AD",
-                            Status = 1
-                        },
-                        new
-                        {
-                            Id = new Guid("1db2efa1-303b-41da-9c63-6753506ddc49"),
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 23, 705, DateTimeKind.Utc).AddTicks(2274),
-                            Name = "Customer",
-                            RoleCode = "CUS",
-                            Status = 1
-                        },
-                        new
-                        {
-                            Id = new Guid("86a13262-7fca-4b0f-b3f0-d28c48133034"),
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 23, 705, DateTimeKind.Utc).AddTicks(2275),
-                            Name = "Owner",
-                            RoleCode = "OWN",
-                            Status = 1
+                            CreatedDate = new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4193)
                         });
                 });
 
@@ -533,28 +846,31 @@ namespace SFMSSolution.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("AvatarUrl")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<DateTime?>("Birthday")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -564,126 +880,137 @@ namespace SFMSSolution.Infrastructure.Migrations
                     b.Property<int>("Gender")
                         .HasColumnType("int");
 
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
 
-                    b.Property<Guid?>("RoleId1")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
 
-                    b.HasIndex("RoleId1");
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("Users", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("a1234568-1234-1234-1234-1234567810ab"),
-                            Address = "System Address",
-                            AvatarUrl = "",
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 23, 850, DateTimeKind.Utc).AddTicks(8496),
-                            Email = "admin@gmail.com",
-                            FullName = "System Admin",
-                            Gender = 1,
-                            PasswordHash = "$2a$10$ohhPKLZ7Un8xugJ8v2jkkeoHsG5Lnl7NJO4WXkjRhlatELNoIIQxa",
-                            Phone = "0123456789",
-                            RoleId = new Guid("6bf8ddbb-4aac-40fb-8972-c91718401175"),
-                            Status = 1
-                        },
-                        new
-                        {
-                            Id = new Guid("a1234368-1234-1234-1234-1234567830ab"),
-                            Address = "Thạch Thất, Hòa Lạc",
-                            AvatarUrl = "",
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 23, 955, DateTimeKind.Utc).AddTicks(17),
-                            Email = "owner@gmail.com",
-                            FullName = "John Doe",
-                            Gender = 1,
-                            PasswordHash = "$2a$10$LhntqUawxKuD994Iz1kMAuTakPqyUwiSRGULr8o.Bu2swaufbA2XC",
-                            Phone = "0987654321",
-                            RoleId = new Guid("86a13262-7fca-4b0f-b3f0-d28c48133034"),
-                            Status = 1
-                        },
-                        new
-                        {
-                            Id = new Guid("a1934568-1234-1234-1234-1234562810ab"),
-                            Address = "Thạch Thất, Hòa Lạc",
-                            AvatarUrl = "",
-                            CreatedDate = new DateTime(2025, 3, 24, 8, 30, 24, 59, DateTimeKind.Utc).AddTicks(5942),
-                            Email = "customer@gmail.com",
-                            FullName = "Jane Smith",
-                            Gender = 2,
-                            PasswordHash = "$2a$10$8Sc87GReOOF62nTYu84Sluzu6y4PiPy5NP/svoxQlGpvsRIwIZLsm",
-                            Phone = "0123987654",
-                            RoleId = new Guid("1db2efa1-303b-41da-9c63-6753506ddc49"),
-                            Status = 1
-                        });
                 });
 
-            modelBuilder.Entity("SFMSSolution.Domain.Entities.UserToken", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+                {
+                    b.HasOne("SFMSSolution.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+                {
+                    b.HasOne("SFMSSolution.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-                    b.Property<DateTime>("Expiry")
-                        .HasColumnType("datetime2");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                    b.HasOne("SFMSSolution.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-                    b.Property<string>("TokenType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+                {
+                    b.HasOne("SFMSSolution.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
+            modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreAuthorization", b =>
+                {
+                    b.HasOne("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreApplication", "Application")
+                        .WithMany("Authorizations")
+                        .HasForeignKey("ApplicationId");
 
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Navigation("Application");
+                });
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+            modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreToken", b =>
+                {
+                    b.HasOne("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreApplication", "Application")
+                        .WithMany("Tokens")
+                        .HasForeignKey("ApplicationId");
 
-                    b.HasKey("Id");
+                    b.HasOne("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreAuthorization", "Authorization")
+                        .WithMany("Tokens")
+                        .HasForeignKey("AuthorizationId");
 
-                    b.HasIndex("UserId");
+                    b.Navigation("Application");
 
-                    b.ToTable("UserTokens");
+                    b.Navigation("Authorization");
                 });
 
             modelBuilder.Entity("SFMSSolution.Domain.Entities.Booking", b =>
@@ -753,45 +1080,21 @@ namespace SFMSSolution.Infrastructure.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("SFMSSolution.Domain.Entities.User", b =>
+            modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreApplication", b =>
                 {
-                    b.HasOne("SFMSSolution.Domain.Entities.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.Navigation("Authorizations");
 
-                    b.HasOne("SFMSSolution.Domain.Entities.Role", null)
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId1");
-
-                    b.Navigation("Role");
+                    b.Navigation("Tokens");
                 });
 
-            modelBuilder.Entity("SFMSSolution.Domain.Entities.UserToken", b =>
+            modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreAuthorization", b =>
                 {
-                    b.HasOne("SFMSSolution.Domain.Entities.User", "User")
-                        .WithMany("UserTokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
+                    b.Navigation("Tokens");
                 });
 
             modelBuilder.Entity("SFMSSolution.Domain.Entities.Facility", b =>
                 {
                     b.Navigation("FacilityTimeSlots");
-                });
-
-            modelBuilder.Entity("SFMSSolution.Domain.Entities.Role", b =>
-                {
-                    b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("SFMSSolution.Domain.Entities.User", b =>
-                {
-                    b.Navigation("UserTokens");
                 });
 #pragma warning restore 612, 618
         }

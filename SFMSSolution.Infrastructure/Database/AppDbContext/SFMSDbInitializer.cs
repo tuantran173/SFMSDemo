@@ -3,7 +3,6 @@ using SFMSSolution.Domain.Entities;
 using SFMSSolution.Domain.Entities.Base;
 using SFMSSolution.Domain.Enums;
 using System;
-using Role = SFMSSolution.Domain.Entities.Role;
 
 namespace SFMSSolution.Infrastructure.Database.SFMSDbContext
 {
@@ -11,85 +10,8 @@ namespace SFMSSolution.Infrastructure.Database.SFMSDbContext
     {
         public static void Seed(ModelBuilder modelBuilder)
         {
-            // Khai báo ID cho các Role
-            var adminRoleId = Guid.Parse("6bf8ddbb-4aac-40fb-8972-c91718401175");
-            var customerRoleId = Guid.Parse("1db2efa1-303b-41da-9c63-6753506ddc49");
-            var ownerRoleId = Guid.Parse("86a13262-7fca-4b0f-b3f0-d28c48133034");
-
-
-            // Seed dữ liệu cho bảng Roles
-            modelBuilder.Entity<Role>().HasData(
-                new Role
-                {
-                    Id = adminRoleId,
-                    Name = "Admin",
-                    RoleCode = "AD",
-                    CreatedDate = DateTime.UtcNow
-                },
-                new Role
-                {
-                    Id = customerRoleId,
-                    Name = "Customer",
-                    RoleCode = "CUS",
-                    CreatedDate = DateTime.UtcNow
-                },
-                new Role
-                {
-                    Id = ownerRoleId,
-                    Name = "Owner",
-                    RoleCode = "OWN",
-                    CreatedDate = DateTime.UtcNow
-                }
-            );
-
-            // Khai báo ID cho các User
-            var adminUserId = Guid.Parse("A1234568-1234-1234-1234-1234567810AB");
-            var ownerUserId = Guid.Parse("A1234368-1234-1234-1234-1234567830AB");
-            var customerUserId = Guid.Parse("A1934568-1234-1234-1234-1234562810AB");
-
-            // Seed dữ liệu cho bảng Users
-            modelBuilder.Entity<User>().HasData(
-                new User
-                {
-                    Id = adminUserId,
-                    FullName = "System Admin",
-                    Email = "admin@gmail.com",
-                    Phone = "0123456789",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123"),
-                    Gender = Gender.Male,
-                    Status = EntityStatus.Active,
-                    Address = "System Address",
-                    RoleId = adminRoleId,
-                    CreatedDate = DateTime.UtcNow
-                },
-                new User
-                {
-                    Id = ownerUserId,
-                    FullName = "John Doe",
-                    Email = "owner@gmail.com",
-                    Phone = "0987654321",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Owner123"),
-                    Gender = Gender.Male,
-                    Status = EntityStatus.Active,
-                    Address = "Thạch Thất, Hòa Lạc",
-                    RoleId = ownerRoleId,
-                    CreatedDate = DateTime.UtcNow
-                },
-                new User
-                {
-                    Id = customerUserId,
-                    FullName = "Jane Smith",
-                    Email = "customer@gmail.com",
-                    Phone = "0123987654",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Customer123"),
-                    Gender = Gender.Female,
-                    Status = EntityStatus.Active,
-                    Address = "Thạch Thất, Hòa Lạc",
-                    RoleId = customerRoleId,
-                    CreatedDate = DateTime.UtcNow
-                }
-            );
-
+            
+           
             // Khai báo ID cho các Category
             var footballFieldId = Guid.Parse("A1234567-1234-1234-1234-1234567890AB");
             var badmintonCourtId = Guid.Parse("B1234567-1234-1234-1234-1234567890BC");
