@@ -90,6 +90,14 @@
             "OpenIddict.AspNetCore": {
               "target": "Package",
               "version": "[5.8.0, )"
+            },
+            "OpenIddict.Quartz": {
+              "target": "Package",
+              "version": "[5.8.0, )"
+            },
+            "Quartz.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[3.14.0, )"
             }
           },
           "imports": [

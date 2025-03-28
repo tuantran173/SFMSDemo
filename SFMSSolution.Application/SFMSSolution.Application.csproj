@@ -23,6 +23,8 @@
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="9.0.2" />
     <PackageReference Include="MimeKit" Version="4.10.0" />
     <PackageReference Include="OpenIddict.AspNetCore" Version="5.8.0" />
+    <PackageReference Include="OpenIddict.Quartz" Version="5.8.0" />
+    <PackageReference Include="Quartz.Extensions.Hosting" Version="3.14.0" />
   </ItemGroup>
 
 </Project>

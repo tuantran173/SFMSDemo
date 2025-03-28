@@ -16,6 +16,7 @@
           "Microsoft.AspNetCore.SignalR": "1.2.0",
           "Microsoft.EntityFrameworkCore.Tools": "8.0.12",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "8.0.7",
+          "OpenIddict.Quartz": "5.8.0",
           "SFMSSolution.Application": "1.0.0",
           "SFMSSolution.Infrastructure": "1.0.0",
           "Swashbuckle.AspNetCore": "6.4.0",
@@ -2520,6 +2521,18 @@
           }
         }
       },
+      "OpenIddict.Quartz/5.8.0": {
+        "dependencies": {
+          "OpenIddict.Core": "5.8.0",
+          "Quartz.Extensions.DependencyInjection": "3.14.0"
+        },
+        "runtime": {
+          "lib/net8.0/OpenIddict.Quartz.dll": {
+            "assemblyVersion": "5.8.0.0",
+            "fileVersion": "5.800.24.42237"
+          }
+        }
+      },
       "OpenIddict.Server/5.8.0": {
         "dependencies": {
           "Microsoft.Extensions.Logging": "8.0.1",
@@ -2666,6 +2679,42 @@
           "lib/net8.0/Polly.RateLimiting.dll": {
             "assemblyVersion": "8.0.0.0",
             "fileVersion": "8.3.0.3097"
+          }
+        }
+      },
+      "Quartz/3.14.0": {
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.2"
+        },
+        "runtime": {
+          "lib/net8.0/Quartz.dll": {
+            "assemblyVersion": "3.14.0.0",
+            "fileVersion": "3.14.0.0"
+          }
+        }
+      },
+      "Quartz.Extensions.DependencyInjection/3.14.0": {
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Options": "8.0.2",
+          "Quartz": "3.14.0"
+        },
+        "runtime": {
+          "lib/net8.0/Quartz.Extensions.DependencyInjection.dll": {
+            "assemblyVersion": "3.14.0.0",
+            "fileVersion": "3.14.0.0"
+          }
+        }
+      },
+      "Quartz.Extensions.Hosting/3.14.0": {
+        "dependencies": {
+          "Microsoft.Extensions.Hosting.Abstractions": "8.0.1",
+          "Quartz.Extensions.DependencyInjection": "3.14.0"
+        },
+        "runtime": {
+          "lib/net8.0/Quartz.Extensions.Hosting.dll": {
+            "assemblyVersion": "3.14.0.0",
+            "fileVersion": "3.14.0.0"
           }
         }
       },
@@ -3372,6 +3421,8 @@
           "Microsoft.Extensions.Localization.Abstractions": "9.0.2",
           "MimeKit": "4.10.0",
           "OpenIddict.AspNetCore": "5.8.0",
+          "OpenIddict.Quartz": "5.8.0",
+          "Quartz.Extensions.Hosting": "3.14.0",
           "SFMSSolution.Domain": "1.0.0",
           "SFMSSolution.Infrastructure": "1.0.0"
         },
@@ -4852,6 +4903,13 @@
       "path": "openiddict.entityframeworkcore.models/5.8.0",
       "hashPath": "openiddict.entityframeworkcore.models.5.8.0.nupkg.sha512"
     },
+    "OpenIddict.Quartz/5.8.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Wg+++7ZrP8g8rx0T2JeHyJUOCMVpBrhVhZVsmRbtQRuthPcUjWJM9J+d3MhxXnl7SEniy4q+3QU5BBlxYF9Igw==",
+      "path": "openiddict.quartz/5.8.0",
+      "hashPath": "openiddict.quartz.5.8.0.nupkg.sha512"
+    },
     "OpenIddict.Server/5.8.0": {
       "type": "package",
       "serviceable": true,
@@ -4942,6 +5000,27 @@
       "sha512": "sha512-vxymhXDbWQ37C/qEs0WcuWHZmedYmhWyg0JcUPW5kwk/YTQIzFecn2jyg8s6fiuTZv5q/ISWw1RzCTB7LcRuYg==",
       "path": "polly.ratelimiting/8.3.0",
       "hashPath": "polly.ratelimiting.8.3.0.nupkg.sha512"
+    },
+    "Quartz/3.14.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-j8mY6S0FWbtuEFbStUEZAkkGpZLbSuTT0us1w0DUQqhi+vwg/7XXS36TeH3o34zZoqYGyXvk6jrKnW/p6kS8sg==",
+      "path": "quartz/3.14.0",
+      "hashPath": "quartz.3.14.0.nupkg.sha512"
+    },
+    "Quartz.Extensions.DependencyInjection/3.14.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-CUY9ZaUsmnl8YxPcl3eXmg/1UVWv1NdyATKGaBjfxf8MYH36vgCoerv7aCSjM/oRbdiaBwNnPfNgHMzxUu1p1g==",
+      "path": "quartz.extensions.dependencyinjection/3.14.0",
+      "hashPath": "quartz.extensions.dependencyinjection.3.14.0.nupkg.sha512"
+    },
+    "Quartz.Extensions.Hosting/3.14.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-kbxBND5Nift+qwOud8cjywoLvjcQX+aLt6R7qQcQVg8w84NUNjTsjzZ5zIod9vz7ricSvIaQXGVbhpm7X6yVQA==",
+      "path": "quartz.extensions.hosting/3.14.0",
+      "hashPath": "quartz.extensions.hosting.3.14.0.nupkg.sha512"
     },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {
       "type": "package",

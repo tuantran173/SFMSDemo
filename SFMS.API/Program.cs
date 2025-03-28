@@ -9,6 +9,11 @@ using SFMSSolution.Application.Mapping;
 using SFMSSolution.Infrastructure.Database.AppDbContext;
 using SFMSSolution.Domain.Entities;
 using System.Text;
+using static OpenIddict.Abstractions.OpenIddictConstants;
+using Microsoft.AspNetCore.Authorization;
+using OpenIddict.Server.AspNetCore;
+using OpenIddict.Validation.AspNetCore;
+using SFMSSolution.Application.Extensions.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,42 +23,112 @@ builder.Services.AddDbContext<SFMSDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
     options.UseOpenIddict();  // Tích hợp OpenIddict
 });
-builder.Services.AddInfrastructure();
 // Add Identity
 builder.Services.AddIdentity<User, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<SFMSDbContext>()
     .AddDefaultTokenProviders();
 
-// Configure OpenIddict
 builder.Services.AddOpenIddict()
-    .AddCore(options =>
-    {
-        options.UseEntityFrameworkCore()
-               .UseDbContext<SFMSDbContext>();
-    })
-    .AddServer(options =>
-    {
-        options.AllowPasswordFlow()
-               .AllowRefreshTokenFlow();
-        options.SetAuthorizationEndpointUris("/connect/authorize");
-        options.SetLogoutEndpointUris("/connect/logout");
-        options.SetTokenEndpointUris("/connect/token");
 
-        // ✅ Sử dụng chứng chỉ ký và mã hóa tạm thời (Chỉ sử dụng khi phát triển)
-        options.AddDevelopmentEncryptionCertificate()
-               .AddDevelopmentSigningCertificate();
+            // Register the OpenIddict core components.
+            .AddCore(options =>
+            {
+                // Configure OpenIddict to use the Entity Framework Core stores and models.
+                // Note: call ReplaceDefaultEntities() to replace the default OpenIddict entities.
+                options.UseEntityFrameworkCore()
+                       .UseDbContext<SFMSDbContext>();
 
-        // ✅ Cho phép tạo Token ở dạng JWT
-        options.UseAspNetCore()
-               .EnableTokenEndpointPassthrough()
-               .DisableTransportSecurityRequirement(); // Bỏ qua HTTPS khi phát triển (không khuyến khích trong sản xuất)
-    })
-    .AddValidation(options =>
+                // Enable Quartz.NET integration.
+                options.UseQuartz();
+            })
+
+            // Register the OpenIddict server components.
+            .AddServer(options =>
+            {
+                // Enable the authorization, logout, token and userinfo endpoints.
+                options.SetAuthorizationEndpointUris("connect/authorize")
+                       .SetLogoutEndpointUris("connect/logout")
+                       .SetIntrospectionEndpointUris("connect/introspect")
+                       .SetTokenEndpointUris("connect/token")
+                       .SetUserinfoEndpointUris("connect/userinfo")
+                       .SetVerificationEndpointUris("connect/verify");
+
+                // Mark the "openId", "email", "profile" and "roles" scopes as supported scopes.
+                options.RegisterScopes(Scopes.OpenId, Scopes.Email, Scopes.Profile, Scopes.Roles);
+
+                options
+                       .AllowAuthorizationCodeFlow()
+                       .AllowPasswordFlow()
+                       .AllowImplicitFlow()
+                       .AllowRefreshTokenFlow()
+                       .AllowClientCredentialsFlow()
+                       ;
+
+                // Register the signing and encryption credentials.
+                options
+                       //.AddDevelopmentEncryptionCertificate()
+                       .AddDevelopmentSigningCertificate()
+                       .AddEncryptionKey(new SymmetricSecurityKey(Convert.FromBase64String("YWN0aXZlX3NpZ24ga2V5LiBLZWVwIGl0IHNlY3JldCE=")))
+                       //.DisableAccessTokenEncryption()
+                       ;
+
+                // Register the ASP.NET Core host and configure the ASP.NET Core-specific options.
+                options.UseAspNetCore()
+                       .EnableAuthorizationEndpointPassthrough()
+                       .EnableLogoutEndpointPassthrough()
+                       .EnableTokenEndpointPassthrough()
+                       .EnableUserinfoEndpointPassthrough()
+                       .EnableStatusCodePagesIntegration()
+                       .DisableTransportSecurityRequirement()
+                       ;
+                options.UseReferenceAccessTokens().UseReferenceRefreshTokens();
+
+                options.UseDataProtection()
+                       .PreferDefaultAccessTokenFormat()
+                       .PreferDefaultAuthorizationCodeFormat()
+                       .PreferDefaultDeviceCodeFormat()
+                       .PreferDefaultRefreshTokenFormat()
+                       .PreferDefaultUserCodeFormat()
+                       ;
+            })
+
+            // Register the OpenIddict validation components.
+            .AddValidation(options =>
+            {
+                // Import the configuration from the local OpenIddict server instance.
+                options.UseLocalServer();
+
+                // Register the ASP.NET Core host.
+                options.UseAspNetCore();
+
+                options.UseDataProtection();
+                // options.EnableTokenEntryValidation
+            })
+            ;
+builder.Services.AddInfrastructure();
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+builder.Services.AddAuthorizationBuilder()
+    .SetDefaultPolicy(new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .AddAuthenticationSchemes(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)
+        .Build())
+    .AddPolicy("OpenIddict.Server.AspNetCore", policy =>
     {
-        options.UseLocalServer();
-        options.UseAspNetCore();
+        policy.AuthenticationSchemes.Add(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        policy.RequireAuthenticatedUser();
+    })
+    .AddPolicy("admin", policy =>
+    {
+        policy.AuthenticationSchemes = [OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme];
+        policy.RequireAuthenticatedUser();
+        policy.RequireRole("Administrator");
+    })
+    .AddPolicy("owner", policy =>
+    {
+        policy.AuthenticationSchemes = [OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme];
+        policy.RequireAuthenticatedUser();
+        policy.RequireRole("FacilityOwner");
     });
-
 // Configure Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

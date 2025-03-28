@@ -12,6 +12,17 @@ using SFMSSolution.Application.ExternalService.Email;
 using SFMSSolution.Application.ExternalService.CDN;
 using SFMSSolution.Application.Services.FacilityPrices;
 using SFMSSolution.Application.Services.Reports;
+using Microsoft.AspNetCore.Identity;
+using SFMSSolution.Domain.Entities;
+using SFMSSolution.Infrastructure.Database.AppDbContext;
+using Quartz;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using OpenIddict.Server.AspNetCore;
+using OpenIddict.Validation.AspNetCore;
+using System.Collections.Generic;
+using SFMSSolution.Application.ExternalService;
+using SFMSSolution.Application.Extensions.Exceptions;
 
 namespace SFMSSolution.Application.Mapping
 {
@@ -30,9 +41,8 @@ namespace SFMSSolution.Application.Mapping
                 cfg.AddProfile<EventProfile>();
                 cfg.AddProfile<FacilityPriceProfile>();
             });
+            services.AddScoped<IUnitOfWork,UnitOfWork>();
             
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-
             // Đăng ký Services
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUserService, UserService>();
@@ -44,8 +54,12 @@ namespace SFMSSolution.Application.Mapping
             services.AddScoped<IFacilityPriceService, FacilityPriceService>();
             services.AddScoped<IReportService, ReportService>();
 
+            
+
             return services;
         }
+
+     
 
     }
 }

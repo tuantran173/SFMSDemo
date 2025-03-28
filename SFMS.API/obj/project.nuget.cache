@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "cZzD7X4HdqLjV2htd5KRxQTb9pxjOcRxu0xmOvkTPWEJLoJV5oZOoPx6M8WZwuOJShRfm562rra5RlVQlmBV1g==",
+  "dgSpecHash": "SMUSOiMklADbruVWUzkwQjrQ/D0vlXcas5deuSOYtOfkQ8viE+Co7tYWdAZHdnAtxjnb+6viiGdLzGwm/yiH0A==",
   "success": true,
   "projectFilePath": "D:\\SEP490_G46\\SFMS.API\\SFMSSolution.API.csproj",
   "expectedPackageFiles": [
@@ -210,6 +210,7 @@
     "C:\\Users\\Asus\\.nuget\\packages\\openiddict.core\\5.8.0\\openiddict.core.5.8.0.nupkg.sha512",
     "C:\\Users\\Asus\\.nuget\\packages\\openiddict.entityframeworkcore\\5.8.0\\openiddict.entityframeworkcore.5.8.0.nupkg.sha512",
     "C:\\Users\\Asus\\.nuget\\packages\\openiddict.entityframeworkcore.models\\5.8.0\\openiddict.entityframeworkcore.models.5.8.0.nupkg.sha512",
+    "C:\\Users\\Asus\\.nuget\\packages\\openiddict.quartz\\5.8.0\\openiddict.quartz.5.8.0.nupkg.sha512",
     "C:\\Users\\Asus\\.nuget\\packages\\openiddict.server\\5.8.0\\openiddict.server.5.8.0.nupkg.sha512",
     "C:\\Users\\Asus\\.nuget\\packages\\openiddict.server.aspnetcore\\5.8.0\\openiddict.server.aspnetcore.5.8.0.nupkg.sha512",
     "C:\\Users\\Asus\\.nuget\\packages\\openiddict.server.dataprotection\\5.8.0\\openiddict.server.dataprotection.5.8.0.nupkg.sha512",
@@ -223,6 +224,9 @@
     "C:\\Users\\Asus\\.nuget\\packages\\polly.extensions\\8.3.0\\polly.extensions.8.3.0.nupkg.sha512",
     "C:\\Users\\Asus\\.nuget\\packages\\polly.extensions.http\\3.0.0\\polly.extensions.http.3.0.0.nupkg.sha512",
     "C:\\Users\\Asus\\.nuget\\packages\\polly.ratelimiting\\8.3.0\\polly.ratelimiting.8.3.0.nupkg.sha512",
+    "C:\\Users\\Asus\\.nuget\\packages\\quartz\\3.14.0\\quartz.3.14.0.nupkg.sha512",
+    "C:\\Users\\Asus\\.nuget\\packages\\quartz.extensions.dependencyinjection\\3.14.0\\quartz.extensions.dependencyinjection.3.14.0.nupkg.sha512",
+    "C:\\Users\\Asus\\.nuget\\packages\\quartz.extensions.hosting\\3.14.0\\quartz.extensions.hosting.3.14.0.nupkg.sha512",
     "C:\\Users\\Asus\\.nuget\\packages\\runtime.debian.8-x64.runtime.native.system.security.cryptography.openssl\\4.3.2\\runtime.debian.8-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",
     "C:\\Users\\Asus\\.nuget\\packages\\runtime.fedora.23-x64.runtime.native.system.security.cryptography.openssl\\4.3.2\\runtime.fedora.23-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",
     "C:\\Users\\Asus\\.nuget\\packages\\runtime.fedora.24-x64.runtime.native.system.security.cryptography.openssl\\4.3.2\\runtime.fedora.24-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",

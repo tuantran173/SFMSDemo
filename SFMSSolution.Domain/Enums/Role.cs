@@ -1,16 +1,12 @@
-﻿using System.ComponentModel;
+﻿using SFMSSolution.Domain.Entities;
+using System.ComponentModel;
 
 namespace SFMSSolution.Domain.Enums
 {
-    public enum Role
+    public abstract class Roles
     {
-        [Description("Administrator")]
-        Admin = 1,
-
-        [Description("Facility Owner")]
-        FacilityOwner = 2,
-
-        [Description("Customer")]
-        Customer = 3
+        public const string Administrator = nameof(Administrator);
+        public const string User = nameof(User);
+        public const string FacilityOwner = nameof(FacilityOwner);
     }
 }

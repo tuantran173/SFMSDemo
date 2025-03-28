@@ -7,7 +7,7 @@ namespace SFMSSolution.API.Controllers
 {
     [Authorize(Roles = "Admin")]
     [ApiController]
-    [Route("api/admin")]
+    [Route("api/user")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _adminService;

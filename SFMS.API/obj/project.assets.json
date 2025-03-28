@@ -3572,6 +3572,23 @@
           }
         }
       },
+      "OpenIddict.Quartz/5.8.0": {
+        "type": "package",
+        "dependencies": {
+          "OpenIddict.Core": "5.8.0",
+          "Quartz.Extensions.DependencyInjection": "3.5.0"
+        },
+        "compile": {
+          "lib/net8.0/OpenIddict.Quartz.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/OpenIddict.Quartz.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "OpenIddict.Server/5.8.0": {
         "type": "package",
         "dependencies": {
@@ -3795,6 +3812,57 @@
         "runtime": {
           "lib/net8.0/Polly.RateLimiting.dll": {
             "related": ".pdb;.xml"
+          }
+        }
+      },
+      "Quartz/3.14.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "2.1.1"
+        },
+        "compile": {
+          "lib/net8.0/Quartz.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Quartz.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Quartz.Extensions.DependencyInjection/3.14.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Options": "8.0.0",
+          "Quartz": "3.14.0"
+        },
+        "compile": {
+          "lib/net8.0/Quartz.Extensions.DependencyInjection.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Quartz.Extensions.DependencyInjection.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Quartz.Extensions.Hosting/3.14.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Hosting.Abstractions": "8.0.0",
+          "Quartz.Extensions.DependencyInjection": "3.14.0"
+        },
+        "compile": {
+          "lib/net8.0/Quartz.Extensions.Hosting.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Quartz.Extensions.Hosting.dll": {
+            "related": ".xml"
           }
         }
       },
@@ -5333,6 +5401,8 @@
           "Microsoft.Extensions.Localization.Abstractions": "9.0.2",
           "MimeKit": "4.10.0",
           "OpenIddict.AspNetCore": "5.8.0",
+          "OpenIddict.Quartz": "5.8.0",
+          "Quartz.Extensions.Hosting": "3.14.0",
           "SFMSSolution.Domain": "1.0.0",
           "SFMSSolution.Infrastructure": "1.0.0"
         },
@@ -10914,6 +10984,34 @@
         "openiddict.entityframeworkcore.models.nuspec"
       ]
     },
+    "OpenIddict.Quartz/5.8.0": {
+      "sha512": "Wg+++7ZrP8g8rx0T2JeHyJUOCMVpBrhVhZVsmRbtQRuthPcUjWJM9J+d3MhxXnl7SEniy4q+3QU5BBlxYF9Igw==",
+      "type": "package",
+      "path": "openiddict.quartz/5.8.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "lib/net461/OpenIddict.Quartz.dll",
+        "lib/net461/OpenIddict.Quartz.xml",
+        "lib/net472/OpenIddict.Quartz.dll",
+        "lib/net472/OpenIddict.Quartz.xml",
+        "lib/net48/OpenIddict.Quartz.dll",
+        "lib/net48/OpenIddict.Quartz.xml",
+        "lib/net6.0/OpenIddict.Quartz.dll",
+        "lib/net6.0/OpenIddict.Quartz.xml",
+        "lib/net7.0/OpenIddict.Quartz.dll",
+        "lib/net7.0/OpenIddict.Quartz.xml",
+        "lib/net8.0/OpenIddict.Quartz.dll",
+        "lib/net8.0/OpenIddict.Quartz.xml",
+        "lib/netstandard2.0/OpenIddict.Quartz.dll",
+        "lib/netstandard2.0/OpenIddict.Quartz.xml",
+        "lib/netstandard2.1/OpenIddict.Quartz.dll",
+        "lib/netstandard2.1/OpenIddict.Quartz.xml",
+        "openiddict.quartz.5.8.0.nupkg.sha512",
+        "openiddict.quartz.nuspec"
+      ]
+    },
     "OpenIddict.Server/5.8.0": {
       "sha512": "CpS78OmkfHD/sfwqTeQ4PIjdLfqHTKItRe0eB4y9U6YV9JcPu3McH1jkNg8CAlgUP/VpkEHti7eBFmZGdvLANw==",
       "type": "package",
@@ -11252,6 +11350,67 @@
         "package-readme.md",
         "polly.ratelimiting.8.3.0.nupkg.sha512",
         "polly.ratelimiting.nuspec"
+      ]
+    },
+    "Quartz/3.14.0": {
+      "sha512": "j8mY6S0FWbtuEFbStUEZAkkGpZLbSuTT0us1w0DUQqhi+vwg/7XXS36TeH3o34zZoqYGyXvk6jrKnW/p6kS8sg==",
+      "type": "package",
+      "path": "quartz/3.14.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net462/Quartz.dll",
+        "lib/net462/Quartz.xml",
+        "lib/net472/Quartz.dll",
+        "lib/net472/Quartz.xml",
+        "lib/net8.0/Quartz.dll",
+        "lib/net8.0/Quartz.xml",
+        "lib/net9.0/Quartz.dll",
+        "lib/net9.0/Quartz.xml",
+        "lib/netstandard2.0/Quartz.dll",
+        "lib/netstandard2.0/Quartz.xml",
+        "quartz-logo-small.png",
+        "quartz.3.14.0.nupkg.sha512",
+        "quartz.nuspec",
+        "quick-start.md"
+      ]
+    },
+    "Quartz.Extensions.DependencyInjection/3.14.0": {
+      "sha512": "CUY9ZaUsmnl8YxPcl3eXmg/1UVWv1NdyATKGaBjfxf8MYH36vgCoerv7aCSjM/oRbdiaBwNnPfNgHMzxUu1p1g==",
+      "type": "package",
+      "path": "quartz.extensions.dependencyinjection/3.14.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net8.0/Quartz.Extensions.DependencyInjection.dll",
+        "lib/net8.0/Quartz.Extensions.DependencyInjection.xml",
+        "lib/net9.0/Quartz.Extensions.DependencyInjection.dll",
+        "lib/net9.0/Quartz.Extensions.DependencyInjection.xml",
+        "lib/netstandard2.0/Quartz.Extensions.DependencyInjection.dll",
+        "lib/netstandard2.0/Quartz.Extensions.DependencyInjection.xml",
+        "microsoft-di-integration.md",
+        "quartz-logo-small.png",
+        "quartz.extensions.dependencyinjection.3.14.0.nupkg.sha512",
+        "quartz.extensions.dependencyinjection.nuspec"
+      ]
+    },
+    "Quartz.Extensions.Hosting/3.14.0": {
+      "sha512": "kbxBND5Nift+qwOud8cjywoLvjcQX+aLt6R7qQcQVg8w84NUNjTsjzZ5zIod9vz7ricSvIaQXGVbhpm7X6yVQA==",
+      "type": "package",
+      "path": "quartz.extensions.hosting/3.14.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "hosted-services-integration.md",
+        "lib/net8.0/Quartz.Extensions.Hosting.dll",
+        "lib/net8.0/Quartz.Extensions.Hosting.xml",
+        "lib/net9.0/Quartz.Extensions.Hosting.dll",
+        "lib/net9.0/Quartz.Extensions.Hosting.xml",
+        "lib/netstandard2.0/Quartz.Extensions.Hosting.dll",
+        "lib/netstandard2.0/Quartz.Extensions.Hosting.xml",
+        "quartz-logo-small.png",
+        "quartz.extensions.hosting.3.14.0.nupkg.sha512",
+        "quartz.extensions.hosting.nuspec"
       ]
     },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {
@@ -14714,6 +14873,7 @@
       "Microsoft.AspNetCore.SignalR >= 1.2.0",
       "Microsoft.EntityFrameworkCore.Tools >= 8.0.12",
       "Microsoft.VisualStudio.Web.CodeGeneration.Design >= 8.0.7",
+      "OpenIddict.Quartz >= 5.8.0",
       "SFMSSolution.Application >= 1.0.0",
       "SFMSSolution.Infrastructure >= 1.0.0",
       "Swashbuckle.AspNetCore >= 6.4.0",
@@ -14799,6 +14959,10 @@
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
             "target": "Package",
             "version": "[8.0.7, )"
+          },
+          "OpenIddict.Quartz": {
+            "target": "Package",
+            "version": "[5.8.0, )"
           },
           "Swashbuckle.AspNetCore": {
             "target": "Package",
