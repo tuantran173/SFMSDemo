@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SFMSSolution.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class add : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -469,9 +469,9 @@ namespace SFMSSolution.Infrastructure.Migrations
                 columns: new[] { "Id", "CreatedBy", "CreatedDate", "Description", "Name", "UpdatedBy", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { new Guid("a1234567-1234-1234-1234-1234567890ab"), null, new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(3936), "Sân bóng đá 5-a-side, 7-a-side, 11-a-side", "Sân bóng", null, null },
-                    { new Guid("b1234567-1234-1234-1234-1234567890bc"), null, new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(3939), "Sân cầu lông đơn và đôi", "Sân cầu lông", null, null },
-                    { new Guid("c1234567-1234-1234-1234-1234567890cd"), null, new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(3940), "Sân Pickleball chuẩn quốc tế", "Sân Pickleball", null, null }
+                    { new Guid("a1234567-1234-1234-1234-1234567890ab"), null, new DateTime(2025, 3, 29, 5, 16, 55, 491, DateTimeKind.Utc).AddTicks(6256), "Sân bóng đá 5-a-side, 7-a-side, 11-a-side", "Sân bóng", null, null },
+                    { new Guid("b1234567-1234-1234-1234-1234567890bc"), null, new DateTime(2025, 3, 29, 5, 16, 55, 491, DateTimeKind.Utc).AddTicks(6259), "Sân cầu lông đơn và đôi", "Sân cầu lông", null, null },
+                    { new Guid("c1234567-1234-1234-1234-1234567890cd"), null, new DateTime(2025, 3, 29, 5, 16, 55, 491, DateTimeKind.Utc).AddTicks(6261), "Sân Pickleball chuẩn quốc tế", "Sân Pickleball", null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -479,8 +479,8 @@ namespace SFMSSolution.Infrastructure.Migrations
                 columns: new[] { "Id", "Capacity", "CategoryId", "CreatedBy", "CreatedDate", "Description", "Images", "Location", "Name", "UpdatedBy", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"), "4", new Guid("b1234567-1234-1234-1234-1234567890bc"), null, new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4137), "Sân cầu lông đơn/đôi", "image2.jpg", "Thạch Thất, Hòa Lạc", "Badminton Court 1", null, null },
-                    { new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"), "10", new Guid("a1234567-1234-1234-1234-1234567890ab"), null, new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4134), "Sân bóng đá 5 người", "image1.jpg", "Thạch Thất, Hòa Lạc", "Football Field 5-a-side", null, null }
+                    { new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"), "4", new Guid("b1234567-1234-1234-1234-1234567890bc"), null, new DateTime(2025, 3, 29, 5, 16, 55, 491, DateTimeKind.Utc).AddTicks(6559), "Sân cầu lông đơn/đôi", "image2.jpg", "Thạch Thất, Hòa Lạc", "Badminton Court 1", null, null },
+                    { new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"), "10", new Guid("a1234567-1234-1234-1234-1234567890ab"), null, new DateTime(2025, 3, 29, 5, 16, 55, 491, DateTimeKind.Utc).AddTicks(6555), "Sân bóng đá 5 người", "image1.jpg", "Thạch Thất, Hòa Lạc", "Football Field 5-a-side", null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -488,8 +488,8 @@ namespace SFMSSolution.Infrastructure.Migrations
                 columns: new[] { "Id", "BasePrice", "CategoryId", "CreatedBy", "CreatedDate", "UpdatedBy", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { new Guid("4b2a1c6c-4eeb-4ddc-975f-2fe31d791ded"), 400000m, new Guid("a1234567-1234-1234-1234-1234567890ab"), null, new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4192), null, null },
-                    { new Guid("bcf67ba8-46d3-4499-9874-b924a2b53f7b"), 200000m, new Guid("b1234567-1234-1234-1234-1234567890bc"), null, new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4193), null, null }
+                    { new Guid("479b7b44-dccb-4050-a358-52055355efbb"), 200000m, new Guid("b1234567-1234-1234-1234-1234567890bc"), null, new DateTime(2025, 3, 29, 5, 16, 55, 491, DateTimeKind.Utc).AddTicks(6632), null, null },
+                    { new Guid("fbfbf7b5-32bd-4656-9b33-446798ddb368"), 400000m, new Guid("a1234567-1234-1234-1234-1234567890ab"), null, new DateTime(2025, 3, 29, 5, 16, 55, 491, DateTimeKind.Utc).AddTicks(6629), null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -497,14 +497,14 @@ namespace SFMSSolution.Infrastructure.Migrations
                 columns: new[] { "Id", "CreatedBy", "CreatedDate", "EndTime", "FacilityId", "FacilityId1", "IsWeekend", "StartTime", "UpdatedBy", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { new Guid("1a2c6a93-97cd-4493-a1fc-9b5819ac6e17"), null, new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4231), new TimeSpan(0, 12, 30, 0, 0), new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"), null, false, new TimeSpan(0, 11, 0, 0, 0), null, null },
-                    { new Guid("1b05b57c-6d02-4c06-b0b5-a96139825346"), null, new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4228), new TimeSpan(0, 9, 30, 0, 0), new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"), null, false, new TimeSpan(0, 8, 0, 0, 0), null, null },
-                    { new Guid("1b7ea0d1-c743-47d7-b3f1-02860dbd9806"), null, new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4235), new TimeSpan(0, 17, 0, 0, 0), new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"), null, false, new TimeSpan(0, 15, 30, 0, 0), null, null },
-                    { new Guid("907b662c-5a2c-4a90-b96b-81b603b27e57"), null, new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4230), new TimeSpan(0, 11, 0, 0, 0), new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"), null, false, new TimeSpan(0, 9, 30, 0, 0), null, null },
-                    { new Guid("b03366d1-b1cc-4c0e-8e61-6fff1651755d"), null, new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4238), new TimeSpan(0, 11, 0, 0, 0), new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"), null, false, new TimeSpan(0, 9, 30, 0, 0), null, null },
-                    { new Guid("bb9299e1-518a-4730-9797-6ec37c5dd03f"), null, new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4236), new TimeSpan(0, 9, 30, 0, 0), new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"), null, false, new TimeSpan(0, 8, 0, 0, 0), null, null },
-                    { new Guid("d75d092a-7da6-4cc3-88c9-69ac5c82652c"), null, new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4233), new TimeSpan(0, 15, 30, 0, 0), new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"), null, false, new TimeSpan(0, 14, 0, 0, 0), null, null },
-                    { new Guid("ffa61f3b-58a0-4881-ae97-61332f81fc4f"), null, new DateTime(2025, 3, 26, 4, 31, 44, 330, DateTimeKind.Utc).AddTicks(4239), new TimeSpan(0, 12, 30, 0, 0), new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"), null, false, new TimeSpan(0, 11, 0, 0, 0), null, null }
+                    { new Guid("1a2c6a93-97cd-4493-a1fc-9b5819ac6e17"), null, new DateTime(2025, 3, 29, 5, 16, 55, 491, DateTimeKind.Utc).AddTicks(6686), new TimeSpan(0, 12, 30, 0, 0), new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"), null, false, new TimeSpan(0, 11, 0, 0, 0), null, null },
+                    { new Guid("1b05b57c-6d02-4c06-b0b5-a96139825346"), null, new DateTime(2025, 3, 29, 5, 16, 55, 491, DateTimeKind.Utc).AddTicks(6680), new TimeSpan(0, 9, 30, 0, 0), new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"), null, false, new TimeSpan(0, 8, 0, 0, 0), null, null },
+                    { new Guid("1b7ea0d1-c743-47d7-b3f1-02860dbd9806"), null, new DateTime(2025, 3, 29, 5, 16, 55, 491, DateTimeKind.Utc).AddTicks(6691), new TimeSpan(0, 17, 0, 0, 0), new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"), null, false, new TimeSpan(0, 15, 30, 0, 0), null, null },
+                    { new Guid("907b662c-5a2c-4a90-b96b-81b603b27e57"), null, new DateTime(2025, 3, 29, 5, 16, 55, 491, DateTimeKind.Utc).AddTicks(6683), new TimeSpan(0, 11, 0, 0, 0), new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"), null, false, new TimeSpan(0, 9, 30, 0, 0), null, null },
+                    { new Guid("b03366d1-b1cc-4c0e-8e61-6fff1651755d"), null, new DateTime(2025, 3, 29, 5, 16, 55, 491, DateTimeKind.Utc).AddTicks(6696), new TimeSpan(0, 11, 0, 0, 0), new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"), null, false, new TimeSpan(0, 9, 30, 0, 0), null, null },
+                    { new Guid("bb9299e1-518a-4730-9797-6ec37c5dd03f"), null, new DateTime(2025, 3, 29, 5, 16, 55, 491, DateTimeKind.Utc).AddTicks(6694), new TimeSpan(0, 9, 30, 0, 0), new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"), null, false, new TimeSpan(0, 8, 0, 0, 0), null, null },
+                    { new Guid("d75d092a-7da6-4cc3-88c9-69ac5c82652c"), null, new DateTime(2025, 3, 29, 5, 16, 55, 491, DateTimeKind.Utc).AddTicks(6689), new TimeSpan(0, 15, 30, 0, 0), new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"), null, false, new TimeSpan(0, 14, 0, 0, 0), null, null },
+                    { new Guid("ffa61f3b-58a0-4881-ae97-61332f81fc4f"), null, new DateTime(2025, 3, 29, 5, 16, 55, 491, DateTimeKind.Utc).AddTicks(6699), new TimeSpan(0, 12, 30, 0, 0), new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"), null, false, new TimeSpan(0, 11, 0, 0, 0), null, null }
                 });
 
             migrationBuilder.CreateIndex(
