@@ -176,7 +176,7 @@ namespace SFMSSolution.API.Controllers
         }
 
         [Authorize, FormValueRequired("submit.Accept")]
-        [HttpPost("~/connect/authorize"), ValidateAntiForgeryToken]
+        [HttpPost("~/connect/authorize/accept"), ValidateAntiForgeryToken]
         public async Task<IActionResult> Accept()
         {
             var request = HttpContext.GetOpenIddictServerRequest() ??
@@ -250,7 +250,7 @@ namespace SFMSSolution.API.Controllers
         }
 
         [Authorize, FormValueRequired("submit.Deny")]
-        [HttpPost("~/connect/authorize"), ValidateAntiForgeryToken]
+        [HttpPost("~/connect/authorize/deny"), ValidateAntiForgeryToken]
         // Notify OpenIddict that the authorization grant has been denied by the resource owner
         // to redirect the user agent to the client application using the appropriate response_mode.
         public IActionResult Deny() => Forbid(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);

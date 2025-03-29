@@ -16,7 +16,7 @@ namespace SFMSSolution.API.Controllers
         {
             _adminService = adminService;
         }
-
+        [Authorize]
         [HttpGet("get-user-by-id/{userId:Guid}")]
         public async Task<IActionResult> GetUserById(Guid userId)
         {
