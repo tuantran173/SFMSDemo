@@ -51,7 +51,7 @@ namespace SFMSSolution.Application.Services.Facilities
                 facilities = facilities.Where(f => f.CategoryId == categoryId.Value);
 
             if (!string.IsNullOrWhiteSpace(location))
-                facilities = facilities.Where(f => f.Location.Contains(location, StringComparison.OrdinalIgnoreCase));
+                facilities = facilities.Where(f => f.Address.Contains(location, StringComparison.OrdinalIgnoreCase));
 
             if (startTime.HasValue && endTime.HasValue)
             {
@@ -84,9 +84,9 @@ namespace SFMSSolution.Application.Services.Facilities
 
             facility.Name = request.Name;
             facility.Description = request.Description;
-            facility.Location = request.Location;
+            facility.Address = request.Address;
             facility.Capacity = request.Capacity;
-            facility.Images = request.Images;
+            facility.ImageUrl = request.ImageUrl;
             facility.UpdatedDate = DateTime.UtcNow;
 
             await _unitOfWork.FacilityRepository.UpdateAsync(facility);

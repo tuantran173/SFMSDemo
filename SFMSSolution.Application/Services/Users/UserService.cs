@@ -11,6 +11,7 @@ using SFMSSolution.Infrastructure.Implements.UnitOfWorks;
 using Microsoft.AspNetCore.Identity;
 using SFMSSolution.Domain.Entities;
 using SFMSSolution.Application.DataTransferObjects.User.Request;
+using SFMSSolution.Application.DataTransferObjects.User;
 
 namespace SFMSSolution.Application.Services.Admin
 {
@@ -28,9 +29,24 @@ namespace SFMSSolution.Application.Services.Admin
             _userManager = userManager;
         }
 
-        public async Task<(List<UserResponseDto> Users, int TotalCount)> GetAllUsersAsync(int pageNumber, int pageSize)
+        public async Task<(List<UserResponseDto> Users, int TotalCount)> GetAllUsersAsync(
+            int pageNumber,
+            int pageSize,
+            string? fullName = null,
+            string? email = null,
+            string? phone = null,
+            EntityStatus? status = null,
+            string? role = null)
         {
-            var (users, totalCount) = await _unitOfWork.AdminRepository.GetAllUsersWithRolesAsync(pageNumber, pageSize);
+            var (users, totalCount) = await _unitOfWork.AdminRepository.GetAllUsersWithRolesAsync(
+                pageNumber,
+                pageSize,
+                fullName,
+                email,
+                phone,
+                status,
+                role
+            );
 
             var userDtos = new List<UserResponseDto>();
             foreach (var user in users)
@@ -75,26 +91,46 @@ namespace SFMSSolution.Application.Services.Admin
             return true;
         }
 
-        public async Task<bool> ChangeUserRoleAsync(ChangeUserRoleRequestDto request)
+        public async Task<bool> UpdateAccountAsync(ChangeUserRoleRequestDto request)
         {
             var user = await _userManager.FindByIdAsync(request.UserId.ToString());
             if (user == null) return false;
 
-            var newRole = await _roleManager.FindByIdAsync(request.NewRoleId.ToString());
-            if (newRole == null) return false;
+            var roleExists = await _roleManager.RoleExistsAsync(request.Role);
+            if (!roleExists) return false;
 
             var currentRoles = await _userManager.GetRolesAsync(user);
-            await _userManager.RemoveFromRolesAsync(user, currentRoles);
-            var roleResult = await _userManager.AddToRoleAsync(user, newRole.Name);
+            var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+            if (!removeResult.Succeeded) return false;
 
-            return roleResult.Succeeded;
+            var addResult = await _userManager.AddToRoleAsync(user, request.Role);
+            return addResult.Succeeded;
         }
 
+        public async Task<UserProfileDto?> GetUserProfileAsync(Guid userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null) return null;
 
-        public async Task<bool> DeleteUserAsync(Guid userId)
+            var dto = new UserProfileDto
+            {
+                Id = user.Id,
+                FullName = user.FullName ?? "",
+                Email = user.Email ?? "",
+                Phone = user.PhoneNumber ?? "",
+                Address = user.Address ?? "",
+                Birthday = user.Birthday,
+                AvatarUrl = user.AvatarUrl ?? "",
+                Gender = user.Gender.ToString()
+            };
+
+            return dto;
+        }
+        public async Task<bool> DisableUserAsync(Guid userId)
         {
             var user = await _unitOfWork.AdminRepository.GetUserByIdWithRolesAsync(userId);
-            if (user == null) return false;
+            if (user == null || user.Status == EntityStatus.Inactive)
+                return false;
 
             user.Status = EntityStatus.Inactive;
             await _unitOfWork.AdminRepository.UpdateAsync(user);
@@ -103,23 +139,61 @@ namespace SFMSSolution.Application.Services.Admin
             return true;
         }
 
-        public async Task<bool> ChangePasswordAsync(Guid userId, ChangePasswordRequestDto request)
+        public async Task<bool> ActivateUserAsync(Guid userId)
         {
             var user = await _unitOfWork.AdminRepository.GetUserByIdWithRolesAsync(userId);
-            if (user == null) return false;
+            if (user == null || user.Status == EntityStatus.Active)
+                return false;
 
-            if (!BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.PasswordHash))
+            user.Status = EntityStatus.Active;
+            await _unitOfWork.AdminRepository.UpdateAsync(user);
+            await _unitOfWork.CompleteAsync();
+
+            return true;
+        }
+
+        public async Task<bool> ChangePasswordAsync(ChangePasswordRequestDto request)
+        {
+            var user = await _userManager.FindByIdAsync(request.UserId.ToString());
+            if (user == null)
+                return false;
+
+            // Xác minh mật khẩu hiện tại trước
+            var isCorrect = await _userManager.CheckPasswordAsync(user, request.CurrentPassword);
+            if (!isCorrect)
                 throw new Exception("Current password is incorrect.");
 
             if (!string.Equals(request.NewPassword, request.ConfirmNewPassword))
                 throw new Exception("New password and confirmation do not match.");
 
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
-            await _unitOfWork.AdminRepository.UpdateAsync(user); // Không cần gán kết quả
+            var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
 
-            await _unitOfWork.CompleteAsync(); // Lưu thay đổi vào CSDL
+            if (!result.Succeeded)
+                throw new Exception("Password change failed: " + string.Join(", ", result.Errors.Select(e => e.Description)));
 
             return true;
+        }
+
+        public async Task<bool> ChangeEmailAsync(ChangeEmailRequestDto request)
+        {
+            var user = await _userManager.FindByIdAsync(request.UserId.ToString());
+            if (user == null) return false;
+
+            var existing = await _userManager.FindByEmailAsync(request.NewEmail.ToLower());
+            if (existing != null && existing.Id != user.Id) return false; // Email đã tồn tại
+
+            user.Email = request.NewEmail.ToLower();
+            user.UserName = request.NewEmail.ToLower(); // Nếu bạn đang dùng email làm username
+
+            var result = await _userManager.UpdateAsync(user);
+            return result.Succeeded;
+        }
+        public async Task<bool> CheckPasswordAsync(CheckPasswordRequestDto request)
+        {
+            var user = await _userManager.FindByIdAsync(request.UserId.ToString());
+            if (user == null) return false;
+
+            return await _userManager.CheckPasswordAsync(user, request.CurrentPassword);
         }
     }
 }

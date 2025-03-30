@@ -8,9 +8,6 @@ namespace SFMSSolution.Application.Services.Auth
 {
     public interface IAuthService
     {
-        // Xác thực người dùng (Đăng nhập)
-        Task<AuthResponseDto?> AuthenticateAsync(AuthRequestDto request);
-
         // Đăng ký người dùng mới
         Task<ApiResponse<string>> RegisterAsync(RegisterRequestDto request); // Trả về ApiResponse để chứa thông báo
 

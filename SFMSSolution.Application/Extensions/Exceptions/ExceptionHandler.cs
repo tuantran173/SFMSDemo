@@ -18,7 +18,6 @@ namespace SFMSSolution.Application.Extensions.Exceptions
             // Register known exception types and handlers.
             _exceptionHandlers = new()
             {
-                { typeof(ValidationException), HandleValidationException },
                 { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException },
                 { typeof(ForbiddenAccessException), HandleForbiddenAccessException },
             };
@@ -35,19 +34,6 @@ namespace SFMSSolution.Application.Extensions.Exceptions
             }
 
             return false;
-        }
-
-        private async Task HandleValidationException(HttpContext httpContext, Exception ex)
-        {
-            var exception = (ValidationException)ex;
-
-            httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-
-            await httpContext.Response.WriteAsJsonAsync(new ValidationProblemDetails(exception.Errors)
-            {
-                Status = StatusCodes.Status400BadRequest,
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
-            });
         }
 
 

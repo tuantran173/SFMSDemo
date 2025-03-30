@@ -51,10 +51,10 @@ namespace SFMSSolution.Infrastructure.Database.SFMSDbContext
                 {
                     Id = facility1Id,
                     Name = "Football Field 5-a-side",
-                    Location = "Thạch Thất, Hòa Lạc",
+                    Address = "Thạch Thất, Hòa Lạc",
                     Description = "Sân bóng đá 5 người",
-                    Capacity = "10",
-                    Images = "image1.jpg",
+                    Capacity = 10,
+                    ImageUrl = "image1.jpg",
                     CategoryId = footballFieldId,
                     CreatedDate = DateTime.UtcNow
                 },
@@ -62,10 +62,10 @@ namespace SFMSSolution.Infrastructure.Database.SFMSDbContext
                 {
                     Id = facility2Id,
                     Name = "Badminton Court 1",
-                    Location = "Thạch Thất, Hòa Lạc",
+                    Address = "Thạch Thất, Hòa Lạc",
                     Description = "Sân cầu lông đơn/đôi",
-                    Capacity = "4",
-                    Images = "image2.jpg",
+                    Capacity = 4,
+                    ImageUrl = "image2.jpg",
                     CategoryId = badmintonCourtId,
                     CreatedDate = DateTime.UtcNow
                 }

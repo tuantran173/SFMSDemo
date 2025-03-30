@@ -11,8 +11,6 @@ namespace SFMSSolution.Application.DataTransferObjects.FacilityPrice.Request
         public Guid FacilityTimeSlotId { get; set; }
         public Guid CategoryId { get; set; }
         public decimal Coefficient { get; set; }
-        public string StartTime { get; set; }
-        public string EndTime { get; set; }
-        public bool IsWeekend { get; set; }
+        public decimal FinalPrice { get; set; }
     }
 }

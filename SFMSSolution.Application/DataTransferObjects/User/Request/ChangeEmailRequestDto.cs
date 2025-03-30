@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SFMSSolution.Application.DataTransferObjects.Admin.Request
+namespace SFMSSolution.Application.DataTransferObjects.User.Request
 {
-    public class ChangeUserRoleRequestDto
+    public class ChangeEmailRequestDto
     {
         public Guid UserId { get; set; }
-        public string Role { get; set; }
+        public string NewEmail { get; set; } = string.Empty;
     }
 }

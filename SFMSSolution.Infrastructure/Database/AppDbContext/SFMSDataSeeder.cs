@@ -42,7 +42,7 @@ namespace SFMSSolution.Infrastructure.Database.AppDbContext
             // Seed users
             var adminUser = new User
             {
-                UserName = "admin@gmail.com",
+                UserName = "admin",
                 Email = "admin@gmail.com",
                 FullName = "System Admin",
                 Gender = Gender.Male,

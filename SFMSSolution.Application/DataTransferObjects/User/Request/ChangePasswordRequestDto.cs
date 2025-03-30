@@ -9,7 +9,8 @@ namespace SFMSSolution.Application.DataTransferObjects.User.Request
 {
     public class ChangePasswordRequestDto
     {
-        public string CurrentPassword { get; set; } = string.Empty;
+        public Guid UserId { get; set; }
+        public string CurrentPassword { get; set; }
         public string NewPassword { get; set; } = string.Empty;
         public string ConfirmNewPassword { get; set; } = string.Empty;
     }

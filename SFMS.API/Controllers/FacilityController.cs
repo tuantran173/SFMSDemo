@@ -5,7 +5,7 @@ using SFMSSolution.Application.Services.Facilities;
 
 namespace SFMSSolution.API.Controllers
 {
-    [Authorize(Roles = "Owner")]
+    [Authorize(Roles = "Admin,Owner")]
     [ApiController]
     [Route("api/[controller]")]
     public class FacilityController : ControllerBase

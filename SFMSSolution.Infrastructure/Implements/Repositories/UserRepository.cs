@@ -1,14 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Polly;
 using SFMS.Infrastructure.Repositories;
 using SFMSSolution.Domain.Entities;
+using SFMSSolution.Domain.Enums;
 using SFMSSolution.Infrastructure.Database.AppDbContext;
 using SFMSSolution.Infrastructure.Implements.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SFMSSolution.Infrastructure.Implements.Repositories
 {
@@ -21,23 +17,48 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
             _userManager = userManager;
         }
 
-        public async Task<(List<User> Users, int TotalCount)> GetAllUsersWithRolesAsync(int pageNumber, int pageSize)
+        public async Task<(List<User> Users, int TotalCount)> GetAllUsersWithRolesAsync(
+    int pageNumber,
+    int pageSize,
+    string? fullName = null,
+    string? email = null,
+    string? phone = null,
+    EntityStatus? status = null,
+    string? role = null)
         {
-            var query = _dbSet.AsQueryable();
-            var totalCount = await query.CountAsync();
+            var query = _context.Users.AsQueryable();
+
+            if (!string.IsNullOrEmpty(fullName))
+                query = query.Where(u => u.FullName!.ToLower().Contains(fullName.ToLower()));
+
+            if (!string.IsNullOrEmpty(email))
+                query = query.Where(u => u.Email!.ToLower().Contains(email.ToLower()));
+
+            if (!string.IsNullOrEmpty(phone))
+                query = query.Where(u => u.PhoneNumber!.Contains(phone));
+
+            if (status.HasValue)
+                query = query.Where(u => u.Status == status.Value);
 
             var users = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
-            // Lấy vai trò cho từng user nếu cần
-            foreach (var user in users)
+            // Lấy roles cho từng user (nếu có lọc theo role)
+            if (!string.IsNullOrEmpty(role))
             {
-                var roles = await _userManager.GetRolesAsync(user);
-                // Nếu cần gắn roles vào một property tạm, bạn có thể thêm logic ở đây
+                var usersInRole = new List<User>();
+                foreach (var user in users)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    if (roles.Contains(role))
+                        usersInRole.Add(user);
+                }
+                users = usersInRole;
             }
 
+            var totalCount = await query.CountAsync();
             return (users, totalCount);
         }
 
@@ -71,5 +92,7 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
             // Gán vai trò mới
             await _userManager.AddToRoleAsync(user, role.Name);
         }
+
+
     }
 }

@@ -11,6 +11,8 @@ using OpenIddict.Server.AspNetCore;
 using SFMSSolution.API.Helper;
 using SFMSSolution.API.Helpers;
 using SFMSSolution.Application.DataTransferObjects.Auth;
+using SFMSSolution.Application.DataTransferObjects.Auth.Request;
+using SFMSSolution.Application.Services.Auth;
 using SFMSSolution.Domain.Entities;
 using SFMSSolution.Domain.Enums;
 using System.Security.Claims;
@@ -18,17 +20,19 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace SFMSSolution.API.Controllers
 {
-    public class AuthorizeController(IOpenIddictApplicationManager applicationManager,
+    public class AuthController(IOpenIddictApplicationManager applicationManager,
     IOpenIddictAuthorizationManager authorizationManager,
     IOpenIddictScopeManager scopeManager,
     SignInManager<User> signInManager,
-    UserManager<User> userManager) : ControllerBase
+    UserManager<User> userManager,
+         IAuthService authService) : ControllerBase
     {
         private readonly IOpenIddictApplicationManager _applicationManager = applicationManager;
         private readonly IOpenIddictAuthorizationManager _authorizationManager = authorizationManager;
         private readonly IOpenIddictScopeManager _scopeManager = scopeManager;
         private readonly SignInManager<User> _signInManager = signInManager;
         private readonly UserManager<User> _userManager = userManager;
+        private readonly IAuthService _authService = authService;
 
         [HttpGet("~/connect/authorize")]
         [HttpPost("~/connect/authorize")]
@@ -456,6 +460,38 @@ namespace SFMSSolution.API.Controllers
                     yield break;
             }
         }
-    } 
 
+        [HttpPost("api/auth/register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
+        {
+            var result = await _authService.RegisterAsync(request);
+            if (!result.Success)
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
+        }
+
+        [HttpPost("api/auth/forgot-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDto request)
+        {
+            var result = await _authService.ForgotPasswordAsync(request.Email);
+            if (!result.Success)
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
+        }
+
+        [HttpPost("api/auth/reset-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto request)
+        {
+            var result = await _authService.ResetPasswordWithOTPAsync(request.Email, request.OTP, request.NewPassword);
+            if (!result.Success)
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
+        }
+    } 
  }

@@ -1,28 +1,46 @@
-﻿using FluentValidation.Results;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SFMSSolution.Application.Extensions.Exceptions
 {
-    public class ValidationException : Exception
+    public class ValidationExceptionMiddleware
     {
-        public ValidationException()
-            : base("One or more validation failures have occurred.")
+        private readonly RequestDelegate _next;
+
+        public ValidationExceptionMiddleware(RequestDelegate next)
         {
-            Errors = new Dictionary<string, string[]>();
+            _next = next;
         }
 
-        public ValidationException(IEnumerable<ValidationFailure> failures)
-            : this()
+        public async Task Invoke(HttpContext context)
         {
-            Errors = failures
-                .GroupBy(e => e.PropertyName, e => e.ErrorMessage)
-                .ToDictionary(failureGroup => failureGroup.Key, failureGroup => failureGroup.ToArray());
-        }
+            try
+            {
+                await _next(context);
+            }
+            catch (ValidationException ex)
+            {
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
-        public IDictionary<string, string[]> Errors { get; }
+                var response = new
+                {
+                    message = "Validation failed",
+                    errors = ex.Errors
+                        .GroupBy(e => e.PropertyName)
+                        .ToDictionary(g => g.Key, g => g.Select(x => x.ErrorMessage).ToArray())
+                };
+
+                await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            }
+        }
     }
 }

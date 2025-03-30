@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SFMSSolution.Application.DataTransferObjects.FacilityPrice.Request;
 using SFMSSolution.Application.Services.FacilityPrices;
 
 namespace SFMSSolution.API.Controllers
 {
+    [Authorize("Admin, Owner")]
     [Route("api/[controller]")]
     [ApiController]
     public class FacilityPriceController : ControllerBase

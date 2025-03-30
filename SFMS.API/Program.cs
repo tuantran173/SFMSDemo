@@ -1,19 +1,18 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using OpenIddict.Abstractions;
-using SFMSSolution.API.Hubs;
-using SFMSSolution.Application.Mapping;
-using SFMSSolution.Infrastructure.Database.AppDbContext;
-using SFMSSolution.Domain.Entities;
-using System.Text;
-using static OpenIddict.Abstractions.OpenIddictConstants;
-using Microsoft.AspNetCore.Authorization;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Validation.AspNetCore;
+using SFMSSolution.API.Hubs;
 using SFMSSolution.Application.Extensions.Exceptions;
+using SFMSSolution.Application.Mapping;
+using SFMSSolution.Domain.Entities;
+using SFMSSolution.Infrastructure.Database.AppDbContext;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -105,6 +104,12 @@ builder.Services.AddOpenIddict()
                 // options.EnableTokenEntryValidation
             })
             ;
+
+builder.Services.AddControllers()
+    .AddFluentValidation(fv =>
+    {
+        fv.RegisterValidatorsFromAssemblyContaining<Program>();
+    });
 builder.Services.AddInfrastructure();
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 builder.Services.AddAuthorizationBuilder()
@@ -158,7 +163,7 @@ builder.Services.AddCors(options =>
 // Register Controllers & JSON Options
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
-    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     options.JsonSerializerOptions.WriteIndented = true;
 });
 
@@ -205,6 +210,7 @@ app.UseDefaultFiles();
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseMiddleware<ValidationExceptionMiddleware>();
 app.UseCors("AllowAngularApp");
 
 app.UseAuthentication();

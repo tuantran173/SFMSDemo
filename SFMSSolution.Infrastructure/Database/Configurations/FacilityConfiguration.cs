@@ -14,7 +14,7 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
                    .IsRequired()
                    .HasMaxLength(255);
 
-            builder.Property(f => f.Location)
+            builder.Property(f => f.Address)
                    .HasMaxLength(255);
 
             builder.Property(f => f.Description)
@@ -23,7 +23,7 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
             builder.Property(f => f.Capacity)
                    .HasMaxLength(50);
 
-            builder.Property(f => f.Images)
+            builder.Property(f => f.ImageUrl)
                    .HasMaxLength(500);
 
             builder.HasOne(f => f.Category)
