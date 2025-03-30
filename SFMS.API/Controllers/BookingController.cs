@@ -7,7 +7,7 @@ using SFMSSolution.Application.Services.Bookings;
 
 namespace SFMSSolution.API.Controllers
 {
-    [Authorize(Roles = "Owner, Customer")]
+    [Authorize(Roles = "Admin,Owner, Customer")]
     [ApiController]
     [Route("api/[controller]")]
     public class BookingController : ControllerBase
@@ -21,7 +21,6 @@ namespace SFMSSolution.API.Controllers
             _hubContext = hubContext;
         }
 
-        [Authorize]
         [HttpGet("get-booking-by-id/{id:Guid}")]
         public async Task<IActionResult> GetBooking(Guid id)
         {
@@ -32,7 +31,6 @@ namespace SFMSSolution.API.Controllers
             return Ok(booking);
         }
 
-        [Authorize]
         [HttpGet("get-all-booking")]
         public async Task<IActionResult> GetAllBookings([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {

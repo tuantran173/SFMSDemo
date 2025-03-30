@@ -31,7 +31,8 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
                     .HasForeignKey(f => f.CategoryId);
 
             builder.Property(f => f.CreatedDate)
-                   .HasDefaultValueSql("GETUTCDATE()");
+                     .HasColumnType("datetime(6)")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
             // Ngày cập nhật: có thể null
             builder.Property(f => f.UpdatedDate);

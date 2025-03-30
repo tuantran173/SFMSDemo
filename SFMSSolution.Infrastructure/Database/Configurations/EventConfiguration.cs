@@ -38,7 +38,8 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
                 .IsRequired();
 
             builder.Property(e => e.CreatedDate)
-                .HasDefaultValueSql("GETUTCDATE()");
+                  .HasColumnType("datetime(6)")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
         }
     }
 }

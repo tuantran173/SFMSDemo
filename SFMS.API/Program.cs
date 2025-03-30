@@ -19,7 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add DbContext
 builder.Services.AddDbContext<SFMSDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection"));
     options.UseOpenIddict();  // Tích hợp OpenIddict
 });
 // Add Identity
