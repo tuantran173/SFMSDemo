@@ -62,14 +62,14 @@ namespace SFMSSolution.Application.Services.Admin
             return (userDtos, totalCount);
         }
 
-        public async Task<UserResponseDto?> GetUserByIdAsync(Guid userId)
+        public async Task<UserDto?> GetUserByIdAsync(Guid userId)
         {
             var user = await _unitOfWork.AdminRepository.GetUserByIdWithRolesAsync(userId);
             if (user == null)
                 return null;
 
             var roles = await _userManager.GetRolesAsync(user);
-            var userDto = _mapper.Map<UserResponseDto>(user);
+            var userDto = _mapper.Map<UserDto>(user);
             userDto.Role = roles.FirstOrDefault() ?? string.Empty;
 
             if (userDto.Role == "Admin") // Bỏ qua Admin
@@ -195,5 +195,6 @@ namespace SFMSSolution.Application.Services.Admin
 
             return await _userManager.CheckPasswordAsync(user, request.CurrentPassword);
         }
+
     }
 }

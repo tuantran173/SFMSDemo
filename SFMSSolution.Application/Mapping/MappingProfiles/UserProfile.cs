@@ -4,6 +4,7 @@ using SFMSSolution.Application.DataTransferObjects.Admin;
 using SFMSSolution.Domain.Entities;
 using System.Linq;
 using SFMSSolution.Domain.Enums;
+using SFMSSolution.Application.DataTransferObjects.User;
 
 namespace SFMSSolution.Application.Mapping.MappingProfiles
 {
@@ -12,6 +13,8 @@ namespace SFMSSolution.Application.Mapping.MappingProfiles
         public UserProfile()
         {
             CreateMap<User, UserResponseDto>()
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.Status == EntityStatus.Active));
+            CreateMap<User, UserDto>()
                 .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.Status == EntityStatus.Active));
 
             CreateMap<UpdateUserRequestDto, User>()

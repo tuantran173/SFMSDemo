@@ -22,7 +22,7 @@ namespace SFMSSolution.Application.Services.Admin
            string? phone = null,
            EntityStatus? status = null,
            string? role = null);
-        Task<UserResponseDto?> GetUserByIdAsync(Guid userId);
+        Task<UserDto?> GetUserByIdAsync(Guid userId);
         Task<bool> UpdateUserAsync(Guid userId, UpdateUserRequestDto request);
         Task<bool> UpdateAccountAsync(ChangeUserRoleRequestDto request);
         Task<UserProfileDto?> GetUserProfileAsync(Guid userId);

@@ -40,25 +40,35 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
             if (status.HasValue)
                 query = query.Where(u => u.Status == status.Value);
 
+            if (!string.IsNullOrEmpty(role))
+            {
+                var userIdsWithRole = await (from ur in _context.UserRoles
+                                             join r in _context.Roles on ur.RoleId equals r.Id
+                                             where r.Name == role
+                                             select ur.UserId).ToListAsync();
+
+                query = query.Where(u => userIdsWithRole.Contains(u.Id));
+            }
+
+            var adminRoleId = await _context.Roles
+            .Where(r => r.Name == "Admin")
+            .Select(r => r.Id)
+            .FirstOrDefaultAsync();
+
+            var adminUserIds = await _context.UserRoles
+                .Where(ur => ur.RoleId == adminRoleId)
+                .Select(ur => ur.UserId)
+                .ToListAsync();
+
+            query = query.Where(u => !adminUserIds.Contains(u.Id));
+
+            var totalCount = await query.CountAsync();
+
             var users = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
-            // Lấy roles cho từng user (nếu có lọc theo role)
-            if (!string.IsNullOrEmpty(role))
-            {
-                var usersInRole = new List<User>();
-                foreach (var user in users)
-                {
-                    var roles = await _userManager.GetRolesAsync(user);
-                    if (roles.Contains(role))
-                        usersInRole.Add(user);
-                }
-                users = usersInRole;
-            }
-
-            var totalCount = await query.CountAsync();
             return (users, totalCount);
         }
 
