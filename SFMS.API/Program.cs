@@ -126,13 +126,13 @@ builder.Services.AddAuthorizationBuilder()
     {
         policy.AuthenticationSchemes = [OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme];
         policy.RequireAuthenticatedUser();
-        policy.RequireRole("Administrator");
+        policy.RequireRole("Admin");
     })
     .AddPolicy("owner", policy =>
     {
         policy.AuthenticationSchemes = [OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme];
         policy.RequireAuthenticatedUser();
-        policy.RequireRole("FacilityOwner");
+        policy.RequireRole("Owner");
     });
 // Configure Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

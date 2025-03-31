@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SFMSSolution.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+78d218d903b0177e3e4ce8ba7f460e6553f1929f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9a6ba4e5fd7a5569c97a74c85190d3ae13e21149")]
 [assembly: System.Reflection.AssemblyProductAttribute("SFMSSolution.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SFMSSolution.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -86,7 +86,7 @@ namespace SFMSSolution.Application.Services.Auth
                 return new ApiResponse<string>("Failed to register user: " + string.Join(", ", result.Errors.Select(e => e.Description)));
 
             // Gán vai trò mặc định "CUS"
-            var roleResult = await _userManager.AddToRoleAsync(newUser, "Customer");
+            var roleResult = await _userManager.AddToRoleAsync(newUser, Role.Customer.ToString());
             if (!roleResult.Succeeded)
                 return new ApiResponse<string>("Failed to assign role: " + string.Join(", ", roleResult.Errors.Select(e => e.Description)));
 

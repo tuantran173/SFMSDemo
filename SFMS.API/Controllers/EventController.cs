@@ -5,7 +5,7 @@ using SFMSSolution.Application.Services.Events;
 
 namespace SFMSSolution.API.Controllers
 {
-    [Authorize]
+    [Authorize(Policy ="Admin, Owner")]
     [ApiController]
     [Route("api/event")]
     public class EventController : ControllerBase

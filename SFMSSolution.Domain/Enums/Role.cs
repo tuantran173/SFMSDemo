@@ -3,10 +3,15 @@ using System.ComponentModel;
 
 namespace SFMSSolution.Domain.Enums
 {
-    public abstract class Roles
+    public enum Role
     {
-        public const string Administrator = nameof(Administrator);
-        public const string User = nameof(User);
-        public const string FacilityOwner = nameof(FacilityOwner);
+        [Description("Administrator")]
+        Admin,
+
+        [Description("Facility Owner")]
+        Owner,
+
+        [Description("Customer")]
+        Customer
     }
 }

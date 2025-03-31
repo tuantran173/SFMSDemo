@@ -7,7 +7,7 @@ using SFMSSolution.Domain.Enums;
 
 namespace SFMSSolution.API.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Policy = "Admin")]
     [ApiController]
     [Route("api/user")]
     public class UserController : ControllerBase

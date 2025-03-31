@@ -6,7 +6,7 @@ using SFMSSolution.Application.Services.FacilityPrices;
 
 namespace SFMSSolution.API.Controllers
 {
-    [Authorize("Admin, Owner")]
+    [Authorize(Policy = "Admin, Owner")]
     [Route("api/[controller]")]
     [ApiController]
     public class FacilityPriceController : ControllerBase

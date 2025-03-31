@@ -7,7 +7,7 @@ using SFMSSolution.Application.Services.Bookings;
 
 namespace SFMSSolution.API.Controllers
 {
-    [Authorize(Roles = "Admin,Owner, Customer")]
+    [Authorize(Policy = "Admin,Owner, Customer")]
     [ApiController]
     [Route("api/[controller]")]
     public class BookingController : ControllerBase

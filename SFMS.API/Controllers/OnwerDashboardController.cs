@@ -5,7 +5,7 @@ using SFMSSolution.Application.Services.Reports;
 
 namespace SFMSSolution.API.Controllers
 {
-    [Authorize(Roles = "Owner")]
+    [Authorize(Policy = "Admin,Owner")]
     [Route("api/owner/reports")]
     [ApiController]
     public class OwnerDashboardController : ControllerBase

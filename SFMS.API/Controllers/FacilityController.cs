@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using CloudinaryDotNet.Actions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SFMSSolution.Application.DataTransferObjects.Facility.Request;
 using SFMSSolution.Application.Services.Facilities;
 
 namespace SFMSSolution.API.Controllers
 {
-    [Authorize(Roles = "Admin,Owner")]
+    [Authorize(Policy = "Admin,Owner")]
     [ApiController]
     [Route("api/[controller]")]
     public class FacilityController : ControllerBase
