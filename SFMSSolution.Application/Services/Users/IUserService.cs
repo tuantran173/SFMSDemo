@@ -25,10 +25,10 @@ namespace SFMSSolution.Application.Services.Admin
         Task<UserDto?> GetUserByIdAsync(Guid userId);
         Task<bool> UpdateUserAsync(Guid userId, UpdateUserRequestDto request);
         Task<bool> UpdateAccountAsync(ChangeUserRoleRequestDto request);
-        Task<UserProfileDto?> GetUserProfileAsync(Guid userId);
+        Task<UserDto> GetUserProfileAsync();
         Task<bool> DisableUserAsync(Guid userId);
         Task<bool> ActivateUserAsync(Guid userId);
-        Task<bool> ChangePasswordAsync(ChangePasswordRequestDto request);
+        Task<bool> ChangePasswordAsync(Guid userId, ChangePasswordRequestDto request);
         Task<bool> ChangeEmailAsync(ChangeEmailRequestDto request);
         Task<bool> CheckPasswordAsync(CheckPasswordRequestDto request);
     }

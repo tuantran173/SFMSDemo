@@ -5,7 +5,7 @@ using SFMSSolution.Application.Services.Events;
 
 namespace SFMSSolution.API.Controllers
 {
-    [Authorize(Policy ="Admin, Owner")]
+    
     [ApiController]
     [Route("api/event")]
     public class EventController : ControllerBase
@@ -36,6 +36,7 @@ namespace SFMSSolution.API.Controllers
             return Ok(new { TotalCount = totalCount, Events = events });
         }
 
+        [Authorize(Policy = "Admin, Owner")]
         [HttpPost("create-event")]
         public async Task<IActionResult> CreateEvent([FromBody] EventCreateRequestDto request)
         {
@@ -49,6 +50,7 @@ namespace SFMSSolution.API.Controllers
             return Ok(new { message = "Event created successfully." });
         }
 
+        [Authorize(Policy = "Admin, Owner")]
         [HttpPut("update-event/{id:Guid}")]
         public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] EventUpdateRequestDto request)
         {
@@ -62,6 +64,7 @@ namespace SFMSSolution.API.Controllers
             return Ok(new { message = "Event updated successfully." });
         }
 
+        [Authorize(Policy = "Admin, Owner")]
         [HttpDelete("delete/event{id:Guid}")]
         public async Task<IActionResult> DeleteEvent(Guid id)
         {

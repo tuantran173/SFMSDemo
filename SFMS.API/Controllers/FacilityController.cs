@@ -6,7 +6,6 @@ using SFMSSolution.Application.Services.Facilities;
 
 namespace SFMSSolution.API.Controllers
 {
-    [Authorize(Policy = "Admin,Owner")]
     [ApiController]
     [Route("api/[controller]")]
     public class FacilityController : ControllerBase
@@ -73,23 +72,7 @@ namespace SFMSSolution.API.Controllers
             });
         }
 
-        [AllowAnonymous]
-        [HttpGet("search-facility")]
-        public async Task<IActionResult> SearchFacilitiesByName(
-            [FromQuery] string name,
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10)
-        {
-            var (facilities, totalCount) = await _facilityService.SearchFacilitiesByNameAsync(name, pageNumber, pageSize);
-            return Ok(new
-            {
-                Data = facilities,
-                TotalCount = totalCount,
-                CurrentPage = pageNumber,
-                PageSize = pageSize
-            });
-        }
-
+        [Authorize(Policy = "Admin,Owner")]
         [HttpPost("create-facility")]
         public async Task<IActionResult> CreateFacility([FromBody] FacilityCreateRequestDto request)
         {
@@ -99,6 +82,7 @@ namespace SFMSSolution.API.Controllers
             return Ok("Facility created successfully.");
         }
 
+        [Authorize(Policy = "Admin,Owner")]
         [HttpPut("update-facility/{id:Guid}")]
         public async Task<IActionResult> UpdateFacility(Guid id, [FromBody] FacilityUpdateRequestDto request)
         {
@@ -108,6 +92,7 @@ namespace SFMSSolution.API.Controllers
             return Ok("Facility updated successfully.");
         }
 
+        [Authorize(Policy = "Admin,Owner")]
         [HttpDelete("delete-facility/{id:Guid}")]
         public async Task<IActionResult> DeleteFacility(Guid id)
         {

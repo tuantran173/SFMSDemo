@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using SFMSSolution.Domain.Entities;
 using SFMSSolution.Application.DataTransferObjects.User.Request;
 using SFMSSolution.Application.DataTransferObjects.User;
+using Microsoft.AspNetCore.Http;
 
 namespace SFMSSolution.Application.Services.Admin
 {
@@ -21,13 +22,14 @@ namespace SFMSSolution.Application.Services.Admin
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole<Guid>> _roleManager;
-
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public UserService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager, IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
             _roleManager = roleManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<(List<UserResponseDto> Users, int TotalCount)> GetAllUsersAsync(
@@ -108,24 +110,25 @@ namespace SFMSSolution.Application.Services.Admin
             return addResult.Succeeded;
         }
 
-        public async Task<UserProfileDto?> GetUserProfileAsync(Guid userId)
+        public async Task<UserDto> GetUserProfileAsync()
         {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
+            var userId = _httpContextAccessor.HttpContext?.User?.FindFirst("sub")?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                throw new UnauthorizedAccessException("User is not authenticated.");
+
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null) return null;
 
-            var dto = new UserProfileDto
-            {
-                Id = user.Id,
-                FullName = user.FullName ?? "",
-                Email = user.Email ?? "",
-                Phone = user.PhoneNumber ?? "",
-                Address = user.Address ?? "",
-                Birthday = user.Birthday,
-                AvatarUrl = user.AvatarUrl ?? "",
-                Gender = user.Gender.ToString()
-            };
+            // Lấy danh sách role của user
+            var roles = await _userManager.GetRolesAsync(user);
+            var role = roles.FirstOrDefault() ?? "";
 
-            return dto;
+            // Mapping
+            var userDto = _mapper.Map<UserDto>(user);
+            userDto.Role = role;
+            return userDto;
+        
         }
         public async Task<bool> DisableUserAsync(Guid userId)
         {
@@ -153,22 +156,20 @@ namespace SFMSSolution.Application.Services.Admin
             return true;
         }
 
-        public async Task<bool> ChangePasswordAsync(ChangePasswordRequestDto request)
+        public async Task<bool> ChangePasswordAsync(Guid userId, ChangePasswordRequestDto request)
         {
-            var user = await _userManager.FindByIdAsync(request.UserId.ToString());
+            var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
-                return false;
+                throw new Exception("User not found");
 
-            // Xác minh mật khẩu hiện tại trước
-            var isCorrect = await _userManager.CheckPasswordAsync(user, request.CurrentPassword);
+            var isCorrect = await _userManager.CheckPasswordAsync(user, request.OldPassword);
             if (!isCorrect)
                 throw new Exception("Current password is incorrect.");
 
-            if (!string.Equals(request.NewPassword, request.ConfirmNewPassword))
+            if (request.NewPassword != request.ConfirmedPassword)
                 throw new Exception("New password and confirmation do not match.");
 
-            var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
-
+            var result = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
             if (!result.Succeeded)
                 throw new Exception("Password change failed: " + string.Join(", ", result.Errors.Select(e => e.Description)));
 

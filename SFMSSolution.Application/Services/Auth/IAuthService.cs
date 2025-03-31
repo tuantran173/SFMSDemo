@@ -11,12 +11,9 @@ namespace SFMSSolution.Application.Services.Auth
         // Đăng ký người dùng mới
         Task<ApiResponse<string>> RegisterAsync(RegisterRequestDto request); // Trả về ApiResponse để chứa thông báo
 
-        // Quên mật khẩu: sinh token reset mật khẩu và gửi email reset
-        Task<ApiResponse<string>> ForgotPasswordAsync(string email);
-
-        // Đặt lại mật khẩu bằng OTP
-        Task<ApiResponse<string>> ResetPasswordWithOTPAsync(string email, string otp, string newPassword);
-
+        Task<ApiResponse<string>> SendOtpAsync(string email);
+        Task<ApiResponse<bool>> VerifyOtpAsync(string email, string otp);
+        Task<ApiResponse<string>> ResetPasswordAsync(string email, string otp, string newPassword);
         // Đăng xuất người dùng
         Task<bool> LogoutAsync(Guid userId);
     }

@@ -71,7 +71,7 @@ namespace SFMSSolution.Application.Services.Auth
 
 
             var email = request.Email.ToLower();
-            var username = request.UserName.ToLower();
+            var username = request.UserName;
             var phone = request.Phone;
 
             // Check trùng email
@@ -138,14 +138,13 @@ namespace SFMSSolution.Application.Services.Auth
             return true;
         }
 
-        public async Task<ApiResponse<string>> ForgotPasswordAsync(string email)
+        public async Task<ApiResponse<string>> SendOtpAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email.ToLower());
             if (user == null)
                 return new ApiResponse<string>(string.Empty, "If an account with that email exists, an OTP has been sent.");
 
             var otp = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var otpExpiry = DateTime.UtcNow.AddMinutes(3);
 
             var subject = "Mã OTP để đặt lại mật khẩu của bạn";
             var body = $"<p>Xin chào {user.FullName},</p>" +
@@ -159,17 +158,38 @@ namespace SFMSSolution.Application.Services.Auth
             return new ApiResponse<string>(string.Empty, "If an account with that email exists, an OTP has been sent.");
         }
 
-        public async Task<ApiResponse<string>> ResetPasswordWithOTPAsync(string email, string otp, string newPassword)
+        public async Task<ApiResponse<bool>> VerifyOtpAsync(string email, string otp)
+        {
+            var user = await _userManager.FindByEmailAsync(email.ToLower());
+            if (user == null) return new ApiResponse<bool>("Invalid email.");
+
+            // Chỉ kiểm tra tính hợp lệ, không đổi mật khẩu
+            var result = await _userManager.VerifyUserTokenAsync(
+                user, _userManager.Options.Tokens.PasswordResetTokenProvider,
+                "ResetPassword", otp);
+
+            return result
+                ? new ApiResponse<bool>(true, "OTP is valid.")
+                : new ApiResponse<bool>("OTP is invalid or expired.");
+        }
+
+        public async Task<ApiResponse<string>> ResetPasswordAsync(string email, string password, string confirmPassword)
         {
             var user = await _userManager.FindByEmailAsync(email.ToLower());
             if (user == null)
                 return new ApiResponse<string>("Invalid email.");
 
-            var result = await _userManager.ResetPasswordAsync(user, otp, newPassword);
-            if (!result.Succeeded)
-                return new ApiResponse<string>("Invalid or expired OTP: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+            if (password != confirmPassword)
+                return new ApiResponse<string>("Password and confirmation do not match.");
 
-            return new ApiResponse<string>(string.Empty, "Password reset successfully.");
+            // Tạo lại token mới vì securityStamp đã được làm mới ở SendOtpAsync
+            var otp = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var result = await _userManager.ResetPasswordAsync(user, otp, password);
+            if (!result.Succeeded)
+                return new ApiResponse<string>("Reset failed: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+
+            return new ApiResponse<string>(string.Empty, "Password has been reset successfully.");
         }
     }
 }

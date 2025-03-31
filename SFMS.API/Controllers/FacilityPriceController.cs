@@ -6,7 +6,7 @@ using SFMSSolution.Application.Services.FacilityPrices;
 
 namespace SFMSSolution.API.Controllers
 {
-    [Authorize(Policy = "Admin, Owner")]
+    
     [Route("api/[controller]")]
     [ApiController]
     public class FacilityPriceController : ControllerBase
@@ -18,6 +18,7 @@ namespace SFMSSolution.API.Controllers
             _facilityPriceService = facilityPriceService;
         }
 
+        [Authorize(Policy = "Admin, Owner")]
         // API để thêm hoặc cập nhật giá cho khung giờ cụ thể
         [HttpPost("add-or-update")]
         public async Task<IActionResult> AddOrUpdatePrice([FromBody] FacilityPriceCreateRequestDto request)
@@ -29,6 +30,7 @@ namespace SFMSSolution.API.Controllers
             return BadRequest(new { message = "Failed to add/update Facility Price" });
         }
 
+        [Authorize(Policy = "Admin, Owner")]
         // Lấy tất cả các giá áp dụng cho một khung giờ cụ thể
         [HttpGet("get-by-timeslot/{facilityTimeSlotId}")]
         public async Task<IActionResult> GetPricesByTimeSlot(Guid facilityTimeSlotId)

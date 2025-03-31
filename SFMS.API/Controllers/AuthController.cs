@@ -12,6 +12,7 @@ using SFMSSolution.API.Helper;
 using SFMSSolution.API.Helpers;
 using SFMSSolution.Application.DataTransferObjects.Auth;
 using SFMSSolution.Application.DataTransferObjects.Auth.Request;
+using SFMSSolution.Application.DataTransferObjects.User.Request;
 using SFMSSolution.Application.Services.Auth;
 using SFMSSolution.Domain.Entities;
 using SFMSSolution.Domain.Enums;
@@ -472,26 +473,29 @@ namespace SFMSSolution.API.Controllers
             return Ok(new { result.Message });
         }
 
-        [HttpPost("api/auth/forgot-password")]
-        [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDto request)
+        [HttpPost("send-otp")]
+        public async Task<IActionResult> SendOtp([FromBody] ForgotPasswordRequestDto request)
         {
-            var result = await _authService.ForgotPasswordAsync(request.Email);
+            var result = await _authService.SendOtpAsync(request.Email);
             if (!result.Success)
                 return BadRequest(new { result.Message });
 
             return Ok(new { result.Message });
         }
 
-        [HttpPost("api/auth/reset-password")]
+        [HttpPost("verify-otp")]
+        public async Task<IActionResult> VerifyOtp([FromBody] VerifyOTPRequestDto request)
+        {
+            var isValid = await _authService.VerifyOtpAsync(request.Email, request.Otp);
+            return Ok(new { isValid });
+        }
+
         [AllowAnonymous]
+        [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto request)
         {
-            var result = await _authService.ResetPasswordWithOTPAsync(request.Email, request.OTP, request.NewPassword);
-            if (!result.Success)
-                return BadRequest(new { result.Message });
-
-            return Ok(new { result.Message });
+            var result = await _authService.ResetPasswordAsync(request.Email, request.Password, request.ConfirmPassword);
+            return Ok(result);
         }
     } 
  }

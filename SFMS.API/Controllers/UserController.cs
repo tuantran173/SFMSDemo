@@ -7,7 +7,7 @@ using SFMSSolution.Domain.Enums;
 
 namespace SFMSSolution.API.Controllers
 {
-    [Authorize(Policy = "Admin")]
+
     [ApiController]
     [Route("api/user")]
     public class UserController : ControllerBase
@@ -30,6 +30,7 @@ namespace SFMSSolution.API.Controllers
             return Ok(user);
         }
 
+        [Authorize(Policy = "Admin")]
         [HttpGet("get-all-users")]
         public async Task<IActionResult> GetAllUsers(
         [FromQuery] int pageNumber = 1,
@@ -46,17 +47,18 @@ namespace SFMSSolution.API.Controllers
             return Ok(new { TotalCount = totalCount, Users = users });
         }
 
+        [Authorize]
+        [HttpPatch("update-user/{userId:Guid}")]
+        public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UpdateUserRequestDto request)
+        {
+            var result = await _adminService.UpdateUserAsync(userId, request);
+            if (!result)
+                return NotFound(new { message = "User not found or update failed" });
 
-        //[HttpPut("update-user/{userId:Guid}")]
-        //public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UpdateUserRequestDto request)
-        //{
-        //    var result = await _adminService.UpdateUserAsync(userId, request);
-        //    if (!result)
-        //        return NotFound(new { message = "User not found or update failed" });
+            return Ok(new { message = "User updated successfully" });
+        }
 
-        //    return Ok(new { message = "User updated successfully" });
-        //}
-
+        [Authorize(Policy = "Admin")]
         [HttpPost("update-account/{userId:Guid}")]
         public async Task<IActionResult> ChangeUserRole([FromRoute] Guid userId, [FromQuery] string role)
         {
@@ -74,16 +76,14 @@ namespace SFMSSolution.API.Controllers
         }
 
         [Authorize]
-        [HttpGet("UserInfo/{userId}")]
-        public async Task<IActionResult> GetUserProfile(Guid userId)
+        [HttpGet("UserInfo")]
+        public async Task<IActionResult> GetProfile()
         {
-            var profile = await _adminService.GetUserProfileAsync(userId);
-            if (profile == null)
-                return NotFound(new { message = "User not found" });
-
-            return Ok(profile);
+            var profile = await _adminService.GetUserProfileAsync();
+            return profile != null ? Ok(profile) : NotFound("User not found.");
         }
 
+        [Authorize(Policy = "Admin")]
         [HttpPost("disable-account/{userId:Guid}")]
         public async Task<IActionResult> DisableUser(Guid userId)
         {
@@ -94,7 +94,8 @@ namespace SFMSSolution.API.Controllers
             return Ok(new { message = "User disabled successfully" });
         }
 
-        [HttpPut("active-account/{userId:Guid}")]
+        [Authorize(Policy = "Admin")]
+        [HttpPost("active-account/{userId:Guid}")]
         public async Task<IActionResult> ActivateUser(Guid userId)
         {
             var result = await _adminService.ActivateUserAsync(userId);
@@ -108,18 +109,12 @@ namespace SFMSSolution.API.Controllers
         [HttpPut("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDto request)
         {
-            try
-            {
-                var result = await _adminService.ChangePasswordAsync(request);
-                if (!result)
-                    return NotFound(new { message = "User not found or password change failed" });
+            var userId = User.FindFirst("sub")?.Value; // or ClaimTypes.NameIdentifier
+            if (userId == null)
+                return Unauthorized();
 
-                return Ok(new { message = "Password changed successfully" });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var success = await _adminService.ChangePasswordAsync(Guid.Parse(userId), request);
+            return success ? Ok("Password changed successfully.") : BadRequest("Password change failed.");
         }
 
         [Authorize]
