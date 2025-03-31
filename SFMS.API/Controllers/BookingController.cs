@@ -9,7 +9,7 @@ namespace SFMSSolution.API.Controllers
 {
     [Authorize(Policy = "Admin,Owner, Customer")]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/booking")]
     public class BookingController : ControllerBase
     {
         private readonly IBookingService _bookingService;

@@ -7,7 +7,7 @@ using SFMSSolution.Application.Services.FacilityPrices;
 namespace SFMSSolution.API.Controllers
 {
     
-    [Route("api/[controller]")]
+    [Route("api/facilityprice")]
     [ApiController]
     public class FacilityPriceController : ControllerBase
     {

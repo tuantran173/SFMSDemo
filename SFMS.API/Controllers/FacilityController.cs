@@ -7,7 +7,7 @@ using SFMSSolution.Application.Services.Facilities;
 namespace SFMSSolution.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/facility")]
     public class FacilityController : ControllerBase
     {
         private readonly IFacilityService _facilityService;
