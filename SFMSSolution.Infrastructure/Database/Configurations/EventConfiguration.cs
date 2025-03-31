@@ -18,28 +18,43 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.Title)
-                .IsRequired()
-                .HasMaxLength(255);
+                   .IsRequired()
+                   .HasMaxLength(255);
 
             builder.Property(e => e.Description)
-                .HasMaxLength(1000);
+                   .HasMaxLength(1000);
 
-            builder.Property(f => f.Images)
+            builder.Property(e => e.ImageUrl)
                    .HasMaxLength(500);
-            
-            builder.Property(e => e.Status)
-                .IsRequired()
-                .HasMaxLength(50);
 
             builder.Property(e => e.StartTime)
-                .IsRequired();
+                   .IsRequired();
 
             builder.Property(e => e.EndTime)
-                .IsRequired();
+                   .IsRequired();
+
+            builder.Property(e => e.EventType)
+                   .IsRequired()
+                   .HasMaxLength(100);
+
+            builder.Property(e => e.Status)
+                   .IsRequired()
+                   .HasMaxLength(50)
+                   .HasDefaultValue("Scheduled");
+
+            builder.Property(e => e.OwnerId)
+                   .IsRequired();
+
+            builder.HasOne(e => e.Owner)
+                   .WithMany()
+                   .HasForeignKey(e => e.OwnerId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
             builder.Property(e => e.CreatedDate)
-                  .HasColumnType("datetime(6)")
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+                   .HasColumnType("datetime(6)")
+                   .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+
+            builder.Property(e => e.UpdatedDate);
         }
     }
 }

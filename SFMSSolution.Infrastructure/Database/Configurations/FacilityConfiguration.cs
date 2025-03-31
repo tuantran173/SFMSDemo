@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SFMSSolution.Domain.Entities;
+using SFMSSolution.Domain.Enums;
 
 namespace SFMSSolution.Infrastructure.Database.Configurations
 {
@@ -20,21 +21,27 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
             builder.Property(f => f.Description)
                    .HasMaxLength(500);
 
-            builder.Property(f => f.Capacity)
-                   .HasMaxLength(50);
-
             builder.Property(f => f.ImageUrl)
                    .HasMaxLength(500);
 
-            builder.HasOne(f => f.Category)
-                    .WithMany()
-                    .HasForeignKey(f => f.CategoryId);
+            builder.Property(f => f.FacilityType)
+                   .IsRequired()
+                   .HasMaxLength(100); // vì FacilityType là string
+            builder.Property(f => f.Status)
+                   .IsRequired()
+                   .HasDefaultValue(FacilityStatus.Available);
+            builder.Property(f => f.OwnerId)
+                   .IsRequired();
+
+            builder.HasOne(f => f.Owner)
+                   .WithMany() // nếu bạn thêm ICollection<Facility> trong User thì dùng .WithMany(u => u.Facilities)
+                   .HasForeignKey(f => f.OwnerId)
+                   .OnDelete(DeleteBehavior.Restrict); // tránh xóa cascade khi xóa user
 
             builder.Property(f => f.CreatedDate)
-                     .HasColumnType("datetime(6)")
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+                   .HasColumnType("datetime(6)")
+                   .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
-            // Ngày cập nhật: có thể null
             builder.Property(f => f.UpdatedDate);
         }
     }

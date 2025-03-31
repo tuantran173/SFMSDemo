@@ -10,7 +10,6 @@ namespace SFMSSolution.Domain.Entities
 {
     public class Booking: BaseEntity
     {
-        // Ngày đặt (có thể là ngày làm việc)
         public DateTime BookingDate { get; set; }
         // Thời gian bắt đầu và kết thúc của booking
         public DateTime StartTime { get; set; }

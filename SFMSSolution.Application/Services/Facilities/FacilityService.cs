@@ -1,104 +1,123 @@
 ﻿using AutoMapper;
 using SFMSSolution.Application.DataTransferObjects.Facility.Request;
 using SFMSSolution.Application.DataTransferObjects.Facility;
+using SFMSSolution.Application.Services.Facilities;
 using SFMSSolution.Domain.Entities;
-using SFMSSolution.Infrastructure.Implements.Interfaces;
 using SFMSSolution.Infrastructure.Implements.UnitOfWorks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace SFMSSolution.Application.Services.Facilities
+public class FacilityService : IFacilityService
 {
-    public class FacilityService : IFacilityService
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
+
+    public FacilityService(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        _unitOfWork = unitOfWork;
+        _mapper = mapper;
+    }
 
-        public FacilityService(IUnitOfWork unitOfWork, IMapper mapper)
+    public async Task<FacilityDto> GetFacilityAsync(Guid id)
+    {
+        var facility = await _unitOfWork.FacilityRepository.GetFacilityByIdAsync(id); // Sử dụng method có include
+        return _mapper.Map<FacilityDto>(facility);
+    }
+
+    // Get all facilities by owner (for facility owner)
+    public async Task<(IEnumerable<FacilityDto> Facilities, int TotalCount)> GetFacilitiesByOwnerAsync(Guid ownerId, string? name, int pageNumber, int pageSize)
+    {
+        var allFacilities = await _unitOfWork.FacilityRepository.GetFacilitiesWithDetailsAsync();
+
+        var ownerFacilities = allFacilities
+            .Where(f => f.OwnerId == ownerId)
+            .ToList();
+        if (!string.IsNullOrWhiteSpace(name))
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
+            allFacilities = allFacilities.Where(f => f.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
+        }
+        var totalCount = ownerFacilities.Count;
+
+        var pagedFacilities = ownerFacilities
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize);
+
+        return (_mapper.Map<IEnumerable<FacilityDto>>(pagedFacilities), totalCount);
+    }
+
+    // Filter facilities by name (for users)
+    public async Task<(IEnumerable<FacilityDto> Facilities, int TotalCount)> GetAllFacilitiesAsync(string? name, int pageNumber, int pageSize)
+    {
+        var facilities = await _unitOfWork.FacilityRepository.GetFacilitiesWithDetailsAsync();
+
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            facilities = facilities.Where(f => f.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
         }
 
-        public async Task<FacilityDto> GetFacilityAsync(Guid id)
+        var totalCount = facilities.Count();
+
+        var filteredFacilities = facilities
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        return (_mapper.Map<IEnumerable<FacilityDto>>(filteredFacilities), totalCount);
+    }
+
+    public async Task<(IEnumerable<FacilityDto> Facilities, int TotalCount)> FilterFacilitiesAsync(
+    string? name, int pageNumber, int pageSize)
+    {
+        var facilities = await _unitOfWork.FacilityRepository.GetFacilitiesWithDetailsAsync();
+
+        if (!string.IsNullOrWhiteSpace(name))
         {
-            var facility = await _unitOfWork.FacilityRepository.GetByIdAsync(id);
-            return _mapper.Map<FacilityDto>(facility);
+            facilities = facilities.Where(f => f.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
         }
 
-        public async Task<(IEnumerable<FacilityDto> Facilities, int TotalCount)> GetAllFacilitiesAsync(int pageNumber, int pageSize)
-        {
-            var facilities = await _unitOfWork.FacilityRepository.GetAllAsync(pageNumber, pageSize);
-            var totalCount = await _unitOfWork.FacilityRepository.CountAsync();
-            return (_mapper.Map<IEnumerable<FacilityDto>>(facilities), totalCount);
-        }
+        var totalCount = facilities.Count();
 
-        public async Task<(IEnumerable<FacilityDto> Facilities, int TotalCount)> SearchFacilitiesByNameAsync(string name, int pageNumber, int pageSize)
-        {
-            var facilities = await _unitOfWork.FacilityRepository.GetByNameAsync(name, pageNumber, pageSize);
-            var totalCount = await _unitOfWork.FacilityRepository.CountByNameAsync(name);
-            return (_mapper.Map<IEnumerable<FacilityDto>>(facilities), totalCount);
-        }
+        var filteredFacilities = facilities
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
 
-        public async Task<(IEnumerable<FacilityDto> Facilities, int TotalCount)> FilterFacilitiesAsync(
-            Guid? categoryId, string? location, TimeSpan? startTime, TimeSpan? endTime, int pageNumber, int pageSize)
-        {
-            var facilities = await _unitOfWork.FacilityRepository.GetFacilitiesWithDetailsAsync();
+        return (_mapper.Map<IEnumerable<FacilityDto>>(filteredFacilities), totalCount);
+    }
 
-            if (categoryId.HasValue)
-                facilities = facilities.Where(f => f.CategoryId == categoryId.Value);
 
-            if (!string.IsNullOrWhiteSpace(location))
-                facilities = facilities.Where(f => f.Address.Contains(location, StringComparison.OrdinalIgnoreCase));
+    public async Task<bool> CreateFacilityAsync(FacilityCreateRequestDto request)
+    {
+        var facility = _mapper.Map<Facility>(request);
 
-            if (startTime.HasValue && endTime.HasValue)
-            {
-                facilities = facilities.Where(f => f.FacilityTimeSlots.Any(ts =>
-                    ts.StartTime <= startTime.Value && ts.EndTime >= endTime.Value));
-            }
+        // Gán thêm OwnerId nếu cần, ví dụ từ token (nếu bạn truyền từ controller)
+        // facility.OwnerId = currentUserId;
 
-            var filteredFacilities = facilities
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
+        await _unitOfWork.FacilityRepository.AddAsync(facility);
+        await _unitOfWork.CompleteAsync();
+        return true;
+    }
 
-            var totalCount = facilities.Count();
-            return (_mapper.Map<IEnumerable<FacilityDto>>(filteredFacilities), totalCount);
-        }
+    public async Task<bool> UpdateFacilityAsync(FacilityUpdateRequestDto request)
+    {
+        var facility = await _unitOfWork.FacilityRepository.GetFacilityByIdAsync(request.Id);
+        if (facility == null)
+            return false;
 
-        public async Task<bool> CreateFacilityAsync(FacilityCreateRequestDto request)
-        {
-            var facility = _mapper.Map<Facility>(request);
-            await _unitOfWork.FacilityRepository.AddAsync(facility);
-            await _unitOfWork.CompleteAsync();
-            return true;
-        }
+        facility.Name = request.Name;
+        facility.Description = request.Description;
+        facility.Address = request.Address;
+        facility.ImageUrl = request.ImageUrl;
+        facility.FacilityType = request.FacilityType;
+        facility.UpdatedDate = DateTime.UtcNow;
 
-        public async Task<bool> UpdateFacilityAsync(Guid id, FacilityUpdateRequestDto request)
-        {
-            var facility = await _unitOfWork.FacilityRepository.GetByIdAsync(id);
-            if (facility == null)
-                return false;
+        await _unitOfWork.FacilityRepository.UpdateAsync(facility);
+        await _unitOfWork.CompleteAsync();
+        return true;
+    }
 
-            facility.Name = request.Name;
-            facility.Description = request.Description;
-            facility.Address = request.Address;
-            facility.Capacity = request.Capacity;
-            facility.ImageUrl = request.ImageUrl;
-            facility.UpdatedDate = DateTime.UtcNow;
-
-            await _unitOfWork.FacilityRepository.UpdateAsync(facility);
-            await _unitOfWork.CompleteAsync();
-            return true;
-        }
-
-        public async Task<bool> DeleteFacilityAsync(Guid id)
-        {
-            await _unitOfWork.FacilityRepository.DeleteAsync(id);
-            await _unitOfWork.CompleteAsync();
-            return true;
-        }
+    public async Task<bool> DeleteFacilityAsync(Guid id)
+    {
+        await _unitOfWork.FacilityRepository.DeleteAsync(id);
+        await _unitOfWork.CompleteAsync();
+        return true;
     }
 }

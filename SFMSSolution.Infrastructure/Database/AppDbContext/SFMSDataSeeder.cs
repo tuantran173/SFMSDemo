@@ -29,15 +29,15 @@ namespace SFMSSolution.Infrastructure.Database.AppDbContext
             // Ensure the database is created
             await context.Database.MigrateAsync();
 
-            //// Create roles if they don't exist
-            //var roles = new[] { "Admin", "Owner", "Customer" };
-            //foreach (var roleName in roles)
-            //{
-            //    if (!await roleManager.RoleExistsAsync(roleName))
-            //    {
-            //        await roleManager.CreateAsync(new IdentityRole<Guid> { Name = roleName });
-            //    }
-            //}
+            // Create roles if they don't exist
+            var roles = new[] { "Admin", "Owner", "Customer" };
+            foreach (var roleName in roles)
+            {
+                if (!await roleManager.RoleExistsAsync(roleName))
+                {
+                    await roleManager.CreateAsync(new IdentityRole<Guid> { Name = roleName });
+                }
+            }
 
             // Seed users
             var adminUser = new User

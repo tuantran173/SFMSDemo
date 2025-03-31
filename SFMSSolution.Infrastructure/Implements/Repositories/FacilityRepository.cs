@@ -6,7 +6,6 @@ using SFMSSolution.Infrastructure.Implements.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SFMSSolution.Infrastructure.Implements.Repositories
@@ -17,7 +16,7 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
 
         public async Task<Facility?> GetFacilityByIdAsync(Guid id)
         {
-            return await GetByIdWithIncludesAsync(id, f => f.Category, f => f.FacilityTimeSlots);
+            return await GetByIdWithIncludesAsync(id, f => f.FacilityTimeSlots, f => f.Owner);
         }
 
         public async Task<IEnumerable<Facility>> GetAllFacilitiesAsync(int? pageNumber = null, int? pageSize = null)
@@ -27,7 +26,7 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
 
         public async Task<IEnumerable<Facility>> GetFacilitiesWithDetailsAsync(int? pageNumber = null, int? pageSize = null)
         {
-            return await GetAllWithIncludesAsync(pageNumber, pageSize, f => f.Category, f => f.FacilityTimeSlots);
+            return await GetAllWithIncludesAsync(pageNumber, pageSize, f => f.FacilityTimeSlots, f => f.Owner);
         }
 
         public async Task<IEnumerable<Facility>> GetFacilitiesByNameAsync(string name, int? pageNumber = null, int? pageSize = null)

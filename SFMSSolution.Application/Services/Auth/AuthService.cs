@@ -92,7 +92,7 @@ namespace SFMSSolution.Application.Services.Auth
 
             var newUser = new User
             {
-                UserName = request.UserName.ToLower(),
+                UserName = request.UserName,
                 Email = request.Email.ToLower(),
                 Phone = request.Phone,
                 FullName = request.FullName,

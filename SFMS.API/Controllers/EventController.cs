@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using SFMSSolution.Application.DataTransferObjects.Event.Request;
 using SFMSSolution.Application.Services.Events;
+using System.Security.Claims;
 
 namespace SFMSSolution.API.Controllers
 {
-    
     [ApiController]
     [Route("api/event")]
     public class EventController : ControllerBase
@@ -19,71 +19,60 @@ namespace SFMSSolution.API.Controllers
 
         [AllowAnonymous]
         [HttpGet("get-event-by-id/{id:Guid}")]
-        public async Task<IActionResult> GetEvent(Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
-            var ev = await _eventService.GetEventByIdAsync(id);
-            if (ev == null)
-                return NotFound(new { message = "Event not found." });
-
-            return Ok(ev);
+            var result = await _eventService.GetEventByIdAsync(id);
+            return result == null ? NotFound("Event not found.") : Ok(result);
         }
 
         [AllowAnonymous]
         [HttpGet("get-all-events")]
-        public async Task<IActionResult> GetAllEvents([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAll([FromQuery] string? title, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var (events, totalCount) = await _eventService.GetAllEventsAsync(pageNumber, pageSize);
-            return Ok(new { TotalCount = totalCount, Events = events });
+            var (events, total) = await _eventService.GetAllEventsAsync(title, pageNumber, pageSize);
+            return Ok(new { Data = events, TotalCount = total, CurrentPage = pageNumber, PageSize = pageSize });
         }
 
-        [Authorize(Policy = "Admin, Owner")]
+        [Authorize(Policy = "Admin,Owner")]
+        [HttpGet("get-events-by-owner")]
+        public async Task<IActionResult> GetByOwner([FromQuery] string? title, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            var ownerIdStr = User.FindFirstValue("sub");
+            if (!Guid.TryParse(ownerIdStr, out var ownerId))
+                return Unauthorized("Invalid token");
+
+            var (events, total) = await _eventService.GetEventsByOwnerAsync(ownerId, title, pageNumber, pageSize);
+            return Ok(new { Data = events, TotalCount = total, CurrentPage = pageNumber, PageSize = pageSize });
+        }
+
+        [Authorize(Policy = "Admin,Owner")]
         [HttpPost("create-event")]
-        public async Task<IActionResult> CreateEvent([FromBody] EventCreateRequestDto request)
+        public async Task<IActionResult> Create([FromBody] EventCreateRequestDto request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            var ownerIdStr = User.FindFirstValue("sub");
+            if (!Guid.TryParse(ownerIdStr, out var ownerId))
+                return Unauthorized("Invalid token");
 
-            var result = await _eventService.CreateEventAsync(request);
-            if (!result)
-                return BadRequest(new { message = "Failed to create event." });
+            request.OwnerId = ownerId;
 
-            return Ok(new { message = "Event created successfully." });
+            var success = await _eventService.CreateEventAsync(request);
+            return success ? Ok("Event created.") : BadRequest("Failed to create event.");
         }
 
-        [Authorize(Policy = "Admin, Owner")]
-        [HttpPut("update-event/{id:Guid}")]
-        public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] EventUpdateRequestDto request)
+        [Authorize(Policy = "Admin,Owner")]
+        [HttpPut("update-event")]
+        public async Task<IActionResult> Update([FromBody] EventUpdateRequestDto request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var result = await _eventService.UpdateEventAsync(id, request);
-            if (!result)
-                return BadRequest(new { message = "Failed to update event." });
-
-            return Ok(new { message = "Event updated successfully." });
+            var success = await _eventService.UpdateEventAsync(request);
+            return success ? Ok("Event updated.") : NotFound("Event not found or update failed.");
         }
 
-        [Authorize(Policy = "Admin, Owner")]
-        [HttpDelete("delete/event{id:Guid}")]
-        public async Task<IActionResult> DeleteEvent(Guid id)
+        [Authorize(Policy = "Admin,Owner")]
+        [HttpDelete("delete-event/{id:Guid}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _eventService.DeleteEventAsync(id);
-            if (!result)
-                return BadRequest(new { message = "Failed to delete event." });
-
-            return Ok(new { message = "Event deleted successfully." });
-        }
-
-        [AllowAnonymous]
-        [HttpGet("search-event")]
-        public async Task<IActionResult> SearchEvents(
-            [FromQuery] string title,
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10)
-        {
-            var (events, totalCount) = await _eventService.SearchEventsByTitleAsync(title, pageNumber, pageSize);
-            return Ok(new { TotalCount = totalCount, Events = events });
+            var success = await _eventService.DeleteEventAsync(id);
+            return success ? Ok("Event deleted.") : NotFound("Event not found or delete failed.");
         }
     }
 }

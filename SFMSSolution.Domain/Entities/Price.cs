@@ -9,10 +9,7 @@ namespace SFMSSolution.Domain.Entities
 {
     public class Price: BaseEntity
     {
-        public Guid CategoryId { get; set; } // Khóa ngoại tham chiếu đến Category
         public decimal BasePrice { get; set; } // Giá cơ bản
-
-        // Navigation Property
-        public Category Category { get; set; }
+        public string FacilityType { get; set; } = string.Empty;
     }
 }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SFMSSolution.Domain.Enums;
+using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFMSSolution.Application.DataTransferObjects.Facility.Request
 {
@@ -15,12 +12,11 @@ namespace SFMSSolution.Application.DataTransferObjects.Facility.Request
 
         public string Address { get; set; } = string.Empty;
 
-        [Required]
-        [Range(0, int.MaxValue)]
-        public int Capacity { get; set; } 
+        public string ImageUrl { get; set; } = string.Empty;
 
-        public string ImageỦrl { get; set; } = string.Empty;
-        public Guid CategoryId { get; set; }
+        public string FacilityType { get; set; } = string.Empty;
+
+        public Guid OwnerId { get; set; }
+        public FacilityStatus Status { get; set; } = FacilityStatus.Available;
     }
-
 }

@@ -3,11 +3,6 @@ using SFMSSolution.Application.DataTransferObjects.Event.Request;
 using SFMSSolution.Application.DataTransferObjects.Event;
 using SFMSSolution.Domain.Entities;
 using SFMSSolution.Infrastructure.Implements.UnitOfWorks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFMSSolution.Application.Services.Events
 {
@@ -28,21 +23,45 @@ namespace SFMSSolution.Application.Services.Events
             return ev == null ? null : _mapper.Map<EventDto>(ev);
         }
 
-        public async Task<(List<EventDto> Events, int TotalCount)> GetAllEventsAsync(int pageNumber, int pageSize)
+        public async Task<(IEnumerable<EventDto> Events, int TotalCount)> GetAllEventsAsync(string? title, int pageNumber, int pageSize)
         {
-            var events = await _unitOfWork.EventRepository.GetAllAsync(pageNumber, pageSize);
-            var totalCount = await _unitOfWork.EventRepository.CountAsync();
+            var allEvents = await _unitOfWork.EventRepository.GetAllAsync();
 
-            var mappedEvents = _mapper.Map<List<EventDto>>(events);
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                allEvents = allEvents.Where(e => e.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var totalCount = allEvents.Count();
+
+            var pagedEvents = allEvents
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var mappedEvents = _mapper.Map<IEnumerable<EventDto>>(pagedEvents);
             return (mappedEvents, totalCount);
         }
 
-        public async Task<(List<EventDto> Events, int TotalCount)> SearchEventsByTitleAsync(string title, int pageNumber, int pageSize)
+        public async Task<(IEnumerable<EventDto> Events, int TotalCount)> GetEventsByOwnerAsync(Guid ownerId, string? title, int pageNumber, int pageSize)
         {
-            var events = await _unitOfWork.EventRepository.SearchEventsByTitleAsync(title, pageNumber, pageSize);
-            var totalCount = await _unitOfWork.EventRepository.CountEventsByTitleAsync(title);
+            var allEvents = await _unitOfWork.EventRepository.GetAllAsync();
 
-            var mappedEvents = _mapper.Map<List<EventDto>>(events);
+            var ownerEvents = allEvents.Where(e => e.OwnerId == ownerId);
+
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                ownerEvents = ownerEvents.Where(e => e.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var totalCount = ownerEvents.Count();
+
+            var pagedEvents = ownerEvents
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var mappedEvents = _mapper.Map<IEnumerable<EventDto>>(pagedEvents);
             return (mappedEvents, totalCount);
         }
 
@@ -56,14 +75,13 @@ namespace SFMSSolution.Application.Services.Events
             return true;
         }
 
-        public async Task<bool> UpdateEventAsync(Guid id, EventUpdateRequestDto request)
+        public async Task<bool> UpdateEventAsync(EventUpdateRequestDto request)
         {
-            var existingEvent = await _unitOfWork.EventRepository.GetByIdAsync(id);
+            var existingEvent = await _unitOfWork.EventRepository.GetByIdAsync(request.Id);
             if (existingEvent == null)
                 return false;
 
             _mapper.Map(request, existingEvent);
-
             await _unitOfWork.EventRepository.UpdateAsync(existingEvent);
             await _unitOfWork.CompleteAsync();
 
@@ -74,7 +92,6 @@ namespace SFMSSolution.Application.Services.Events
         {
             await _unitOfWork.EventRepository.DeleteAsync(id);
             await _unitOfWork.CompleteAsync();
-
             return true;
         }
     }

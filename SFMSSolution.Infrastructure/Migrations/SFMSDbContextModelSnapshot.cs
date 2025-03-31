@@ -441,21 +441,21 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("a1234567-1234-1234-1234-1234567890ab"),
-                            CreatedDate = new DateTime(2025, 3, 30, 13, 32, 15, 213, DateTimeKind.Utc).AddTicks(573),
+                            CreatedDate = new DateTime(2025, 3, 31, 21, 7, 2, 556, DateTimeKind.Utc).AddTicks(2500),
                             Description = "Sân bóng đá 5-a-side, 7-a-side, 11-a-side",
                             Name = "Sân bóng"
                         },
                         new
                         {
                             Id = new Guid("b1234567-1234-1234-1234-1234567890bc"),
-                            CreatedDate = new DateTime(2025, 3, 30, 13, 32, 15, 213, DateTimeKind.Utc).AddTicks(575),
+                            CreatedDate = new DateTime(2025, 3, 31, 21, 7, 2, 556, DateTimeKind.Utc).AddTicks(2502),
                             Description = "Sân cầu lông đơn và đôi",
                             Name = "Sân cầu lông"
                         },
                         new
                         {
                             Id = new Guid("c1234567-1234-1234-1234-1234567890cd"),
-                            CreatedDate = new DateTime(2025, 3, 30, 13, 32, 15, 213, DateTimeKind.Utc).AddTicks(576),
+                            CreatedDate = new DateTime(2025, 3, 31, 21, 7, 2, 556, DateTimeKind.Utc).AddTicks(2503),
                             Description = "Sân Pickleball chuẩn quốc tế",
                             Name = "Sân Pickleball"
                         });
@@ -518,18 +518,28 @@ namespace SFMSSolution.Infrastructure.Migrations
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Images")
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Status")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("varchar(50)")
+                        .HasDefaultValue("Scheduled");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -543,6 +553,8 @@ namespace SFMSSolution.Infrastructure.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Events", (string)null);
                 });
@@ -558,13 +570,6 @@ namespace SFMSSolution.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<int>("Capacity")
-                        .HasMaxLength(50)
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("char(36)");
-
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("char(36)");
 
@@ -578,6 +583,11 @@ namespace SFMSSolution.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
+                    b.Property<string>("FacilityType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -588,6 +598,14 @@ namespace SFMSSolution.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("char(36)");
 
@@ -596,7 +614,7 @@ namespace SFMSSolution.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Facilities");
 
@@ -605,23 +623,25 @@ namespace SFMSSolution.Infrastructure.Migrations
                         {
                             Id = new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"),
                             Address = "Thạch Thất, Hòa Lạc",
-                            Capacity = 10,
-                            CategoryId = new Guid("a1234567-1234-1234-1234-1234567890ab"),
-                            CreatedDate = new DateTime(2025, 3, 30, 13, 32, 15, 213, DateTimeKind.Utc).AddTicks(721),
+                            CreatedDate = new DateTime(2025, 3, 31, 21, 7, 2, 556, DateTimeKind.Utc).AddTicks(2586),
                             Description = "Sân bóng đá 5 người",
+                            FacilityType = "Football",
                             ImageUrl = "image1.jpg",
-                            Name = "Football Field 5-a-side"
+                            Name = "Football Field 5-a-side",
+                            OwnerId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Status = 1
                         },
                         new
                         {
                             Id = new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"),
                             Address = "Thạch Thất, Hòa Lạc",
-                            Capacity = 4,
-                            CategoryId = new Guid("b1234567-1234-1234-1234-1234567890bc"),
-                            CreatedDate = new DateTime(2025, 3, 30, 13, 32, 15, 213, DateTimeKind.Utc).AddTicks(724),
+                            CreatedDate = new DateTime(2025, 3, 31, 21, 7, 2, 556, DateTimeKind.Utc).AddTicks(2588),
                             Description = "Sân cầu lông đơn/đôi",
+                            FacilityType = "Badminton",
                             ImageUrl = "image2.jpg",
-                            Name = "Badminton Court 1"
+                            Name = "Badminton Court 1",
+                            OwnerId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Status = 1
                         });
                 });
 
@@ -704,7 +724,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("1b05b57c-6d02-4c06-b0b5-a96139825346"),
-                            CreatedDate = new DateTime(2025, 3, 30, 13, 32, 15, 213, DateTimeKind.Utc).AddTicks(854),
+                            CreatedDate = new DateTime(2025, 3, 31, 21, 7, 2, 556, DateTimeKind.Utc).AddTicks(2644),
                             EndTime = new TimeSpan(0, 9, 30, 0, 0),
                             FacilityId = new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"),
                             IsWeekend = false,
@@ -713,7 +733,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("907b662c-5a2c-4a90-b96b-81b603b27e57"),
-                            CreatedDate = new DateTime(2025, 3, 30, 13, 32, 15, 213, DateTimeKind.Utc).AddTicks(856),
+                            CreatedDate = new DateTime(2025, 3, 31, 21, 7, 2, 556, DateTimeKind.Utc).AddTicks(2646),
                             EndTime = new TimeSpan(0, 11, 0, 0, 0),
                             FacilityId = new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"),
                             IsWeekend = false,
@@ -722,7 +742,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("1a2c6a93-97cd-4493-a1fc-9b5819ac6e17"),
-                            CreatedDate = new DateTime(2025, 3, 30, 13, 32, 15, 213, DateTimeKind.Utc).AddTicks(858),
+                            CreatedDate = new DateTime(2025, 3, 31, 21, 7, 2, 556, DateTimeKind.Utc).AddTicks(2647),
                             EndTime = new TimeSpan(0, 12, 30, 0, 0),
                             FacilityId = new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"),
                             IsWeekend = false,
@@ -731,7 +751,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("d75d092a-7da6-4cc3-88c9-69ac5c82652c"),
-                            CreatedDate = new DateTime(2025, 3, 30, 13, 32, 15, 213, DateTimeKind.Utc).AddTicks(859),
+                            CreatedDate = new DateTime(2025, 3, 31, 21, 7, 2, 556, DateTimeKind.Utc).AddTicks(2649),
                             EndTime = new TimeSpan(0, 15, 30, 0, 0),
                             FacilityId = new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"),
                             IsWeekend = false,
@@ -740,7 +760,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("1b7ea0d1-c743-47d7-b3f1-02860dbd9806"),
-                            CreatedDate = new DateTime(2025, 3, 30, 13, 32, 15, 213, DateTimeKind.Utc).AddTicks(861),
+                            CreatedDate = new DateTime(2025, 3, 31, 21, 7, 2, 556, DateTimeKind.Utc).AddTicks(2650),
                             EndTime = new TimeSpan(0, 17, 0, 0, 0),
                             FacilityId = new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"),
                             IsWeekend = false,
@@ -749,7 +769,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("bb9299e1-518a-4730-9797-6ec37c5dd03f"),
-                            CreatedDate = new DateTime(2025, 3, 30, 13, 32, 15, 213, DateTimeKind.Utc).AddTicks(862),
+                            CreatedDate = new DateTime(2025, 3, 31, 21, 7, 2, 556, DateTimeKind.Utc).AddTicks(2651),
                             EndTime = new TimeSpan(0, 9, 30, 0, 0),
                             FacilityId = new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"),
                             IsWeekend = false,
@@ -758,7 +778,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("b03366d1-b1cc-4c0e-8e61-6fff1651755d"),
-                            CreatedDate = new DateTime(2025, 3, 30, 13, 32, 15, 213, DateTimeKind.Utc).AddTicks(864),
+                            CreatedDate = new DateTime(2025, 3, 31, 21, 7, 2, 556, DateTimeKind.Utc).AddTicks(2653),
                             EndTime = new TimeSpan(0, 11, 0, 0, 0),
                             FacilityId = new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"),
                             IsWeekend = false,
@@ -767,7 +787,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("ffa61f3b-58a0-4881-ae97-61332f81fc4f"),
-                            CreatedDate = new DateTime(2025, 3, 30, 13, 32, 15, 213, DateTimeKind.Utc).AddTicks(865),
+                            CreatedDate = new DateTime(2025, 3, 31, 21, 7, 2, 556, DateTimeKind.Utc).AddTicks(2654),
                             EndTime = new TimeSpan(0, 12, 30, 0, 0),
                             FacilityId = new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"),
                             IsWeekend = false,
@@ -784,14 +804,18 @@ namespace SFMSSolution.Infrastructure.Migrations
                     b.Property<decimal>("BasePrice")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("char(36)");
-
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+
+                    b.Property<string>("FacilityType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("char(36)");
@@ -801,24 +825,22 @@ namespace SFMSSolution.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
-
                     b.ToTable("Prices", (string)null);
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("271537a2-759a-4a8b-82b1-f1278e6a8c1e"),
+                            Id = new Guid("8c332de9-4a28-4e6d-89f6-e9a8e14aeb8d"),
                             BasePrice = 400000m,
-                            CategoryId = new Guid("a1234567-1234-1234-1234-1234567890ab"),
-                            CreatedDate = new DateTime(2025, 3, 30, 13, 32, 15, 213, DateTimeKind.Utc).AddTicks(816)
+                            CreatedDate = new DateTime(2025, 3, 31, 21, 7, 2, 556, DateTimeKind.Utc).AddTicks(2615),
+                            FacilityType = "Sân bóng đá"
                         },
                         new
                         {
-                            Id = new Guid("c04462a8-2cf2-41e7-a607-59c1c3a37600"),
+                            Id = new Guid("b6fb9130-8f57-4a58-9742-c17528703448"),
                             BasePrice = 200000m,
-                            CategoryId = new Guid("b1234567-1234-1234-1234-1234567890bc"),
-                            CreatedDate = new DateTime(2025, 3, 30, 13, 32, 15, 213, DateTimeKind.Utc).AddTicks(818)
+                            CreatedDate = new DateTime(2025, 3, 31, 21, 7, 2, 556, DateTimeKind.Utc).AddTicks(2617),
+                            FacilityType = "Sân cầu lông"
                         });
                 });
 
@@ -917,6 +939,30 @@ namespace SFMSSolution.Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("Users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            AccessFailedCount = 0,
+                            Address = "",
+                            AvatarUrl = "",
+                            Birthday = new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ConcurrencyStamp = "5fc056dd-af52-4012-a23e-81bab59493ff",
+                            Email = "owner@example.com",
+                            EmailConfirmed = true,
+                            FullName = "Facility Owner",
+                            Gender = 1,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "OWNER@EXAMPLE.COM",
+                            NormalizedUserName = "OWNER",
+                            PasswordHash = "Trantuan_2003",
+                            Phone = "",
+                            PhoneNumberConfirmed = false,
+                            Status = 1,
+                            TwoFactorEnabled = false,
+                            UserName = "owner"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -1013,15 +1059,26 @@ namespace SFMSSolution.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SFMSSolution.Domain.Entities.Facility", b =>
+            modelBuilder.Entity("SFMSSolution.Domain.Entities.Event", b =>
                 {
-                    b.HasOne("SFMSSolution.Domain.Entities.Category", "Category")
+                    b.HasOne("SFMSSolution.Domain.Entities.User", "Owner")
                         .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Category");
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("SFMSSolution.Domain.Entities.Facility", b =>
+                {
+                    b.HasOne("SFMSSolution.Domain.Entities.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("SFMSSolution.Domain.Entities.FacilityPrice", b =>
@@ -1048,17 +1105,6 @@ namespace SFMSSolution.Infrastructure.Migrations
                         .HasForeignKey("FacilityId1");
 
                     b.Navigation("Facility");
-                });
-
-            modelBuilder.Entity("SFMSSolution.Domain.Entities.Price", b =>
-                {
-                    b.HasOne("SFMSSolution.Domain.Entities.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreApplication", b =>

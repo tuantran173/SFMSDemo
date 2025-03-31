@@ -12,12 +12,9 @@ namespace SFMSSolution.Application.Extensions.Validations
     {
         public FacilityUpdateRequestDtoValidator()
         {
-            RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Name is required.")
-                .MaximumLength(100).WithMessage("Name cannot exceed 100 characters.");
-
-            RuleFor(x => x.Description)
-                .NotEmpty().WithMessage("Description is required.");
+            RuleFor(x => x.Id).NotEmpty().WithMessage("Facility ID is required.");
+            RuleFor(x => x.Name).NotEmpty().WithMessage("Facility name is required.");
+            RuleFor(x => x.FacilityType).NotEmpty().WithMessage("Facility type is required.");
         }
     }
 }

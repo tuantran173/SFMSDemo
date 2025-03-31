@@ -10,8 +10,23 @@ namespace SFMSSolution.Infrastructure.Database.SFMSDbContext
     {
         public static void Seed(ModelBuilder modelBuilder)
         {
-            
-           
+            var ownerId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+
+            modelBuilder.Entity<User>().HasData(new User
+            {
+                Id = ownerId,
+                FullName = "Facility Owner",
+                Email = "owner@example.com",
+                UserName = "owner",
+                NormalizedUserName = "OWNER",
+                NormalizedEmail = "OWNER@EXAMPLE.COM",
+                PasswordHash = "Trantuan_2003", // hoặc để trống nếu chưa dùng auth
+                EmailConfirmed = true,
+                Status = EntityStatus.Active,
+                Gender = Gender.Male,
+                Birthday = new DateTime(1990, 1, 1)
+            });
+
             // Khai báo ID cho các Category
             var footballFieldId = Guid.Parse("A1234567-1234-1234-1234-1234567890AB");
             var badmintonCourtId = Guid.Parse("B1234567-1234-1234-1234-1234567890BC");
@@ -42,7 +57,6 @@ namespace SFMSSolution.Infrastructure.Database.SFMSDbContext
                 }
             );
 
-            // Seed dữ liệu cho bảng Facilities (Sân thể thao)
             var facility1Id = Guid.Parse("f34c777a-fa4b-4ed1-bc22-29570a01d7d9");
             var facility2Id = Guid.Parse("9eefd023-7cc3-428f-b96d-3e0430394391");
 
@@ -53,9 +67,10 @@ namespace SFMSSolution.Infrastructure.Database.SFMSDbContext
                     Name = "Football Field 5-a-side",
                     Address = "Thạch Thất, Hòa Lạc",
                     Description = "Sân bóng đá 5 người",
-                    Capacity = 10,
                     ImageUrl = "image1.jpg",
-                    CategoryId = footballFieldId,
+                    FacilityType = "Football",
+                    OwnerId = ownerId,
+                    Status = FacilityStatus.Available,
                     CreatedDate = DateTime.UtcNow
                 },
                 new Facility
@@ -64,13 +79,13 @@ namespace SFMSSolution.Infrastructure.Database.SFMSDbContext
                     Name = "Badminton Court 1",
                     Address = "Thạch Thất, Hòa Lạc",
                     Description = "Sân cầu lông đơn/đôi",
-                    Capacity = 4,
                     ImageUrl = "image2.jpg",
-                    CategoryId = badmintonCourtId,
+                    FacilityType = "Badminton",
+                    OwnerId = ownerId,
+                    Status = FacilityStatus.Available,
                     CreatedDate = DateTime.UtcNow
                 }
             );
-
             // Seed dữ liệu cho bảng Price (Giá cơ bản cho từng loại sân)
             var price1Id = Guid.NewGuid();
             var price2Id = Guid.NewGuid();
@@ -79,14 +94,14 @@ namespace SFMSSolution.Infrastructure.Database.SFMSDbContext
                 new Price
                 {
                     Id = price1Id,
-                    CategoryId = footballFieldId,
+                    FacilityType = "Sân bóng đá",
                     BasePrice = 400000,
                     CreatedDate = DateTime.UtcNow
                 },
                 new Price
                 {
                     Id = price2Id,
-                    CategoryId = badmintonCourtId,
+                    FacilityType = "Sân cầu lông",
                     BasePrice = 200000,
                     CreatedDate = DateTime.UtcNow
                 }

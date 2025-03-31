@@ -18,8 +18,6 @@ namespace SFMSSolution.Application.Extensions.Validations
             RuleFor(x => x.Coefficient)
                 .GreaterThan(0).WithMessage("Coefficient must be greater than zero.");
 
-            RuleFor(x => x.FinalPrice)
-                .GreaterThan(0).WithMessage("Final Price must be greater than zero.");
         }
     }
 }

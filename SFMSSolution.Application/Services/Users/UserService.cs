@@ -13,6 +13,8 @@ using SFMSSolution.Domain.Entities;
 using SFMSSolution.Application.DataTransferObjects.User.Request;
 using SFMSSolution.Application.DataTransferObjects.User;
 using Microsoft.AspNetCore.Http;
+using SFMSSolution.Response;
+using System.Security.Claims;
 
 namespace SFMSSolution.Application.Services.Admin
 {
@@ -156,25 +158,29 @@ namespace SFMSSolution.Application.Services.Admin
             return true;
         }
 
-        public async Task<bool> ChangePasswordAsync(Guid userId, ChangePasswordRequestDto request)
+        public async Task<ApiResponse<string>> ChangePasswordAsync(ChangePasswordRequestDto request)
         {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user == null)
-                throw new Exception("User not found");
+            var userId = _httpContextAccessor.HttpContext?.User?.FindFirst("sub")?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return new ApiResponse<string>("User is not authenticated.");
 
-            var isCorrect = await _userManager.CheckPasswordAsync(user, request.OldPassword);
-            if (!isCorrect)
-                throw new Exception("Current password is incorrect.");
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return new ApiResponse<string>("User not found.");
+
+            if (!await _userManager.CheckPasswordAsync(user, request.OldPassword))
+                return new ApiResponse<string>("Current password is incorrect.");
 
             if (request.NewPassword != request.ConfirmedPassword)
-                throw new Exception("New password and confirmation do not match.");
+                return new ApiResponse<string>("New password and confirmation do not match.");
 
             var result = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
             if (!result.Succeeded)
-                throw new Exception("Password change failed: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+                return new ApiResponse<string>("Password change failed: " + string.Join(", ", result.Errors.Select(e => e.Description)));
 
-            return true;
+            return new ApiResponse<string>(string.Empty, "Password changed successfully.");
         }
+
 
         public async Task<bool> ChangeEmailAsync(ChangeEmailRequestDto request)
         {

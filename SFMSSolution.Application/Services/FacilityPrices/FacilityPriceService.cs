@@ -4,9 +4,9 @@ using SFMSSolution.Application.DataTransferObjects.FacilityPrice;
 using SFMSSolution.Application.Services.FacilityPrices;
 using SFMSSolution.Domain.Entities;
 using SFMSSolution.Infrastructure.Implements.UnitOfWorks;
+
 namespace SFMSSolution.Application.Services
 {
-
     public class FacilityPriceService : IFacilityPriceService
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -20,14 +20,23 @@ namespace SFMSSolution.Application.Services
 
         public async Task<bool> AddOrUpdatePriceAsync(FacilityPriceCreateRequestDto request)
         {
-            // Tìm giá cơ bản theo CategoryId
-            var basePriceEntity = await _unitOfWork.PriceRepository.GetByCategoryIdAsync(request.CategoryId);
-            if (basePriceEntity == null) return false;
+            // Lấy TimeSlot kèm Facility
+            var timeSlot = await _unitOfWork.FacilityTimeSlotRepository
+                .FindFirstOrDefaultAsync(ts => ts.Id == request.FacilityTimeSlotId, include => include.Facility);
 
-            // Tính toán giá cuối cùng
+            if (timeSlot == null || timeSlot.Facility == null)
+                return false;
+
+            var facilityType = timeSlot.Facility.FacilityType;
+
+            // Lấy giá cơ bản theo FacilityType
+            var basePriceEntity = await _unitOfWork.PriceRepository.GetByFacilityTypeAsync(facilityType);
+            if (basePriceEntity == null)
+                return false;
+
             var finalPrice = basePriceEntity.BasePrice * request.Coefficient;
 
-            // Kiểm tra xem FacilityPrice đã tồn tại cho FacilityTimeSlotId hay chưa
+            // Kiểm tra xem FacilityPrice đã tồn tại
             var existingFacilityPrice = await _unitOfWork.FacilityPriceRepository
                 .FindAsync(fp => fp.FacilityTimeSlotId == request.FacilityTimeSlotId);
 
@@ -35,7 +44,6 @@ namespace SFMSSolution.Application.Services
 
             if (facilityPrice == null)
             {
-                // Tạo mới
                 facilityPrice = _mapper.Map<FacilityPrice>(request);
                 facilityPrice.FinalPrice = finalPrice;
 
@@ -43,7 +51,6 @@ namespace SFMSSolution.Application.Services
             }
             else
             {
-                // Cập nhật
                 facilityPrice.Coefficient = request.Coefficient;
                 facilityPrice.FinalPrice = finalPrice;
 
@@ -56,7 +63,9 @@ namespace SFMSSolution.Application.Services
 
         public async Task<List<FacilityPriceDto>> GetPricesByTimeSlotAsync(Guid facilityTimeSlotId)
         {
-            var facilityPrices = await _unitOfWork.FacilityPriceRepository.GetByFacilityTimeSlotIdAsync(facilityTimeSlotId);
+            var facilityPrices = await _unitOfWork.FacilityPriceRepository
+                .GetByFacilityTimeSlotIdAsync(facilityTimeSlotId);
+
             return _mapper.Map<List<FacilityPriceDto>>(facilityPrices);
         }
     }

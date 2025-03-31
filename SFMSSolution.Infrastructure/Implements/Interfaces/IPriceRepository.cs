@@ -10,6 +10,6 @@ namespace SFMSSolution.Infrastructure.Implements.Interfaces
 {
     public interface IPriceRepository : IGenericRepository<Price>
     {
-        Task<Price?> GetByCategoryIdAsync(Guid categoryId);
+        Task<Price?> GetByFacilityTypeAsync(string facilityType);
     }
 }

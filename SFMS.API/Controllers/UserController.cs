@@ -109,12 +109,12 @@ namespace SFMSSolution.API.Controllers
         [HttpPut("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDto request)
         {
-            var userId = User.FindFirst("sub")?.Value; // or ClaimTypes.NameIdentifier
-            if (userId == null)
-                return Unauthorized();
+            var result = await _adminService.ChangePasswordAsync(request);
 
-            var success = await _adminService.ChangePasswordAsync(Guid.Parse(userId), request);
-            return success ? Ok("Password changed successfully.") : BadRequest("Password change failed.");
+            if (!result.Success)
+                return BadRequest(new { message = result.Message });
+
+            return Ok(new { message = result.Message });
         }
 
         [Authorize]

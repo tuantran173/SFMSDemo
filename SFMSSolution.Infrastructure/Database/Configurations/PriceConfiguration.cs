@@ -17,14 +17,19 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
 
             builder.HasKey(p => p.Id);
 
-            builder.Property(p => p.BasePrice)
+            builder.Property(p => p.FacilityType)
                    .IsRequired()
-                   .HasColumnType("decimal(18,2)");
+                   .HasMaxLength(100);
 
-            builder.HasOne(p => p.Category)
-                   .WithMany()
-                   .HasForeignKey(p => p.CategoryId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder.Property(p => p.BasePrice)
+                   .HasColumnType("decimal(18,2)")
+                   .IsRequired();
+
+            builder.Property(p => p.CreatedDate)
+                   .HasColumnType("datetime(6)")
+                   .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+
+            builder.Property(p => p.UpdatedDate);
         }
     }
 }

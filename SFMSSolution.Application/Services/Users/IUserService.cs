@@ -9,6 +9,8 @@ using SFMSSolution.Application.DataTransferObjects.User.Request;
 using Microsoft.AspNetCore.Identity;
 using SFMSSolution.Domain.Enums;
 using SFMSSolution.Application.DataTransferObjects.User;
+using SFMSSolution.Response;
+using System.Security.Claims;
 
 namespace SFMSSolution.Application.Services.Admin
 {
@@ -28,7 +30,7 @@ namespace SFMSSolution.Application.Services.Admin
         Task<UserDto> GetUserProfileAsync();
         Task<bool> DisableUserAsync(Guid userId);
         Task<bool> ActivateUserAsync(Guid userId);
-        Task<bool> ChangePasswordAsync(Guid userId, ChangePasswordRequestDto request);
+        Task<ApiResponse<string>> ChangePasswordAsync(ChangePasswordRequestDto request);
         Task<bool> ChangeEmailAsync(ChangeEmailRequestDto request);
         Task<bool> CheckPasswordAsync(CheckPasswordRequestDto request);
     }

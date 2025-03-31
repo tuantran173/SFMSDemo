@@ -104,7 +104,7 @@ builder.Services.AddOpenIddict()
                 // options.EnableTokenEntryValidation
             })
             ;
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers()
     .AddFluentValidation(fv =>
     {

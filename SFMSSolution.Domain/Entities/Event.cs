@@ -12,10 +12,14 @@ namespace SFMSSolution.Domain.Entities
     {
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public string Images { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
         public DateTime StartTime { get; set; }
 
         public DateTime EndTime { get; set; }
+        public string EventType { get; set; }
+
+        public Guid OwnerId { get; set; }                      // FK
+        public User Owner { get; set; }
 
         // Trạng thái của event, ví dụ: "Scheduled", "Ongoing", "Completed", "Cancelled"
         public string Status { get; set; } = "Scheduled";
