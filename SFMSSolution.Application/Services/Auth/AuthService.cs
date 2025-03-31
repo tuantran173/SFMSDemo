@@ -69,14 +69,32 @@ namespace SFMSSolution.Application.Services.Auth
             if (!string.Equals(request.Password, request.ConfirmPassword))
                 return new ApiResponse<string>("Password and Confirm Password do not match.");
 
-            var existingUser = await _userManager.FindByEmailAsync(request.Email.ToLower());
-            if (existingUser != null)
+
+            var email = request.Email.ToLower();
+            var username = request.UserName.ToLower();
+            var phone = request.Phone;
+
+            // Check trùng email
+            var existingEmailUser = await _userManager.FindByEmailAsync(email);
+            if (existingEmailUser != null)
                 return new ApiResponse<string>("User with this email already exists.");
+
+            // Check trùng username
+            var existingUserNameUser = await _userManager.FindByNameAsync(username);
+            if (existingUserNameUser != null)
+                return new ApiResponse<string>("User with this username already exists.");
+
+            // Check trùng số điện thoại
+            var existingPhoneUser = _userManager.Users.FirstOrDefault(u => u.PhoneNumber == phone);
+            if (existingPhoneUser != null)
+                return new ApiResponse<string>("User with this phone number already exists.");
+
 
             var newUser = new User
             {
-                UserName = request.Email.ToLower(),
+                UserName = request.UserName.ToLower(),
                 Email = request.Email.ToLower(),
+                Phone = request.Phone,
                 FullName = request.FullName,
                 Status = EntityStatus.Active
             };

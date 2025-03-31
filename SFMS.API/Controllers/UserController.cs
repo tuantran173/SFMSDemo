@@ -58,10 +58,11 @@ namespace SFMSSolution.API.Controllers
         //}
 
         [HttpPost("update-account/{userId:Guid}")]
-        public async Task<IActionResult> UpdateAccount([FromQuery] string role)
+        public async Task<IActionResult> ChangeUserRole([FromRoute] Guid userId, [FromQuery] string role)
         {
             var request = new ChangeUserRoleRequestDto
             {
+                UserId = userId,
                 Role = role
             };
 
@@ -69,7 +70,7 @@ namespace SFMSSolution.API.Controllers
             if (!result)
                 return NotFound(new { message = "User not found or role update failed" });
 
-            return Ok(new { message = "User account role updated successfully" });
+            return Ok(new { message = "User role updated successfully" });
         }
 
         [Authorize]
@@ -93,7 +94,7 @@ namespace SFMSSolution.API.Controllers
             return Ok(new { message = "User disabled successfully" });
         }
 
-        [HttpPost("active-account/{userId:Guid}")]
+        [HttpPut("active-account/{userId:Guid}")]
         public async Task<IActionResult> ActivateUser(Guid userId)
         {
             var result = await _adminService.ActivateUserAsync(userId);
