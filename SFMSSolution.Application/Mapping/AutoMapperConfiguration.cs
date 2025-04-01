@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using SFMSSolution.Application.ExternalService;
 using SFMSSolution.Application.Extensions.Exceptions;
 using SFMSSolution.Application.Services;
+using SFMSSolution.Application.ExternalService.OTP;
 
 namespace SFMSSolution.Application.Mapping
 {
@@ -55,6 +56,7 @@ namespace SFMSSolution.Application.Mapping
             services.AddScoped<IFacilityPriceService, FacilityPriceService>();
             services.AddScoped<IReportService, ReportService>();
 
+            services.AddScoped<IOTPService, OTPService>();
             
 
             return services;

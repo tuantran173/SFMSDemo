@@ -8,7 +8,7 @@ namespace SFMSSolution.Application.DataTransferObjects.Auth.Request
 {
     public class AuthRequestDto
     {
-        public string Email { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
     }
 }

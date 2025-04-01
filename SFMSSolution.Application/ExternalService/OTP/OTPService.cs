@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SFMSSolution.Application.ExternalService
+namespace SFMSSolution.Application.ExternalService.OTP
 {
-    public class OTPService
+    public class OTPService : IOTPService
     {
         private readonly IMemoryCache _memoryCache;
 
