@@ -14,9 +14,12 @@ namespace SFMSSolution.Application.Mapping.MappingProfiles
     {
         public BookingProfile()
         {
-            // Mapping từ Booking entity sang BookingDto
             CreateMap<Booking, BookingDto>()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+                .ForMember(dest => dest.FacilityName, opt => opt.MapFrom(src => src.Facility.Name))
+                .ForMember(dest => dest.UserFullName, opt => opt.MapFrom(src => src.User.FullName))
+                .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.FacilityTimeSlot.StartTime))
+                .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.FacilityTimeSlot.EndTime));
 
             // Mapping từ BookingCreateRequestDto sang Booking entity
             CreateMap<BookingCreateRequestDto, Booking>();

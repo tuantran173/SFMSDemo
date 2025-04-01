@@ -13,13 +13,11 @@ namespace SFMSSolution.Application.DataTransferObjects.Booking.Request
         public DateTime BookingDate { get; set; }
 
         [Required]
-        public DateTime StartTime { get; set; }
+        public Guid FacilityTimeSlotId { get; set; }
 
-        [Required]
-        public DateTime EndTime { get; set; }
+        public string Note { get; set; } = string.Empty;
 
-        // Cho phép cập nhật trạng thái booking (ví dụ: "Confirmed", "Cancelled", "Completed")
-        [Required]
-        public string Status { get; set; } = string.Empty;
+        // Trạng thái: Pending, Confirmed, Completed, Canceled...
+        public string? Status { get; set; }
     }
 }

@@ -50,11 +50,20 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
                    .HasForeignKey(e => e.OwnerId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(e => e.CreatedDate)
+            // === BaseEntity fields ===
+            builder.Property(b => b.CreatedDate)
                    .HasColumnType("datetime(6)")
                    .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
-            builder.Property(e => e.UpdatedDate);
+            builder.Property(b => b.CreatedBy)
+                   .IsRequired(false);
+
+            builder.Property(b => b.UpdatedDate)
+                   .HasColumnType("datetime(6)")
+                   .IsRequired(false);
+
+            builder.Property(b => b.UpdatedBy)
+                   .IsRequired(false);
         }
     }
 }

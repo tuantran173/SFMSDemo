@@ -67,36 +67,37 @@ namespace SFMSSolution.API.Controllers
         [HttpPost("create-facility")]
         public async Task<IActionResult> CreateFacility([FromBody] FacilityCreateRequestDto request)
         {
-            // Lấy OwnerId từ token
             var ownerIdStr = User.FindFirstValue("sub");
             if (!Guid.TryParse(ownerIdStr, out var ownerId))
                 return Unauthorized("Invalid owner ID.");
 
-            // Truyền ownerId vào service như một tham số riêng
-            var result = await _facilityService.CreateFacilityAsync(request, ownerId);
-            if (!result)
-                return BadRequest("Failed to create facility.");
-            return Ok("Facility created successfully.");
+            var response = await _facilityService.CreateFacilityAsync(request, ownerId);
+            if (!response.Success)
+                return BadRequest(response.Message);
+
+            return Ok(new { Message = response.Message });
         }
 
         [Authorize(Policy = "Owner")]
         [HttpPut("update-facility")]
         public async Task<IActionResult> UpdateFacility([FromBody] FacilityUpdateRequestDto request)
         {
-            var result = await _facilityService.UpdateFacilityAsync(request);
-            if (!result)
-                return NotFound("Facility not found or update failed.");
-            return Ok("Facility updated successfully.");
+            var response = await _facilityService.UpdateFacilityAsync(request);
+            if (!response.Success)
+                return NotFound(response.Message);
+
+            return Ok(new { Message = response.Message });
         }
 
         [Authorize(Policy = "Owner")]
         [HttpDelete("delete-facility/{id:Guid}")]
         public async Task<IActionResult> DeleteFacility(Guid id)
         {
-            var result = await _facilityService.DeleteFacilityAsync(id);
-            if (!result)
-                return NotFound("Facility not found or deletion failed.");
-            return Ok("Facility deleted successfully.");
+            var response = await _facilityService.DeleteFacilityAsync(id);
+            if (!response.Success)
+                return NotFound(response.Message);
+
+            return Ok(new { Message = response.Message });
         }
     }
 }

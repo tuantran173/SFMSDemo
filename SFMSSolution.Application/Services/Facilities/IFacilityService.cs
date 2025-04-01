@@ -3,6 +3,7 @@ using SFMSSolution.Application.DataTransferObjects.Facility;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SFMSSolution.Response;
 
 namespace SFMSSolution.Application.Services.Facilities
 {
@@ -14,10 +15,10 @@ namespace SFMSSolution.Application.Services.Facilities
 
         Task<(IEnumerable<FacilityDto> Facilities, int TotalCount)> GetAllFacilitiesAsync(string? name, int pageNumber, int pageSize);
 
-        Task<bool> CreateFacilityAsync(FacilityCreateRequestDto request, Guid ownerId);
+        Task<ApiResponse<string>> CreateFacilityAsync(FacilityCreateRequestDto request, Guid ownerId);
 
-        Task<bool> UpdateFacilityAsync(FacilityUpdateRequestDto request);
+        Task<ApiResponse<string>> UpdateFacilityAsync(FacilityUpdateRequestDto request);
 
-        Task<bool> DeleteFacilityAsync(Guid id);
+        Task<ApiResponse<string>> DeleteFacilityAsync(Guid id);
     }
 }

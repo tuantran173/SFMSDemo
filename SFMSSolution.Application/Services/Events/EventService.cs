@@ -3,6 +3,8 @@ using SFMSSolution.Application.DataTransferObjects.Event.Request;
 using SFMSSolution.Application.DataTransferObjects.Event;
 using SFMSSolution.Domain.Entities;
 using SFMSSolution.Infrastructure.Implements.UnitOfWorks;
+using SFMSSolution.Response;
+using SFMSSolution.Application.Extensions;
 
 namespace SFMSSolution.Application.Services.Events
 {
@@ -29,7 +31,10 @@ namespace SFMSSolution.Application.Services.Events
 
             if (!string.IsNullOrWhiteSpace(title))
             {
-                allEvents = allEvents.Where(e => e.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
+                var normalizedInput = title.Trim().ToLower().RemoveDiacritics();
+                allEvents = allEvents.Where(e =>
+                    e.Title != null &&
+                    e.Title.Trim().ToLower().RemoveDiacritics().Contains(normalizedInput));
             }
 
             var totalCount = allEvents.Count();
@@ -45,18 +50,21 @@ namespace SFMSSolution.Application.Services.Events
 
         public async Task<(IEnumerable<EventDto> Events, int TotalCount)> GetEventsByOwnerAsync(Guid ownerId, string? title, int pageNumber, int pageSize)
         {
-            var allEvents = await _unitOfWork.EventRepository.GetAllAsync();
+            var events = await _unitOfWork.EventRepository.GetAllAsync();
 
-            var ownerEvents = allEvents.Where(e => e.OwnerId == ownerId);
+            var filteredEvents = events.Where(e => e.OwnerId == ownerId);
 
             if (!string.IsNullOrWhiteSpace(title))
             {
-                ownerEvents = ownerEvents.Where(e => e.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
+                var normalizedTitle = title.Trim().ToLower().RemoveDiacritics();
+                filteredEvents = filteredEvents.Where(e =>
+                    e.Title != null &&
+                    e.Title.Trim().ToLower().RemoveDiacritics().Contains(normalizedTitle));
             }
 
-            var totalCount = ownerEvents.Count();
+            var totalCount = filteredEvents.Count();
 
-            var pagedEvents = ownerEvents
+            var pagedEvents = filteredEvents
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
@@ -65,36 +73,37 @@ namespace SFMSSolution.Application.Services.Events
             return (mappedEvents, totalCount);
         }
 
-        public async Task<bool> CreateEventAsync(EventCreateRequestDto request, Guid ownerId)
+        public async Task<ApiResponse<string>> CreateEventAsync(EventCreateRequestDto request, Guid ownerId)
         {
             var eventEntity = _mapper.Map<Event>(request);
-
-            // Ghi đè OwnerId bằng giá trị từ token, bỏ qua giá trị trong DTO
             eventEntity.OwnerId = ownerId;
 
             await _unitOfWork.EventRepository.AddAsync(eventEntity);
             await _unitOfWork.CompleteAsync();
-            return true;
+            return new ApiResponse<string>(string.Empty, "Event created successfully.");
         }
 
-        public async Task<bool> UpdateEventAsync(EventUpdateRequestDto request)
+        public async Task<ApiResponse<string>> UpdateEventAsync(EventUpdateRequestDto request)
         {
             var existingEvent = await _unitOfWork.EventRepository.GetByIdAsync(request.Id);
             if (existingEvent == null)
-                return false;
+                return new ApiResponse<string>("Event not found.");
 
             _mapper.Map(request, existingEvent);
             await _unitOfWork.EventRepository.UpdateAsync(existingEvent);
             await _unitOfWork.CompleteAsync();
-
-            return true;
+            return new ApiResponse<string>(string.Empty, "Event updated successfully.");
         }
 
-        public async Task<bool> DeleteEventAsync(Guid id)
+        public async Task<ApiResponse<string>> DeleteEventAsync(Guid id)
         {
+            var existingEvent = await _unitOfWork.EventRepository.GetByIdAsync(id);
+            if (existingEvent == null)
+                return new ApiResponse<string>("Event not found.");
+
             await _unitOfWork.EventRepository.DeleteAsync(id);
             await _unitOfWork.CompleteAsync();
-            return true;
+            return new ApiResponse<string>(string.Empty, "Event deleted successfully.");
         }
     }
 }

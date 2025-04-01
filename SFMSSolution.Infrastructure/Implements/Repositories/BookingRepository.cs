@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SFMS.Infrastructure.Repositories;
 using SFMSSolution.Domain.Entities;
+using SFMSSolution.Domain.Enums;
 using SFMSSolution.Infrastructure.Database.AppDbContext;
 using SFMSSolution.Infrastructure.Implements.Interfaces;
 using System;
@@ -17,26 +18,61 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
 
         public async Task<Booking?> GetBookingByIdWithDetailsAsync(Guid id)
         {
-            return await _dbSet
+            return await _context.Bookings
                 .Include(b => b.Facility)
                 .Include(b => b.User)
+                .Include(b => b.FacilityTimeSlot)
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
 
-        public async Task<(IEnumerable<Booking> Bookings, int TotalCount)> GetAllBookingsWithDetailsAsync(int pageNumber, int pageSize)
+        public async Task<(IEnumerable<Booking> Bookings, int TotalCount)> GetAllBookingsWithDetailsAsync(string? name, int pageNumber, int pageSize)
         {
-            var query = _dbSet
+            var query = _context.Bookings
                 .Include(b => b.Facility)
-                .Include(b => b.User);
+                .Include(b => b.User)
+                .Include(b => b.FacilityTimeSlot)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                query = query.Where(b => b.Facility.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
+            }
 
             var totalCount = await query.CountAsync();
 
             var bookings = await query
+                .OrderByDescending(b => b.CreatedDate)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
             return (bookings, totalCount);
         }
+
+        public async Task<List<Booking>> GetBookingsByUserAsync(Guid userId)
+        {
+            return await _context.Bookings
+                .Include(b => b.Facility)
+                .Include(b => b.FacilityTimeSlot)
+                .Where(b => b.UserId == userId)
+                .ToListAsync();
+        }
+
+        public async Task<List<Booking>> GetBookingsByFacilityAsync(Guid facilityId, DateTime date)
+        {
+            return await _context.Bookings
+                .Include(b => b.FacilityTimeSlot)
+                .Where(b => b.FacilityId == facilityId && b.BookingDate.Date == date.Date)
+                .ToListAsync();
+        }
+
+        public async Task<bool> IsTimeSlotBooked(Guid facilityTimeSlotId, DateTime date)
+        {
+            return await _context.Bookings.AnyAsync(b =>
+            b.FacilityTimeSlotId == facilityTimeSlotId &&
+            b.BookingDate.Date == date.Date &&
+            b.Status != BookingStatus.Canceled);
+        }
     }
 }
+

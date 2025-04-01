@@ -25,6 +25,7 @@ using SFMSSolution.Application.ExternalService;
 using SFMSSolution.Application.Extensions.Exceptions;
 using SFMSSolution.Application.Services;
 using SFMSSolution.Application.ExternalService.OTP;
+using SFMSSolution.Application.Services.EmailTemplates;
 
 namespace SFMSSolution.Application.Mapping
 {
@@ -42,6 +43,7 @@ namespace SFMSSolution.Application.Mapping
                 cfg.AddProfile<BookingProfile>();
                 cfg.AddProfile<EventProfile>();
                 cfg.AddProfile<FacilityPriceProfile>();
+                cfg.AddProfile<EmailTemplateProfile>();
             });
             services.AddScoped<IUnitOfWork,UnitOfWork>();
             
@@ -55,6 +57,7 @@ namespace SFMSSolution.Application.Mapping
             services.AddScoped<ICloudinaryService, CloudinaryService>();
             services.AddScoped<IFacilityPriceService, FacilityPriceService>();
             services.AddScoped<IReportService, ReportService>();
+            services.AddScoped<IEmailTemplateService, EmailTemplateService>();
 
             services.AddScoped<IOTPService, OTPService>();
             

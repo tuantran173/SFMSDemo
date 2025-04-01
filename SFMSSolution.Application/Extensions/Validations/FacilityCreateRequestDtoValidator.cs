@@ -8,12 +8,27 @@ using System.Threading.Tasks;
 
 namespace SFMSSolution.Application.Extensions.Validations
 {
-    public class FacilityCreateRequestDtoValidator : AbstractValidator<FacilityCreateRequestDto>
+    public class FacilityCreateRequestValidator : AbstractValidator<FacilityCreateRequestDto>
     {
-        public FacilityCreateRequestDtoValidator()
+        public FacilityCreateRequestValidator()
         {
-            RuleFor(x => x.Name).NotEmpty().WithMessage("Facility name is required.");
-            RuleFor(x => x.FacilityType).NotEmpty().WithMessage("Facility type is required.");
+            RuleFor(x => x.Name)
+                .NotEmpty().WithMessage("Facility name is required.")
+                .MaximumLength(255).WithMessage("Name cannot exceed 255 characters.");
+
+            RuleFor(x => x.Description)
+                .MaximumLength(1000).WithMessage("Description cannot exceed 1000 characters.");
+
+            RuleFor(x => x.Address)
+                .NotEmpty().WithMessage("Address is required.")
+                .MaximumLength(255).WithMessage("Address cannot exceed 255 characters.");
+
+            RuleFor(x => x.ImageUrl)
+                .MaximumLength(500).WithMessage("Image URL cannot exceed 500 characters.");
+
+            RuleFor(x => x.FacilityType)
+                .NotEmpty().WithMessage("Facility type is required.")
+                .MaximumLength(100).WithMessage("Facility type cannot exceed 100 characters.");
 
         }
     }

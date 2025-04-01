@@ -49,32 +49,28 @@ namespace SFMSSolution.API.Controllers
         [HttpPost("create-event")]
         public async Task<IActionResult> CreateEvent([FromBody] EventCreateRequestDto request)
         {
-            // Lấy OwnerId từ token
             var ownerIdStr = User.FindFirstValue("sub");
             if (!Guid.TryParse(ownerIdStr, out var ownerId))
                 return Unauthorized("Invalid owner ID.");
 
-            // Gọi service và truyền ownerId từ token
             var result = await _eventService.CreateEventAsync(request, ownerId);
-            if (!result)
-                return BadRequest("Failed to create event.");
-            return Ok("Event created successfully.");
+            return result.Success ? Ok(new { Message = result.Message }) : BadRequest(result.Message);
         }
 
         [Authorize(Policy = "Owner")]
         [HttpPut("update-event")]
         public async Task<IActionResult> Update([FromBody] EventUpdateRequestDto request)
         {
-            var success = await _eventService.UpdateEventAsync(request);
-            return success ? Ok("Event updated.") : NotFound("Event not found or update failed.");
+            var result = await _eventService.UpdateEventAsync(request);
+            return result.Success ? Ok(new { Message = result.Message }) : NotFound(result.Message);
         }
 
         [Authorize(Policy = "Owner")]
         [HttpDelete("delete-event/{id:Guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var success = await _eventService.DeleteEventAsync(id);
-            return success ? Ok("Event deleted.") : NotFound("Event not found or delete failed.");
+            var result = await _eventService.DeleteEventAsync(id);
+            return result.Success ? Ok(new { Message = result.Message }) : NotFound(result.Message);
         }
     }
 }

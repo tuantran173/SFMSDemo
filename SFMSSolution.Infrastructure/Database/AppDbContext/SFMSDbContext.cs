@@ -19,7 +19,7 @@ namespace SFMSSolution.Infrastructure.Database.AppDbContext
         public DbSet<FacilityTimeSlot> FacilityTimeSlots { get; set; }
         public DbSet<FacilityPrice> FacilityPrices { get; set; }
         public DbSet<Price> Prices { get; set; }
-        public DbSet<EmailTemplate> Emails { get; set; }
+        public DbSet<EmailTemplate> EmailTemplates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

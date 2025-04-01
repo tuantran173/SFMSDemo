@@ -16,7 +16,8 @@ namespace SFMSSolution.Application.Mapping.MappingProfiles
         {
             CreateMap<Facility, FacilityDto>();
             CreateMap<FacilityCreateRequestDto, Facility>();
-            
+            CreateMap<Facility, FacilityDto>()
+    .ForMember(dest => dest.OwnerPhone, opt => opt.MapFrom(src => src.Owner.Phone));
         }
 
     }

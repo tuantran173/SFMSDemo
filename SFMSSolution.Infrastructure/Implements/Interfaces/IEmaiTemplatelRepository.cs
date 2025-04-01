@@ -10,7 +10,6 @@ namespace SFMSSolution.Infrastructure.Implements.Interfaces
 {
     public interface IEmailTemplateRepository : IGenericRepository<EmailTemplate>
     {
-        Task<EmailTemplate?> GetTemplateByNameAsync(Guid ownerId, string templateName);
-        Task<IEnumerable<EmailTemplate>> GetAllTemplatesByOwnerAsync(Guid ownerId);
+        Task<EmailTemplate?> GetByTemplateNameAsync(string templateName);
     }
 }

@@ -11,6 +11,13 @@ namespace SFMSSolution.Infrastructure.Implements.Interfaces
     public interface IBookingRepository : IGenericRepository<Booking>
     {
         Task<Booking?> GetBookingByIdWithDetailsAsync(Guid id);
-        Task<(IEnumerable<Booking> Bookings, int TotalCount)> GetAllBookingsWithDetailsAsync(int pageNumber, int pageSize);
+
+        Task<(IEnumerable<Booking> Bookings, int TotalCount)> GetAllBookingsWithDetailsAsync(string? name, int pageNumber, int pageSize);
+
+        Task<List<Booking>> GetBookingsByUserAsync(Guid userId);
+
+        Task<List<Booking>> GetBookingsByFacilityAsync(Guid facilityId, DateTime date);
+
+        Task<bool> IsTimeSlotBooked(Guid facilityTimeSlotId, DateTime date);
     }
 }

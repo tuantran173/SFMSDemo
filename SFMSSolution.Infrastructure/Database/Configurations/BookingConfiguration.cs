@@ -16,23 +16,17 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
         {
             builder.ToTable("Bookings");
 
-            // Khoá chính (đã có trong BaseEntity, nhưng xác nhận lại)
+            // Primary key
             builder.HasKey(b => b.Id);
 
-            // BookingDate, StartTime, EndTime là bắt buộc
+            // Required fields
             builder.Property(b => b.BookingDate)
                    .IsRequired();
 
-            builder.Property(b => b.StartTime)
-                   .IsRequired();
-
-            builder.Property(b => b.EndTime)
-                   .IsRequired();
-
             builder.Property(b => b.Note)
-                .HasMaxLength(1000);
+                   .HasMaxLength(1000);
 
-            // Cấu hình trạng thái booking: chuyển enum sang string để dễ đọc trong DB
+            // Booking status enum → string
             builder.Property(b => b.Status)
                    .IsRequired()
                    .HasConversion(
@@ -40,17 +34,38 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
                         v => (BookingStatus)Enum.Parse(typeof(BookingStatus), v))
                    .HasMaxLength(50);
 
-            // Cấu hình mối quan hệ với Facility
+            // Foreign key: Facility
             builder.HasOne(b => b.Facility)
-                   .WithMany() // Nếu không cần navigation property ngược, hoặc WithMany(f => f.Bookings) nếu có
+                   .WithMany()
                    .HasForeignKey(b => b.FacilityId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // Cấu hình mối quan hệ với User
+            // Foreign key: User
             builder.HasOne(b => b.User)
-                   .WithMany() // Tương tự, hoặc WithMany(u => u.Bookings) nếu User có navigation property Bookings
+                   .WithMany()
                    .HasForeignKey(b => b.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            // Foreign key: FacilityTimeSlot
+            builder.HasOne(b => b.FacilityTimeSlot)
+                   .WithMany()
+                   .HasForeignKey(b => b.FacilityTimeSlotId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            // === BaseEntity fields ===
+            builder.Property(b => b.CreatedDate)
+                   .HasColumnType("datetime(6)")
+                   .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+
+            builder.Property(b => b.CreatedBy)
+                   .IsRequired(false);
+
+            builder.Property(b => b.UpdatedDate)
+                   .HasColumnType("datetime(6)")
+                   .IsRequired(false);
+
+            builder.Property(b => b.UpdatedBy)
+                   .IsRequired(false);
         }
     }
 }

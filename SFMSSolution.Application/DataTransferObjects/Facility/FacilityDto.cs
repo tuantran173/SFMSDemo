@@ -13,5 +13,6 @@ namespace SFMSSolution.Application.DataTransferObjects.Facility
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public Guid OwnerId { get; set; }
+        public string OwnerPhone { get; set; } = string.Empty;
     }
 }

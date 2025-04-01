@@ -21,6 +21,7 @@ namespace SFMSSolution.Infrastructure.Implements.UnitOfWorks
         private IFacilityPriceRepository _facilityPriceRepository;
         private IPriceRepository _priceRepository;
         private IFacilityTimeSlotRepository _facilityTimeSlotRepository;
+        private IEmailTemplateRepository _emailTemplateRepository;
 
         public UnitOfWork(SFMSDbContext context, UserManager<User> userManager)
         {
@@ -48,6 +49,8 @@ namespace SFMSSolution.Infrastructure.Implements.UnitOfWorks
             => _priceRepository ??= new PriceRepository(_context);
         public IFacilityTimeSlotRepository FacilityTimeSlotRepository
            => _facilityTimeSlotRepository ??= new FacilityTimeSlotRepository(_context);
+        public IEmailTemplateRepository EmailTemplateRepository
+           => _emailTemplateRepository ??= new EmailTemplateRepository(_context);
 
         // Triển khai phương thức CompleteAsync
         public async Task<int> CompleteAsync()

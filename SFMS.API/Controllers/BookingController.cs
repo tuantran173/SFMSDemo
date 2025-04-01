@@ -1,77 +1,117 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using SFMSSolution.API.Hubs;
 using SFMSSolution.Application.DataTransferObjects.Booking.Request;
 using SFMSSolution.Application.Services.Bookings;
 
 namespace SFMSSolution.API.Controllers
 {
-    [Authorize(Policy = "Admin,Owner, Customer")]
     [ApiController]
     [Route("api/booking")]
     public class BookingController : ControllerBase
     {
         private readonly IBookingService _bookingService;
-        private readonly IHubContext<BookingHub> _hubContext;
 
-        public BookingController(IBookingService bookingService, IHubContext<BookingHub> hubContext)
+        public BookingController(IBookingService bookingService)
         {
             _bookingService = bookingService;
-            _hubContext = hubContext;
         }
 
-        [HttpGet("get-booking-by-id/{id:Guid}")]
+        [HttpGet("{id:Guid}/get-booking-by-id")]
         public async Task<IActionResult> GetBooking(Guid id)
         {
             var booking = await _bookingService.GetBookingAsync(id);
-            if (booking == null)
-                return NotFound("Booking not found.");
-
+            if (booking == null) return NotFound("Booking not found.");
             return Ok(booking);
         }
 
-        [HttpGet("get-all-booking")]
-        public async Task<IActionResult> GetAllBookings([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        [HttpGet("get-all-bookings")]
+        public async Task<IActionResult> GetAllBookings(
+            [FromQuery] string? name,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var (bookings, totalCount) = await _bookingService.GetAllBookingsAsync(pageNumber, pageSize);
-            return Ok(new { TotalCount = totalCount, Bookings = bookings });
+            var (bookings, totalCount) = await _bookingService.GetAllBookingsAsync(name, pageNumber, pageSize);
+
+            return Ok(new
+            {
+                Data = bookings,
+                TotalCount = totalCount,
+                CurrentPage = pageNumber,
+                PageSize = pageSize
+            });
         }
 
         [HttpPost("create-booking")]
+        [Authorize]
         public async Task<IActionResult> CreateBooking([FromBody] BookingCreateRequestDto request)
         {
-            var result = await _bookingService.CreateBookingAsync(request);
-            if (!result)
-                return BadRequest("Failed to create booking.");
+            var userId = User.FindFirst("sub")?.Value;
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
-            // Thông báo tạo booking mới qua SignalR
-            await _hubContext.Clients.All.SendAsync("BookingCreated", $"A new booking has been created by user {request.UserId}.");
-            return Ok("Booking created successfully.");
+            request.UserId = Guid.Parse(userId);
+
+            try
+            {
+                var result = await _bookingService.CreateBookingAsync(request);
+                return result ? Ok("Booking created successfully.") : BadRequest("Failed to create booking.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message); // ví dụ: "Time slot is already booked."
+            }
         }
 
         [HttpPut("update-booking/{id:Guid}")]
+        [Authorize]
         public async Task<IActionResult> UpdateBooking(Guid id, [FromBody] BookingUpdateRequestDto request)
         {
             var result = await _bookingService.UpdateBookingAsync(id, request);
-            if (!result)
-                return NotFound("Booking not found or update failed.");
-
-            // Thông báo cập nhật booking qua SignalR
-            await _hubContext.Clients.All.SendAsync("BookingUpdated", $"Booking {id} has been updated.");
-            return Ok("Booking updated successfully.");
+            return result ? Ok("Booking updated successfully.") : NotFound("Booking not found or update failed.");
         }
 
-        [HttpDelete("delete/booking{id:Guid}")]
+        [HttpDelete("delete-booking/{id:Guid}")]
+        [Authorize]
         public async Task<IActionResult> DeleteBooking(Guid id)
         {
             var result = await _bookingService.DeleteBookingAsync(id);
-            if (!result)
-                return NotFound("Booking not found or delete failed.");
+            return result ? Ok("Booking deleted successfully.") : NotFound("Booking not found or deletion failed.");
+        }
 
-            // Thông báo xóa booking qua SignalR
-            await _hubContext.Clients.All.SendAsync("BookingDeleted", $"Booking {id} has been deleted.");
-            return Ok("Booking deleted successfully.");
+        [HttpGet("my-bookings")]
+        [Authorize]
+        public async Task<IActionResult> GetMyBookings()
+        {
+            var userId = User.FindFirst("sub")?.Value;
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var bookings = await _bookingService.GetBookingsByUserAsync(Guid.Parse(userId));
+            return Ok(bookings);
+        }
+
+        [HttpPut("update-status-by-owner/{id:Guid}")]
+        [Authorize(Policy = "Owner")]
+        public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] BookingStatusUpdateRequestDto request)
+        {
+            try
+            {
+                var success = await _bookingService.UpdateBookingStatusAsync(id, request);
+                return success ? Ok("Status updated.") : NotFound("Booking not found.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("my-bookings/history")]
+        [Authorize]
+        public async Task<IActionResult> GetBookingHistory()
+        {
+            var userId = User.FindFirst("sub")?.Value;
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var result = await _bookingService.GetBookingHistoryForUserAsync(Guid.Parse(userId));
+            return Ok(result);
         }
     }
 }

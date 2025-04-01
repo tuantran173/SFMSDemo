@@ -44,15 +44,6 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
             builder.Property(u => u.Birthday)
                    .IsRequired(false); // Nullable
 
-
-
-            //    // Nếu User kế thừa BaseEntity có CreatedDate và UpdatedDate
-            //    builder.Property(u => u.CreatedDate)
-            //           .HasDefaultValueSql("GETUTCDATE()");
-
-            //    builder.Property(u => u.UpdatedDate)
-            //           .IsRequired(false);
-            //}
         }
     }
 }

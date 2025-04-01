@@ -20,6 +20,6 @@ namespace SFMSSolution.Domain.Entities
         public new string? Email { get; set; }
         public string? AvatarUrl { get; set; } = string.Empty;
         public EntityStatus Status { get; set; } = EntityStatus.Active;
-        
+
     }
 }

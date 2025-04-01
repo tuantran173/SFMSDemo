@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SFMSSolution.Domain.Entities;
-using SFMSSolution.Domain.Entities.Base;
 using SFMSSolution.Domain.Enums;
-using System;
 
 namespace SFMSSolution.Infrastructure.Database.SFMSDbContext
 {
@@ -188,6 +186,56 @@ namespace SFMSSolution.Infrastructure.Database.SFMSDbContext
                     EndTime = new TimeSpan(12, 30, 0),    // 12:30 PM
                     CreatedDate = DateTime.UtcNow
                 });
+
+
+            var emailTemplate1Id = Guid.Parse("abcd1234-abcd-1234-abcd-1234567890ab");
+            var emailTemplate2Id = Guid.Parse("efgh5678-efgh-5678-efgh-1234567890cd");
+            var emailTemplate3Id = Guid.Parse("dcba4321-dcba-4321-dcba-0987654321ef");
+
+            modelBuilder.Entity<EmailTemplate>().HasData(
+                new EmailTemplate
+                {
+                    Id = emailTemplate1Id,
+                    TemplateName = "Xác nhận đăng ký thành công",
+                    Subject = "Chào mừng đến với 3AT Sport!",
+                    Body = @"
+                            <p>Xin chào {{UserName}},</p>
+                            <p>Bạn đã đăng ký tài khoản thành công.</p>
+                            <p>Chúc bạn có những trải nghiệm tuyệt vời cùng chúng tôi!</p>
+                            <p>Trân trọng,<br>Sport Facility Management Team</p>",
+                    CreatedDate = DateTime.UtcNow
+                },
+                new EmailTemplate
+                {
+                    Id = emailTemplate2Id,
+                    TemplateName = "Xác nhận đặt sân thành công",
+                    Subject = "Xác nhận đặt sân thành công!",
+                    Body = @"
+                            <p>Xin chào {{UserName}},</p>
+                            <p>Đơn đặt sân của bạn tại {{FacilityName}} vào lúc {{BookingTime}} đã được xác nhận.</p>
+                            <p>Chi tiết:</p>
+                            <ul>
+                                <li>Sân: {{FacilityName}}</li>
+                                <li>Thời gian: {{BookingTime}}</li>
+                                <li>Giá: {{Price}}</li>
+                            </ul>
+                             <p>Trân trọng,<br>Sport Facility Management Team</p>",
+                    CreatedDate = DateTime.UtcNow
+                },
+                new EmailTemplate
+                {
+                    Id = emailTemplate3Id,
+                    TemplateName = "OTPVerification",
+                    Subject = "Xác nhận mã OTP đặt lại mật khẩu",
+                    Body = @"
+                            <p>Xin chào {{UserName}},</p>
+                            <p>Mã OTP của bạn để đặt lại mật khẩu là: <strong>{{OTP}}</strong></p>
+                            <p>Mã có hiệu lực trong vòng 2 phút.</p>
+                            <p>Nếu bạn không yêu cầu thao tác này, vui lòng bỏ qua email.</p>
+                            <p>Trân trọng,<br>Sport Facility Management Team</p>",
+                    CreatedDate = DateTime.UtcNow
+                }
+            );
         }
     }
 }

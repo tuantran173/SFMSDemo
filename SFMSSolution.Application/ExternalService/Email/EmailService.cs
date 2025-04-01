@@ -1,13 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mail;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using MimeKit;
 using MailKit.Security;
+using System.Threading.Tasks;
+using MailKit.Net.Smtp;
+using System;
 
 namespace SFMSSolution.Application.ExternalService.Email
 {
@@ -24,34 +20,39 @@ namespace SFMSSolution.Application.ExternalService.Email
         {
             try
             {
-                // Tạo email message
-                var emailMessage = new MimeMessage();
-                emailMessage.From.Add(new MailboxAddress(_configuration["EmailSettings:FromName"],
-                                                           _configuration["EmailSettings:FromEmail"]));
-                emailMessage.To.Add(MailboxAddress.Parse(toEmail));
-                emailMessage.Subject = subject;
-
-                var builder = new BodyBuilder { HtmlBody = body };
-                emailMessage.Body = builder.ToMessageBody();
-
-                // Lấy cấu hình SMTP
+                var fromName = _configuration["EmailSettings:FromName"];
+                var fromEmail = _configuration["EmailSettings:FromEmail"];
                 var smtpServer = _configuration["EmailSettings:SmtpServer"];
                 var smtpPort = int.Parse(_configuration["EmailSettings:SmtpPort"]);
                 var smtpUser = _configuration["EmailSettings:SmtpUser"];
                 var smtpPass = _configuration["EmailSettings:SmtpPass"];
 
-                using (var client = new MailKit.Net.Smtp.SmtpClient())
+                if (string.IsNullOrEmpty(fromEmail) || string.IsNullOrEmpty(smtpServer))
+                    throw new Exception("Email configuration is missing.");
+
+                var emailMessage = new MimeMessage();
+                emailMessage.From.Add(new MailboxAddress(fromName, fromEmail));
+                emailMessage.To.Add(MailboxAddress.Parse(toEmail));
+                emailMessage.Subject = subject;
+
+                var builder = new BodyBuilder
                 {
-                    await client.ConnectAsync(smtpServer, smtpPort, SecureSocketOptions.StartTls);
-                    await client.AuthenticateAsync(smtpUser, smtpPass);
-                    await client.SendAsync(emailMessage, default);
-                    await client.DisconnectAsync(true);
-                }
+                    HtmlBody = body
+                };
+                emailMessage.Body = builder.ToMessageBody();
+
+                using var client = new SmtpClient();
+                await client.ConnectAsync(smtpServer, smtpPort, SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(smtpUser, smtpPass);
+                await client.SendAsync(emailMessage);
+                await client.DisconnectAsync(true);
+
                 return true;
             }
             catch (Exception ex)
             {
-                // Log exception nếu cần
+                // Optional: Log the error
+                Console.WriteLine($"Failed to send email: {ex.Message}");
                 return false;
             }
         }

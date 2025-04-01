@@ -6,6 +6,7 @@ using SFMSSolution.Application.DataTransferObjects.Auth;
 using SFMSSolution.Application.DataTransferObjects.Auth.Request;
 using SFMSSolution.Application.ExternalService.Email;
 using SFMSSolution.Application.ExternalService.OTP;
+using SFMSSolution.Application.Services.EmailTemplates;
 using SFMSSolution.Domain.Entities;
 using SFMSSolution.Domain.Enums;
 using SFMSSolution.Response;
@@ -19,19 +20,23 @@ namespace SFMSSolution.Application.Services.Auth
         private readonly IEmailService _emailService;
         private readonly IOpenIddictTokenManager _tokenManager;
         private readonly IOTPService _otpService;
+        private readonly IEmailTemplateService _emailTemplateService;
 
         public AuthService(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IConfiguration configuration,
             IEmailService emailService,
-            IOpenIddictTokenManager tokenManager, IOTPService otpService)
+            IOpenIddictTokenManager tokenManager,
+            IOTPService otpService,
+            IEmailTemplateService emailTemplateService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailService = emailService;
             _tokenManager = tokenManager;
             _otpService = otpService;
+            _emailTemplateService = emailTemplateService;
         }
 
         public async Task<AuthResponseDto?> AuthenticateAsync(AuthRequestDto request)
@@ -106,18 +111,23 @@ namespace SFMSSolution.Application.Services.Auth
             if (!roleResult.Succeeded)
                 return new ApiResponse<string>("Failed to assign role: " + string.Join(", ", roleResult.Errors.Select(e => e.Description)));
 
-            // Gửi email xác nhận
-            var subject = "Đăng ký tài khoản thành công!";
-            var body = $@"
-                <p>Thân gửi {newUser.FullName},</p>
-                <p>Bạn đã đăng ký tài khoản thành công trên nền tảng của chúng tôi.</p>
-                <p>Trân trọng,<br>Sport Facility Management System Team</p>";
+            // Sau khi tạo user + gán role thành công:
+            var placeholders = new Dictionary<string, string>
+{
+    { "FullName", newUser.FullName }
+};
 
-            var emailSent = await _emailService.SendEmailAsync(newUser.Email, subject, body);
+            var emailSent = await _emailTemplateService.SendFromTemplateAsync(
+                templateName: "RegistrationConfirm",
+                toEmail: newUser.Email,
+                placeholders: placeholders
+            );
+
             if (!emailSent)
                 return new ApiResponse<string>("Registration successful, but failed to send confirmation email.");
 
             return new ApiResponse<string>(string.Empty, "Registration successful. A confirmation email has been sent.");
+
         }
 
 
@@ -157,21 +167,20 @@ namespace SFMSSolution.Application.Services.Auth
             var otp = _otpService.GenerateOTP();
             _otpService.SaveOTP(user.Email, otp);
 
-            // Soạn email
-            var subject = "Mã OTP để đặt lại mật khẩu của bạn";
-            var body = $@"
-                <p>Xin chào {user.FullName},</p>
-                <p>Mã OTP để đặt lại mật khẩu là: <strong>{otp}</strong></p>
-                <p>Mã OTP có hiệu lực trong vòng 3 phút.</p>
-                <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>
-                <p>Trân trọng,<br>Sport Facility Management System Team</p>";
+            var placeholders = new Dictionary<string, string>
+{
+    { "FullName", user.FullName },
+    { "OTP", otp }
+};
 
-            // Gửi email
-            var emailSent = await _emailService.SendEmailAsync(user.Email, subject, body);
+            var emailSent = await _emailTemplateService.SendFromTemplateAsync(
+                templateName: "ResetPasswordOtp",
+                toEmail: user.Email,
+                placeholders: placeholders
+            );
+
             if (!emailSent)
-            {
                 return new ApiResponse<string>("Failed to send OTP email. Please try again later.");
-            }
 
             return new ApiResponse<string>(string.Empty, "If an account with that email exists, an OTP has been sent.");
         }

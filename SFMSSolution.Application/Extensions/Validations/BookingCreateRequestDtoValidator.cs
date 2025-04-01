@@ -12,14 +12,21 @@ namespace SFMSSolution.Application.Extensions.Validations
     {
         public BookingCreateRequestDtoValidator()
         {
+            RuleFor(x => x.BookingDate)
+            .NotEmpty().WithMessage("Booking date is required.")
+            .Must(date => date.Date >= DateTime.UtcNow.Date).WithMessage("Booking date cannot be in the past.");
+
             RuleFor(x => x.FacilityId)
-                .NotEmpty().WithMessage("Facility Id is required.");
+                .NotEmpty().WithMessage("Facility is required.");
+
+            RuleFor(x => x.FacilityTimeSlotId)
+                .NotEmpty().WithMessage("Time slot is required.");
 
             RuleFor(x => x.UserId)
-                .NotEmpty().WithMessage("User Id is required.");
+                .NotEmpty().WithMessage("User is required.");
 
-            RuleFor(x => x.BookingDate)
-                .NotNull().WithMessage("Booking date is required.");
+            RuleFor(x => x.Note)
+                .MaximumLength(1000).WithMessage("Note cannot exceed 1000 characters.");
         }
     }
 }
