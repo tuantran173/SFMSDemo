@@ -81,7 +81,7 @@ namespace SFMSSolution.API.Controllers
         }
 
         [Authorize(Policy = "Owner")]
-        [HttpPut("update-facility/{id:Guid}")]
+        [HttpPut("update-facility")]
         public async Task<IActionResult> UpdateFacility([FromBody] FacilityUpdateRequestDto request)
         {
             var result = await _facilityService.UpdateFacilityAsync(request);
