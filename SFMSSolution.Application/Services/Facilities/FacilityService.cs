@@ -63,33 +63,12 @@ public class FacilityService : IFacilityService
         return (_mapper.Map<IEnumerable<FacilityDto>>(filteredFacilities), totalCount);
     }
 
-    public async Task<(IEnumerable<FacilityDto> Facilities, int TotalCount)> FilterFacilitiesAsync(
-    string? name, int pageNumber, int pageSize)
-    {
-        var facilities = await _unitOfWork.FacilityRepository.GetFacilitiesWithDetailsAsync();
-
-        if (!string.IsNullOrWhiteSpace(name))
-        {
-            facilities = facilities.Where(f => f.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
-        }
-
-        var totalCount = facilities.Count();
-
-        var filteredFacilities = facilities
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .ToList();
-
-        return (_mapper.Map<IEnumerable<FacilityDto>>(filteredFacilities), totalCount);
-    }
-
-
-    public async Task<bool> CreateFacilityAsync(FacilityCreateRequestDto request)
+    public async Task<bool> CreateFacilityAsync(FacilityCreateRequestDto request, Guid ownerId)
     {
         var facility = _mapper.Map<Facility>(request);
 
-        // Gán thêm OwnerId nếu cần, ví dụ từ token (nếu bạn truyền từ controller)
-        // facility.OwnerId = currentUserId;
+        // Gán OwnerId từ tham số được truyền vào
+        facility.OwnerId = ownerId;
 
         await _unitOfWork.FacilityRepository.AddAsync(facility);
         await _unitOfWork.CompleteAsync();

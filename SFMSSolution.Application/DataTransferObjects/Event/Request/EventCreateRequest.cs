@@ -25,8 +25,6 @@ namespace SFMSSolution.Application.DataTransferObjects.Event.Request
         [Required]
         public string EventType { get; set; } = string.Empty;
 
-        [Required]
-        public Guid OwnerId { get; set; }
 
         public string Status { get; set; } = "Scheduled";
     }

@@ -47,16 +47,18 @@ namespace SFMSSolution.API.Controllers
 
         [Authorize(Policy = "Owner")]
         [HttpPost("create-event")]
-        public async Task<IActionResult> Create([FromBody] EventCreateRequestDto request)
+        public async Task<IActionResult> CreateEvent([FromBody] EventCreateRequestDto request)
         {
+            // Lấy OwnerId từ token
             var ownerIdStr = User.FindFirstValue("sub");
             if (!Guid.TryParse(ownerIdStr, out var ownerId))
-                return Unauthorized("Invalid token");
+                return Unauthorized("Invalid owner ID.");
 
-            request.OwnerId = ownerId;
-
-            var success = await _eventService.CreateEventAsync(request);
-            return success ? Ok("Event created.") : BadRequest("Failed to create event.");
+            // Gọi service và truyền ownerId từ token
+            var result = await _eventService.CreateEventAsync(request, ownerId);
+            if (!result)
+                return BadRequest("Failed to create event.");
+            return Ok("Event created successfully.");
         }
 
         [Authorize(Policy = "Owner")]

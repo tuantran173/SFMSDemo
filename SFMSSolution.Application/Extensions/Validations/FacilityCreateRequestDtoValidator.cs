@@ -14,7 +14,6 @@ namespace SFMSSolution.Application.Extensions.Validations
         {
             RuleFor(x => x.Name).NotEmpty().WithMessage("Facility name is required.");
             RuleFor(x => x.FacilityType).NotEmpty().WithMessage("Facility type is required.");
-            RuleFor(x => x.OwnerId).NotEmpty().WithMessage("OwnerId is required.");
 
         }
     }

@@ -15,5 +15,6 @@ namespace SFMSSolution.Application.DataTransferObjects.Event
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public string Status { get; set; } = string.Empty;
+        public Guid OwnerId { get; set; }
     }
 }

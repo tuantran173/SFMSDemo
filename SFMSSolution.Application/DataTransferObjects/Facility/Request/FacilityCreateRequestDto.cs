@@ -16,7 +16,6 @@ namespace SFMSSolution.Application.DataTransferObjects.Facility.Request
 
         public string FacilityType { get; set; } = string.Empty;
 
-        public Guid OwnerId { get; set; }
         public FacilityStatus Status { get; set; } = FacilityStatus.Available;
     }
 }

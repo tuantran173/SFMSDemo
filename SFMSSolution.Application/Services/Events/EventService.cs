@@ -65,13 +65,15 @@ namespace SFMSSolution.Application.Services.Events
             return (mappedEvents, totalCount);
         }
 
-        public async Task<bool> CreateEventAsync(EventCreateRequestDto request)
+        public async Task<bool> CreateEventAsync(EventCreateRequestDto request, Guid ownerId)
         {
-            var ev = _mapper.Map<Event>(request);
+            var eventEntity = _mapper.Map<Event>(request);
 
-            await _unitOfWork.EventRepository.AddAsync(ev);
+            // Ghi đè OwnerId bằng giá trị từ token, bỏ qua giá trị trong DTO
+            eventEntity.OwnerId = ownerId;
+
+            await _unitOfWork.EventRepository.AddAsync(eventEntity);
             await _unitOfWork.CompleteAsync();
-
             return true;
         }
 

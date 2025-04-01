@@ -14,7 +14,7 @@ namespace SFMSSolution.Application.Services.Facilities
 
         Task<(IEnumerable<FacilityDto> Facilities, int TotalCount)> GetAllFacilitiesAsync(string? name, int pageNumber, int pageSize);
 
-        Task<bool> CreateFacilityAsync(FacilityCreateRequestDto request);
+        Task<bool> CreateFacilityAsync(FacilityCreateRequestDto request, Guid ownerId);
 
         Task<bool> UpdateFacilityAsync(FacilityUpdateRequestDto request);
 

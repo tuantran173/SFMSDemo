@@ -15,7 +15,6 @@ namespace SFMSSolution.Application.Extensions.Validations
             RuleFor(x => x.Title).NotEmpty().WithMessage("Event title is required.");
             RuleFor(x => x.StartTime).LessThan(x => x.EndTime).WithMessage("StartTime must be earlier than EndTime.");
             RuleFor(x => x.EventType).NotEmpty().WithMessage("Event type is required.");
-            RuleFor(x => x.OwnerId).NotEmpty().WithMessage("OwnerId is required.");
         }
     }
 }

@@ -67,14 +67,13 @@ namespace SFMSSolution.API.Controllers
         [HttpPost("create-facility")]
         public async Task<IActionResult> CreateFacility([FromBody] FacilityCreateRequestDto request)
         {
-            // Nếu bạn muốn set OwnerId từ token ở controller
+            // Lấy OwnerId từ token
             var ownerIdStr = User.FindFirstValue("sub");
             if (!Guid.TryParse(ownerIdStr, out var ownerId))
                 return Unauthorized("Invalid owner ID.");
 
-            request.OwnerId = ownerId;
-
-            var result = await _facilityService.CreateFacilityAsync(request);
+            // Truyền ownerId vào service như một tham số riêng
+            var result = await _facilityService.CreateFacilityAsync(request, ownerId);
             if (!result)
                 return BadRequest("Failed to create facility.");
             return Ok("Facility created successfully.");
