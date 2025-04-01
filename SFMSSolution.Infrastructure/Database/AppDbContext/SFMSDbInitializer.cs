@@ -189,8 +189,8 @@ namespace SFMSSolution.Infrastructure.Database.SFMSDbContext
 
 
             var emailTemplate1Id = Guid.Parse("abcd1234-abcd-1234-abcd-1234567890ab");
-            var emailTemplate2Id = Guid.Parse("efgh5678-efgh-5678-efgh-1234567890cd");
-            var emailTemplate3Id = Guid.Parse("dcba4321-dcba-4321-dcba-0987654321ef");
+            var emailTemplate2Id = Guid.Parse("efef5678-efef-5678-efef-1234567890cd"); // ✅ hợp lệ
+            var emailTemplate3Id = Guid.Parse("dcba4321-dcba-4321-dcba-0987654321ef"); // ✅ hợp lệ
 
             modelBuilder.Entity<EmailTemplate>().HasData(
                 new EmailTemplate
