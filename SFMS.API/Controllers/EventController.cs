@@ -33,7 +33,7 @@ namespace SFMSSolution.API.Controllers
             return Ok(new { Data = events, TotalCount = total, CurrentPage = pageNumber, PageSize = pageSize });
         }
 
-        [Authorize(Policy = "Admin,Owner")]
+        [Authorize(Policy = "Owner")]
         [HttpGet("get-events-by-owner")]
         public async Task<IActionResult> GetByOwner([FromQuery] string? title, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
@@ -45,7 +45,7 @@ namespace SFMSSolution.API.Controllers
             return Ok(new { Data = events, TotalCount = total, CurrentPage = pageNumber, PageSize = pageSize });
         }
 
-        [Authorize(Policy = "Admin,Owner")]
+        [Authorize(Policy = "Owner")]
         [HttpPost("create-event")]
         public async Task<IActionResult> Create([FromBody] EventCreateRequestDto request)
         {
@@ -59,7 +59,7 @@ namespace SFMSSolution.API.Controllers
             return success ? Ok("Event created.") : BadRequest("Failed to create event.");
         }
 
-        [Authorize(Policy = "Admin,Owner")]
+        [Authorize(Policy = "Owner")]
         [HttpPut("update-event")]
         public async Task<IActionResult> Update([FromBody] EventUpdateRequestDto request)
         {
@@ -67,7 +67,7 @@ namespace SFMSSolution.API.Controllers
             return success ? Ok("Event updated.") : NotFound("Event not found or update failed.");
         }
 
-        [Authorize(Policy = "Admin,Owner")]
+        [Authorize(Policy = "Owner")]
         [HttpDelete("delete-event/{id:Guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {

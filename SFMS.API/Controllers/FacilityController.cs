@@ -41,7 +41,7 @@ namespace SFMSSolution.API.Controllers
             });
         }
 
-        [Authorize(Policy = "Admin,Owner")]
+        [Authorize(Policy = "Owner")]
         [HttpGet("get-facilities-by-owner")]
         public async Task<IActionResult> GetFacilitiesByOwner(
             [FromQuery] string? name,
@@ -63,7 +63,7 @@ namespace SFMSSolution.API.Controllers
             });
         }
 
-        [Authorize(Policy = "Admin,Owner")]
+        [Authorize(Policy = "Owner")]
         [HttpPost("create-facility")]
         public async Task<IActionResult> CreateFacility([FromBody] FacilityCreateRequestDto request)
         {
@@ -80,7 +80,7 @@ namespace SFMSSolution.API.Controllers
             return Ok("Facility created successfully.");
         }
 
-        [Authorize(Policy = "Admin,Owner")]
+        [Authorize(Policy = "Owner")]
         [HttpPut("update-facility/{id:Guid}")]
         public async Task<IActionResult> UpdateFacility([FromBody] FacilityUpdateRequestDto request)
         {
@@ -90,7 +90,7 @@ namespace SFMSSolution.API.Controllers
             return Ok("Facility updated successfully.");
         }
 
-        [Authorize(Policy = "Admin,Owner")]
+        [Authorize(Policy = "Owner")]
         [HttpDelete("delete-facility/{id:Guid}")]
         public async Task<IActionResult> DeleteFacility(Guid id)
         {
