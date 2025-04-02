@@ -16,7 +16,6 @@ namespace SFMSSolution.Infrastructure.Implements.UnitOfWorks
         IFacilityRepository FacilityRepository { get; }
         IEventRepository EventRepository { get; }
         IFacilityPriceRepository FacilityPriceRepository { get; }
-        IPriceRepository PriceRepository { get; }
         IFacilityTimeSlotRepository FacilityTimeSlotRepository { get; }
         IEmailTemplateRepository EmailTemplateRepository { get; }
 

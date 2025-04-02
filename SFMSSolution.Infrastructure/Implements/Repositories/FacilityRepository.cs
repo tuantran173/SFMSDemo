@@ -33,5 +33,6 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
         {
             return await GetByNameAsync(name, pageNumber, pageSize);
         }
+
     }
 }

@@ -7,8 +7,8 @@ using SFMSSolution.Application.Services.FacilityPrices;
 namespace SFMSSolution.API.Controllers
 {
     
-    [Route("api/facilityprice")]
     [ApiController]
+    [Route("api/facility-price")]
     public class FacilityPriceController : ControllerBase
     {
         private readonly IFacilityPriceService _facilityPriceService;
@@ -18,25 +18,48 @@ namespace SFMSSolution.API.Controllers
             _facilityPriceService = facilityPriceService;
         }
 
-        [Authorize(Policy = "Owner")]
-        // API để thêm hoặc cập nhật giá cho khung giờ cụ thể
         [HttpPost("add-or-update")]
         public async Task<IActionResult> AddOrUpdatePrice([FromBody] FacilityPriceCreateRequestDto request)
         {
             var result = await _facilityPriceService.AddOrUpdatePriceAsync(request);
-            if (result)
-                return Ok(new { message = "Facility Price added/updated successfully" });
+            if (!result.Success)
+                return BadRequest(result.Message);
 
-            return BadRequest(new { message = "Failed to add/update Facility Price" });
+            return Ok(result.Message);
         }
 
-        [Authorize(Policy = "Owner")]
-        // Lấy tất cả các giá áp dụng cho một khung giờ cụ thể
-        [HttpGet("get-by-timeslot/{facilityTimeSlotId}")]
-        public async Task<IActionResult> GetPricesByTimeSlot(Guid facilityTimeSlotId)
+        [HttpGet("get-by-timeslot/{timeSlotId:guid}")]
+        public async Task<IActionResult> GetByTimeSlot(Guid timeSlotId)
         {
-            var prices = await _facilityPriceService.GetPricesByTimeSlotAsync(facilityTimeSlotId);
+            var prices = await _facilityPriceService.GetPricesByTimeSlotAsync(timeSlotId);
             return Ok(prices);
+        }
+
+        [HttpGet("get-all")]
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            var (data, totalCount) = await _facilityPriceService.GetAllAsync(pageNumber, pageSize);
+            return Ok(new
+            {
+                Data = data,
+                TotalCount = totalCount,
+                CurrentPage = pageNumber,
+                PageSize = pageSize
+            });
+        }
+
+        [HttpGet("get-by-id/{id:guid}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var result = await _facilityPriceService.GetByIdAsync(id);
+            return result == null ? NotFound("Facility price not found.") : Ok(result);
+        }
+
+        [HttpDelete("delete/{id:guid}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var deleted = await _facilityPriceService.DeleteAsync(id);
+            return deleted ? Ok("Deleted successfully.") : BadRequest("Failed to delete.");
         }
     }
 }

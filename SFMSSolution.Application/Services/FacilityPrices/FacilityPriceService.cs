@@ -4,6 +4,7 @@ using SFMSSolution.Application.DataTransferObjects.FacilityPrice;
 using SFMSSolution.Application.Services.FacilityPrices;
 using SFMSSolution.Domain.Entities;
 using SFMSSolution.Infrastructure.Implements.UnitOfWorks;
+using SFMSSolution.Response;
 
 namespace SFMSSolution.Application.Services
 {
@@ -18,55 +19,51 @@ namespace SFMSSolution.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<bool> AddOrUpdatePriceAsync(FacilityPriceCreateRequestDto request)
+        public async Task<ApiResponse<string>> AddOrUpdatePriceAsync(FacilityPriceCreateRequestDto request)
         {
-            // Lấy TimeSlot kèm Facility
-            var timeSlot = await _unitOfWork.FacilityTimeSlotRepository
-                .FindFirstOrDefaultAsync(ts => ts.Id == request.FacilityTimeSlotId, include => include.Facility);
+            var finalPrice = request.BasePrice * request.Coefficient;
 
-            if (timeSlot == null || timeSlot.Facility == null)
-                return false;
-
-            var facilityType = timeSlot.Facility.FacilityType;
-
-            // Lấy giá cơ bản theo FacilityType
-            var basePriceEntity = await _unitOfWork.PriceRepository.GetByFacilityTypeAsync(facilityType);
-            if (basePriceEntity == null)
-                return false;
-
-            var finalPrice = basePriceEntity.BasePrice * request.Coefficient;
-
-            // Kiểm tra xem FacilityPrice đã tồn tại
-            var existingFacilityPrice = await _unitOfWork.FacilityPriceRepository
-                .FindAsync(fp => fp.FacilityTimeSlotId == request.FacilityTimeSlotId);
-
-            var facilityPrice = existingFacilityPrice.FirstOrDefault();
-
-            if (facilityPrice == null)
+            var newFacilityPrice = new FacilityPrice
             {
-                facilityPrice = _mapper.Map<FacilityPrice>(request);
-                facilityPrice.FinalPrice = finalPrice;
+                Id = Guid.NewGuid(),
+                FacilityTimeSlotId = request.FacilityTimeSlotId,
+                Coefficient = request.Coefficient,
+                BasePrice = request.BasePrice,
+                FinalPrice = finalPrice,
+                FacilityType = request.FacilityType,
+                CreatedDate = DateTime.UtcNow
+            };
 
-                await _unitOfWork.FacilityPriceRepository.AddAsync(facilityPrice);
-            }
-            else
-            {
-                facilityPrice.Coefficient = request.Coefficient;
-                facilityPrice.FinalPrice = finalPrice;
-
-                await _unitOfWork.FacilityPriceRepository.UpdateAsync(facilityPrice);
-            }
-
+            await _unitOfWork.FacilityPriceRepository.AddAsync(newFacilityPrice);
             await _unitOfWork.CompleteAsync();
-            return true;
+
+            return new ApiResponse<string>("New price added successfully.");
+        }
+
+        public async Task<(IEnumerable<FacilityPriceDto> Prices, int TotalCount)> GetAllAsync(int pageNumber, int pageSize)
+        {
+            var (entities, totalCount) = await _unitOfWork.FacilityPriceRepository.GetAllWithTimeSlotAsync(pageNumber, pageSize);
+            var mapped = _mapper.Map<IEnumerable<FacilityPriceDto>>(entities);
+            return (mapped, totalCount);
         }
 
         public async Task<List<FacilityPriceDto>> GetPricesByTimeSlotAsync(Guid facilityTimeSlotId)
         {
-            var facilityPrices = await _unitOfWork.FacilityPriceRepository
-                .GetByFacilityTimeSlotIdAsync(facilityTimeSlotId);
+            var prices = await _unitOfWork.FacilityPriceRepository.GetByFacilityTimeSlotIdAsync(facilityTimeSlotId);
+            return _mapper.Map<List<FacilityPriceDto>>(prices);
+        }
 
-            return _mapper.Map<List<FacilityPriceDto>>(facilityPrices);
+        public async Task<FacilityPriceDto?> GetByIdAsync(Guid id)
+        {
+            var entity = await _unitOfWork.FacilityPriceRepository.GetByIdWithTimeSlotAsync(id);
+            return entity == null ? null : _mapper.Map<FacilityPriceDto>(entity);
+        }
+
+        public async Task<bool> DeleteAsync(Guid id)
+        {
+            await _unitOfWork.FacilityPriceRepository.DeleteAsync(id);
+            await _unitOfWork.CompleteAsync();
+            return true;
         }
     }
 }

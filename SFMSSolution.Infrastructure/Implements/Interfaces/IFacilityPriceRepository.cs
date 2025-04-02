@@ -11,5 +11,7 @@ namespace SFMSSolution.Infrastructure.Implements.Interfaces
     public interface IFacilityPriceRepository : IGenericRepository<FacilityPrice>
     {
         Task<List<FacilityPrice>> GetByFacilityTimeSlotIdAsync(Guid facilityTimeSlotId);
+        Task<(IEnumerable<FacilityPrice> Prices, int TotalCount)> GetAllWithTimeSlotAsync(int pageNumber, int pageSize);
+        Task<FacilityPrice?> GetByIdWithTimeSlotAsync(Guid id);
     }
 }

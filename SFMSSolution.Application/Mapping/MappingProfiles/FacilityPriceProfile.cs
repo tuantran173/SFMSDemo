@@ -15,7 +15,9 @@ namespace SFMSSolution.Application.Mapping.MappingProfiles
         public FacilityPriceProfile()
         {
             CreateMap<FacilityPriceCreateRequestDto, FacilityPrice>();
-            CreateMap<FacilityPrice, FacilityPriceDto>();
+            CreateMap<FacilityPrice, FacilityPriceDto>()
+            .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.FacilityTimeSlot.StartTime))
+            .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.FacilityTimeSlot.EndTime));
         }
     }
 }

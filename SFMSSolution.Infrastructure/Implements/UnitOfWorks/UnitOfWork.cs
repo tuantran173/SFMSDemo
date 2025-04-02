@@ -19,7 +19,6 @@ namespace SFMSSolution.Infrastructure.Implements.UnitOfWorks
         private IFacilityRepository _facilityRepository;
         private IEventRepository _eventRepository;
         private IFacilityPriceRepository _facilityPriceRepository;
-        private IPriceRepository _priceRepository;
         private IFacilityTimeSlotRepository _facilityTimeSlotRepository;
         private IEmailTemplateRepository _emailTemplateRepository;
 
@@ -45,8 +44,6 @@ namespace SFMSSolution.Infrastructure.Implements.UnitOfWorks
         public IFacilityPriceRepository FacilityPriceRepository
             => _facilityPriceRepository ??= new FacilityPriceRepository(_context);
 
-        public IPriceRepository PriceRepository
-            => _priceRepository ??= new PriceRepository(_context);
         public IFacilityTimeSlotRepository FacilityTimeSlotRepository
            => _facilityTimeSlotRepository ??= new FacilityTimeSlotRepository(_context);
         public IEmailTemplateRepository EmailTemplateRepository

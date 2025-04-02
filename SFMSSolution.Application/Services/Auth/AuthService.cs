@@ -114,11 +114,11 @@ namespace SFMSSolution.Application.Services.Auth
             // Sau khi tạo user + gán role thành công:
             var placeholders = new Dictionary<string, string>
 {
-    { "FullName", newUser.FullName }
+    { "UserName", newUser.FullName }
 };
 
             var emailSent = await _emailTemplateService.SendFromTemplateAsync(
-                templateName: "RegistrationConfirm",
+                templateName: "Xác nhận đăng ký thành công",
                 toEmail: newUser.Email,
                 placeholders: placeholders
             );
@@ -168,13 +168,13 @@ namespace SFMSSolution.Application.Services.Auth
             _otpService.SaveOTP(user.Email, otp);
 
             var placeholders = new Dictionary<string, string>
-{
-    { "FullName", user.FullName },
-    { "OTP", otp }
-};
+                {
+                    { "UserName", user.FullName },
+                    { "OTP", otp }
+                };
 
             var emailSent = await _emailTemplateService.SendFromTemplateAsync(
-                templateName: "ResetPasswordOtp",
+                templateName: "OTPVerification",
                 toEmail: user.Email,
                 placeholders: placeholders
             );

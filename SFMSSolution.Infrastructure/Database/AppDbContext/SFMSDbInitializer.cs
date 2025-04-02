@@ -84,26 +84,6 @@ namespace SFMSSolution.Infrastructure.Database.SFMSDbContext
                     CreatedDate = DateTime.UtcNow
                 }
             );
-            // Seed dữ liệu cho bảng Price (Giá cơ bản cho từng loại sân)
-            var price1Id = Guid.NewGuid();
-            var price2Id = Guid.NewGuid();
-
-            modelBuilder.Entity<Price>().HasData(
-                new Price
-                {
-                    Id = price1Id,
-                    FacilityType = "Sân bóng đá",
-                    BasePrice = 400000,
-                    CreatedDate = DateTime.UtcNow
-                },
-                new Price
-                {
-                    Id = price2Id,
-                    FacilityType = "Sân cầu lông",
-                    BasePrice = 200000,
-                    CreatedDate = DateTime.UtcNow
-                }
-            );
 
 
             var timeslot1Id = Guid.Parse("1b05b57c-6d02-4c06-b0b5-a96139825346");

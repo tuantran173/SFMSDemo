@@ -21,14 +21,23 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
                    .IsRequired()
                    .HasColumnType("decimal(18,2)");
 
+            builder.Property(fp => fp.BasePrice)
+                   .IsRequired()
+                   .HasColumnType("decimal(18,2)");
+
             builder.Property(fp => fp.FinalPrice)
                    .IsRequired()
                    .HasColumnType("decimal(18,2)");
+
+            builder.Property(fp => fp.FacilityType)
+                   .IsRequired()
+                   .HasMaxLength(100);
 
             builder.HasOne(fp => fp.FacilityTimeSlot)
                    .WithMany()
                    .HasForeignKey(fp => fp.FacilityTimeSlotId)
                    .OnDelete(DeleteBehavior.Cascade);
+
             // === BaseEntity fields ===
             builder.Property(b => b.CreatedDate)
                    .HasColumnType("datetime(6)")

@@ -19,7 +19,32 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
         {
             return await _context.FacilityPrices
                 .Where(fp => fp.FacilityTimeSlotId == facilityTimeSlotId)
+                .Include(fp => fp.FacilityTimeSlot)
                 .ToListAsync();
+        }
+
+        public async Task<(IEnumerable<FacilityPrice> Prices, int TotalCount)> GetAllWithTimeSlotAsync(int pageNumber, int pageSize)
+        {
+            var query = _context.FacilityPrices
+                .Include(fp => fp.FacilityTimeSlot)
+                .AsQueryable();
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(fp => fp.CreatedDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
+        }
+
+        public async Task<FacilityPrice?> GetByIdWithTimeSlotAsync(Guid id)
+        {
+            return await _context.FacilityPrices
+                .Include(fp => fp.FacilityTimeSlot)
+                .FirstOrDefaultAsync(fp => fp.Id == id);
         }
     }
 }
