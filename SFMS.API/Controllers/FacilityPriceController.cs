@@ -18,7 +18,7 @@ namespace SFMSSolution.API.Controllers
             _facilityPriceService = facilityPriceService;
         }
 
-        [HttpPost("add-or-update")]
+        [HttpPost("add-or-update-price")]
         public async Task<IActionResult> AddOrUpdatePrice([FromBody] FacilityPriceCreateRequestDto request)
         {
             var result = await _facilityPriceService.AddOrUpdatePriceAsync(request);
@@ -28,14 +28,14 @@ namespace SFMSSolution.API.Controllers
             return Ok(result.Message);
         }
 
-        [HttpGet("get-by-timeslot/{timeSlotId:guid}")]
+        [HttpGet("get-price-by-timeslot/{timeSlotId:guid}")]
         public async Task<IActionResult> GetByTimeSlot(Guid timeSlotId)
         {
             var prices = await _facilityPriceService.GetPricesByTimeSlotAsync(timeSlotId);
             return Ok(prices);
         }
 
-        [HttpGet("get-all")]
+        [HttpGet("get-al-price")]
         public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             var (data, totalCount) = await _facilityPriceService.GetAllAsync(pageNumber, pageSize);
@@ -48,7 +48,7 @@ namespace SFMSSolution.API.Controllers
             });
         }
 
-        [HttpGet("get-by-id/{id:guid}")]
+        [HttpGet("get-price-by-id/{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
             var result = await _facilityPriceService.GetByIdAsync(id);

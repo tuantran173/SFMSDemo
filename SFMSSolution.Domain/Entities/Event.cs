@@ -13,8 +13,9 @@ namespace SFMSSolution.Domain.Entities
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string ImageUrl { get; set; } = string.Empty;
-        public DateTime StartTime { get; set; }
+        public string Address { get; set; } = string.Empty;
 
+        public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public string EventType { get; set; }
 

@@ -27,6 +27,9 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
             builder.Property(e => e.ImageUrl)
                    .HasMaxLength(500);
 
+            builder.Property(f => f.Address)
+                   .HasMaxLength(255);
+
             builder.Property(e => e.StartTime)
                    .IsRequired();
 

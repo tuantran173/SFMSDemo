@@ -15,6 +15,7 @@ namespace SFMSSolution.Application.DataTransferObjects.Event.Request
         public string Description { get; set; } = string.Empty;
 
         public string ImageUrl { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
 
         [Required]
         public DateTime StartTime { get; set; }
