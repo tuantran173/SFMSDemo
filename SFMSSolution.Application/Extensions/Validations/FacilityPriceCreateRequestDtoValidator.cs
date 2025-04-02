@@ -12,8 +12,6 @@ namespace SFMSSolution.Application.Extensions.Validations
     {
         public FacilityPriceCreateRequestDtoValidator()
         {
-            RuleFor(x => x.FacilityTimeSlotId)
-                .NotEmpty().WithMessage("Facility Time Slot Id is required.");
 
             RuleFor(x => x.Coefficient)
                 .GreaterThan(0).WithMessage("Coefficient must be greater than zero.");

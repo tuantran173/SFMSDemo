@@ -11,10 +11,12 @@ namespace SFMSSolution.Application.Services.FacilityPrices
 {
     public interface IFacilityPriceService
     {
-        Task<ApiResponse<string>> AddOrUpdatePriceAsync(FacilityPriceCreateRequestDto request);
-        Task<(IEnumerable<FacilityPriceDto> Prices, int TotalCount)> GetAllAsync(int pageNumber, int pageSize);
-        Task<List<FacilityPriceDto>> GetPricesByTimeSlotAsync(Guid facilityTimeSlotId);
+        Task<ApiResponse<string>> CreatePriceAsync(FacilityPriceCreateRequestDto request);
+
+        Task<(IEnumerable<FacilityPriceDto> Prices, int TotalCount)> GetAllAsync(string? facilityName, int pageNumber, int pageSize);
+
         Task<FacilityPriceDto?> GetByIdAsync(Guid id);
-        Task<bool> DeleteAsync(Guid id);
+
+        Task<ApiResponse<string>> DeleteAsync(Guid id);
     }
 }

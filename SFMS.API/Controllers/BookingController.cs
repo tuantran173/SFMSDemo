@@ -113,5 +113,23 @@ namespace SFMSSolution.API.Controllers
             var result = await _bookingService.GetBookingHistoryForUserAsync(Guid.Parse(userId));
             return Ok(result);
         }
+
+        [HttpGet("calendar/{facilityId:Guid}")]
+        public async Task<IActionResult> GetCalendar(Guid facilityId)
+        {
+            var result = await _bookingService.GetFacilityCalendarAsync(facilityId);
+            if (!result.Success)
+                return NotFound(result.Message);
+            return Ok(result.Data);
+        }
+
+        [HttpGet("slot-detail/{slotId:Guid}")]
+        public async Task<IActionResult> GetSlotDetail(Guid slotId)
+        {
+            var result = await _bookingService.GetBookingSlotDetailAsync(slotId);
+            if (!result.Success)
+                return NotFound(result.Message);
+            return Ok(result.Data);
+        }
     }
 }

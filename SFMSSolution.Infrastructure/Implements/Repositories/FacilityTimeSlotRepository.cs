@@ -31,5 +31,12 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
 
             return await query.FirstOrDefaultAsync(predicate);
         }
+
+        public async Task<List<FacilityTimeSlot>> GetByFacilityIdAsync(Guid facilityId)
+        {
+            return await _context.FacilityTimeSlots
+                .Where(t => t.FacilityId == facilityId)
+                .ToListAsync();
+        }
     }
 }

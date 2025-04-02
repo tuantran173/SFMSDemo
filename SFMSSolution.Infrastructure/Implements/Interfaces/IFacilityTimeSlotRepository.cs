@@ -14,5 +14,7 @@ namespace SFMSSolution.Infrastructure.Implements.Interfaces
         Task<FacilityTimeSlot?> FindFirstOrDefaultAsync(
             Expression<Func<FacilityTimeSlot, bool>> predicate,
             params Expression<Func<FacilityTimeSlot, object>>[] includes);
+
+        Task<List<FacilityTimeSlot>> GetByFacilityIdAsync(Guid facilityId);
     }
 }

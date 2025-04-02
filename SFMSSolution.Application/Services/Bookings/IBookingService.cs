@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SFMSSolution.Response;
 
 namespace SFMSSolution.Application.Services.Bookings
 {
@@ -22,5 +23,7 @@ namespace SFMSSolution.Application.Services.Bookings
         Task<IEnumerable<BookingDto>> GetBookingsByUserAsync(Guid userId);
         Task<bool> UpdateBookingStatusAsync(Guid bookingId, BookingStatusUpdateRequestDto request);
         Task<IEnumerable<BookingDto>> GetBookingHistoryForUserAsync(Guid userId);
+        Task<ApiResponse<FacilityBookingCalendarDto>> GetFacilityCalendarAsync(Guid facilityId);
+        Task<ApiResponse<FacilityPriceDetailDto>> GetBookingSlotDetailAsync(Guid slotId);
     }
 }

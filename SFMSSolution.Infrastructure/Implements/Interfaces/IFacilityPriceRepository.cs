@@ -13,5 +13,8 @@ namespace SFMSSolution.Infrastructure.Implements.Interfaces
         Task<List<FacilityPrice>> GetByFacilityTimeSlotIdAsync(Guid facilityTimeSlotId);
         Task<(IEnumerable<FacilityPrice> Prices, int TotalCount)> GetAllWithTimeSlotAsync(int pageNumber, int pageSize);
         Task<FacilityPrice?> GetByIdWithTimeSlotAsync(Guid id);
+        Task<(IEnumerable<FacilityPrice> Prices, int TotalCount)> GetAllWithTimeSlotAndFacilityAsync(int pageNumber, int pageSize);
+        Task<FacilityPrice?> GetByIdWithTimeSlotAndFacilityAsync(Guid id);
+        Task<FacilityPrice?> GetByTimeSlotIdAsync(Guid slotId);
     }
 }

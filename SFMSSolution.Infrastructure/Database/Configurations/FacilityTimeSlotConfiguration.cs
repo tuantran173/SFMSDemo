@@ -25,6 +25,13 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
 
             builder.Property(ft => ft.IsWeekend)
                    .IsRequired();
+            builder.Property(ft => ft.StartDate)
+                   .HasColumnType("date")
+                   .IsRequired();
+
+            builder.Property(ft => ft.EndDate)
+                   .HasColumnType("date")
+                   .IsRequired();
 
             builder.HasOne(ft => ft.Facility)
                    .WithMany()

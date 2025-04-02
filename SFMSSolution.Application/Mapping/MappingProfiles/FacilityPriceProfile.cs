@@ -16,8 +16,11 @@ namespace SFMSSolution.Application.Mapping.MappingProfiles
         {
             CreateMap<FacilityPriceCreateRequestDto, FacilityPrice>();
             CreateMap<FacilityPrice, FacilityPriceDto>()
-            .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.FacilityTimeSlot.StartTime))
-            .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.FacilityTimeSlot.EndTime));
+             .ForMember(dest => dest.FacilityName, opt => opt.MapFrom(src => src.Facility.Name))
+             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Facility.Address))
+             .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Facility.ImageUrl))
+             .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.FacilityTimeSlot.StartTime))
+             .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.FacilityTimeSlot.EndTime));
         }
     }
 }

@@ -19,51 +19,105 @@ namespace SFMSSolution.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<ApiResponse<string>> AddOrUpdatePriceAsync(FacilityPriceCreateRequestDto request)
+        public async Task<ApiResponse<string>> CreatePriceAsync(FacilityPriceCreateRequestDto request)
         {
-            var finalPrice = request.BasePrice * request.Coefficient;
+            var facility = await _unitOfWork.FacilityRepository.GetByIdAsync(request.FacilityId);
+            if (facility == null)
+                return new ApiResponse<string>("Facility not found.");
 
-            var newFacilityPrice = new FacilityPrice
+            // ✅ Parse giờ từ string sang TimeSpan
+            if (!TimeSpan.TryParse(request.StartTime, out var parsedStartTime) ||
+                !TimeSpan.TryParse(request.EndTime, out var parsedEndTime))
+            {
+                return new ApiResponse<string>("Invalid time format. Use HH:mm (e.g. 08:00).");
+            }
+
+            var newTimeSlot = new FacilityTimeSlot
             {
                 Id = Guid.NewGuid(),
-                FacilityTimeSlotId = request.FacilityTimeSlotId,
-                Coefficient = request.Coefficient,
-                BasePrice = request.BasePrice,
-                FinalPrice = finalPrice,
-                FacilityType = request.FacilityType,
+                FacilityId = request.FacilityId,
+                StartTime = parsedStartTime,
+                EndTime = parsedEndTime,
+                StartDate = request.StartDate,
+                EndDate = request.EndDate,
+                IsWeekend = false,
                 CreatedDate = DateTime.UtcNow
             };
 
-            await _unitOfWork.FacilityPriceRepository.AddAsync(newFacilityPrice);
+            await _unitOfWork.FacilityTimeSlotRepository.AddAsync(newTimeSlot);
+
+            var finalPrice = request.BasePrice * request.Coefficient;
+
+            var facilityPrice = new FacilityPrice
+            {
+                Id = Guid.NewGuid(),
+                FacilityId = request.FacilityId,
+                FacilityTimeSlotId = newTimeSlot.Id,
+                BasePrice = request.BasePrice,
+                Coefficient = request.Coefficient,
+                FinalPrice = finalPrice,
+                CreatedDate = DateTime.UtcNow
+            };
+
+            await _unitOfWork.FacilityPriceRepository.AddAsync(facilityPrice);
             await _unitOfWork.CompleteAsync();
 
-            return new ApiResponse<string>("New price added successfully.");
+            return new ApiResponse<string>("Facility price created successfully.");
         }
 
-        public async Task<(IEnumerable<FacilityPriceDto> Prices, int TotalCount)> GetAllAsync(int pageNumber, int pageSize)
-        {
-            var (entities, totalCount) = await _unitOfWork.FacilityPriceRepository.GetAllWithTimeSlotAsync(pageNumber, pageSize);
-            var mapped = _mapper.Map<IEnumerable<FacilityPriceDto>>(entities);
-            return (mapped, totalCount);
-        }
 
-        public async Task<List<FacilityPriceDto>> GetPricesByTimeSlotAsync(Guid facilityTimeSlotId)
+        public async Task<(IEnumerable<FacilityPriceDto> Prices, int TotalCount)> GetAllAsync(string? facilityName, int pageNumber, int pageSize)
         {
-            var prices = await _unitOfWork.FacilityPriceRepository.GetByFacilityTimeSlotIdAsync(facilityTimeSlotId);
-            return _mapper.Map<List<FacilityPriceDto>>(prices);
+            var (prices, total) = await _unitOfWork.FacilityPriceRepository.GetAllWithTimeSlotAndFacilityAsync(pageNumber, pageSize);
+
+            if (!string.IsNullOrWhiteSpace(facilityName))
+            {
+                prices = prices.Where(p => p.Facility != null &&
+                    p.Facility.Name.Contains(facilityName, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var dtos = prices.Select(p => new FacilityPriceDto
+            {
+                Id = p.Id,
+                ImageUrl = p.Facility?.ImageUrl,
+                FacilityName = p.Facility?.Name,
+                StartTime = p.FacilityTimeSlot.StartTime,
+                EndTime = p.FacilityTimeSlot.EndTime,
+                StartDate = p.FacilityTimeSlot.StartDate,
+                EndDate = p.FacilityTimeSlot.EndDate,
+                BasePrice = p.BasePrice,
+                Coefficient = p.Coefficient,
+                FinalPrice = p.FinalPrice
+            });
+
+            return (dtos, total);
         }
 
         public async Task<FacilityPriceDto?> GetByIdAsync(Guid id)
         {
-            var entity = await _unitOfWork.FacilityPriceRepository.GetByIdWithTimeSlotAsync(id);
-            return entity == null ? null : _mapper.Map<FacilityPriceDto>(entity);
+            var entity = await _unitOfWork.FacilityPriceRepository.GetByIdWithTimeSlotAndFacilityAsync(id);
+            if (entity == null) return null;
+
+            return new FacilityPriceDto
+            {
+                Id = entity.Id,
+                ImageUrl = entity.Facility?.ImageUrl,
+                FacilityName = entity.Facility?.Name,
+                StartTime = entity.FacilityTimeSlot.StartTime,
+                EndTime = entity.FacilityTimeSlot.EndTime,
+                StartDate = entity.FacilityTimeSlot.StartDate,
+                EndDate = entity.FacilityTimeSlot.EndDate,
+                BasePrice = entity.BasePrice,
+                Coefficient = entity.Coefficient,
+                FinalPrice = entity.FinalPrice
+            };
         }
 
-        public async Task<bool> DeleteAsync(Guid id)
+        public async Task<ApiResponse<string>> DeleteAsync(Guid id)
         {
             await _unitOfWork.FacilityPriceRepository.DeleteAsync(id);
             await _unitOfWork.CompleteAsync();
-            return true;
+            return new ApiResponse<string>("Facility price deleted successfully.");
         }
     }
 }

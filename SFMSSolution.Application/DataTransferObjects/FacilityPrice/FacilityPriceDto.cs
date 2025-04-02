@@ -9,12 +9,23 @@ namespace SFMSSolution.Application.DataTransferObjects.FacilityPrice
     public class FacilityPriceDto
     {
         public Guid Id { get; set; }
-        public decimal Coefficient { get; set; }
-        public decimal BasePrice { get; set; }
-        public decimal FinalPrice { get; set; }
-        public string FacilityType { get; set; } = string.Empty;
+
+        // Thông tin sân
+        public string FacilityName { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
+
+        // Thông tin timeslot
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
 
+        public DateTime StartDate { get; set; }       
+        public DateTime EndDate { get; set; }
+        // Thông tin giá
+        public decimal BasePrice { get; set; }
+        public decimal Coefficient { get; set; }
+        public decimal FinalPrice { get; set; }
+
+
     }
-}
+    }

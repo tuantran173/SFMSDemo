@@ -5,6 +5,7 @@ using SFMSSolution.Domain.Entities;
 using SFMSSolution.Domain.Enums;
 using SFMSSolution.Infrastructure.Implements.Interfaces;
 using SFMSSolution.Infrastructure.Implements.UnitOfWorks;
+using SFMSSolution.Response;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -127,6 +128,65 @@ namespace SFMSSolution.Application.Services.Bookings
                 .ToList();
 
             return _mapper.Map<IEnumerable<BookingDto>>(history);
+        }
+
+        public async Task<ApiResponse<FacilityBookingCalendarDto>> GetFacilityCalendarAsync(Guid facilityId)
+        {
+            var facility = await _unitOfWork.FacilityRepository.GetFacilityByIdAsync(facilityId);
+            if (facility == null)
+                return new ApiResponse<FacilityBookingCalendarDto>("Facility not found.");
+
+            var timeSlots = await _unitOfWork.FacilityTimeSlotRepository.GetByFacilityIdAsync(facilityId);
+            var bookings = await _unitOfWork.BookingRepository.GetBookingsByFacilityAsync(facilityId, DateTime.UtcNow);
+
+            var calendarItems = timeSlots.Select(slot =>
+            {
+                var isOutdated = slot.EndDate < DateTime.Now;
+                var booking = bookings.FirstOrDefault(b => b.FacilityTimeSlotId == slot.Id);
+
+                var status = isOutdated
+                    ? SlotStatus.Closed
+                    : booking == null
+                        ? SlotStatus.Available
+                        : SlotStatus.Booked;
+
+                return new FacilityBookingSlotDto
+                {
+                    SlotId = slot.Id,
+                    StartTime = slot.StartTime,
+                    EndTime = slot.EndTime,
+                    StartDate = slot.StartDate,
+                    EndDate = slot.EndDate,
+                    Status = status
+                };
+            }).ToList();
+
+            var result = new FacilityBookingCalendarDto
+            {
+                FacilityId = facility.Id,
+                Name = facility.Name,
+                Address = facility.Address,
+                Calendar = calendarItems
+            };
+
+            return new ApiResponse<FacilityBookingCalendarDto>(result);
+        }
+
+        public async Task<ApiResponse<FacilityPriceDetailDto>> GetBookingSlotDetailAsync(Guid slotId)
+        {
+            var price = await _unitOfWork.FacilityPriceRepository.GetByTimeSlotIdAsync (slotId);
+            if (price == null)
+                return new ApiResponse<FacilityPriceDetailDto>("Price info not found.");
+
+            var dto = new FacilityPriceDetailDto
+            {
+                SlotId = slotId,
+                FinalPrice = price.FinalPrice,
+                BasePrice = price.BasePrice,
+                Coefficient = price.Coefficient
+            };
+
+            return new ApiResponse<FacilityPriceDetailDto>(dto);
         }
     }
 }
