@@ -1,7 +1,9 @@
-﻿using System;
+﻿using SFMSSolution.Application.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace SFMSSolution.Application.DataTransferObjects.Event
@@ -13,7 +15,9 @@ namespace SFMSSolution.Application.DataTransferObjects.Event
         public string ImageUrl {  get; set; } = string.Empty;
         public string Address {  get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        [JsonConverter(typeof(JsonDateOnlyConverter))]
         public DateTime StartTime { get; set; }
+        [JsonConverter(typeof(JsonDateOnlyConverter))]
         public DateTime EndTime { get; set; }
         public string Status { get; set; } = string.Empty;
         public Guid OwnerId { get; set; }

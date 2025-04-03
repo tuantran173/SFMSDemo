@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace SFMSSolution.Application.DataTransferObjects.FacilityPrice.Request
 {
-    public class FacilityPriceCreateRequestDto
+    public class FacilityPriceUpdateRequestDto
     {
-        public Guid FacilityId { get; set; }                    // ID của sân
+        public Guid Id { get; set; }                    // ID của giá
         public string StartTime { get; set; } = string.Empty; // Format: "HH:mm"
         public string EndTime { get; set; } = string.Empty;                // Giờ kết thúc
         [JsonConverter(typeof(JsonDateOnlyConverter))]

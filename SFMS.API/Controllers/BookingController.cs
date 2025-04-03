@@ -61,11 +61,11 @@ namespace SFMSSolution.API.Controllers
             }
         }
 
-        [HttpPut("update-booking/{id:Guid}")]
+        [HttpPut("update-booking")]
         [Authorize]
-        public async Task<IActionResult> UpdateBooking(Guid id, [FromBody] BookingUpdateRequestDto request)
+        public async Task<IActionResult> UpdateBooking([FromBody] BookingUpdateRequestDto request)
         {
-            var result = await _bookingService.UpdateBookingAsync(id, request);
+            var result = await _bookingService.UpdateBookingAsync(request.Id, request);
             return result ? Ok("Booking updated successfully.") : NotFound("Booking not found or update failed.");
         }
 
@@ -88,13 +88,13 @@ namespace SFMSSolution.API.Controllers
             return Ok(bookings);
         }
 
-        [HttpPut("update-status-by-owner/{id:Guid}")]
+        [HttpPut("update-status-by-owner")]
         [Authorize(Policy = "Owner")]
-        public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] BookingStatusUpdateRequestDto request)
+        public async Task<IActionResult> UpdateStatus([FromBody] BookingStatusUpdateRequestDto request)
         {
             try
             {
-                var success = await _bookingService.UpdateBookingStatusAsync(id, request);
+                var success = await _bookingService.UpdateBookingStatusAsync(request.BookingId, request);
                 return success ? Ok("Status updated.") : NotFound("Booking not found.");
             }
             catch (Exception ex)

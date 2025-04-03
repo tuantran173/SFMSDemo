@@ -9,6 +9,7 @@ namespace SFMSSolution.Application.DataTransferObjects.Booking.Request
 {
     public class BookingUpdateRequestDto
     {
+        public Guid Id { get; set; }
         [Required]
         public DateTime BookingDate { get; set; }
 

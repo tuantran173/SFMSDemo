@@ -62,10 +62,16 @@ namespace SFMSSolution.API.Controllers
         [HttpPost("update-account/{userId:Guid}")]
         public async Task<IActionResult> ChangeUserRole([FromRoute] Guid userId, [FromQuery] string role)
         {
+            // Try parse string to enum
+            if (!Enum.TryParse<Role>(role, true, out var parsedRole))
+            {
+                return BadRequest(new { message = "Invalid role. Accepted values: Admin, Owner, Customer" });
+            }
+
             var request = new ChangeUserRoleRequestDto
             {
                 UserId = userId,
-                Role = role
+                Role = parsedRole
             };
 
             var result = await _adminService.UpdateAccountAsync(request);

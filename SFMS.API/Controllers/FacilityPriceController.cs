@@ -19,6 +19,7 @@ namespace SFMSSolution.API.Controllers
         }
 
         [HttpPost("create-price")]
+        [Authorize(Policy = "Owner")]
         public async Task<IActionResult> Create([FromBody] FacilityPriceCreateRequestDto request)
         {
             var result = await _facilityPriceService.CreatePriceAsync(request);
@@ -27,9 +28,19 @@ namespace SFMSSolution.API.Controllers
             return Ok(result);
         }
 
+        [HttpPut("update-price")]
+        [Authorize(Policy = "Owner")]
+        public async Task<IActionResult> UpdatePrice([FromBody] FacilityPriceUpdateRequestDto request)
+        {
+            var result = await _facilityPriceService.UpdatePriceAsync(request);
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            return Ok(result.Message);
+        }
 
         [HttpGet("list-price")]
-        [AllowAnonymous]
+        [Authorize(Policy = "Owner")]
         public async Task<IActionResult> GetAll(
             [FromQuery] string? name,
             [FromQuery] int pageNumber = 1,
@@ -46,7 +57,7 @@ namespace SFMSSolution.API.Controllers
         }
 
         [HttpGet("get-price-by-id/{id:Guid}")]
-        [AllowAnonymous]
+        [Authorize(Policy = "Owner")]
         public async Task<IActionResult> GetById(Guid id)
         {
             var result = await _facilityPriceService.GetByIdAsync(id);

@@ -101,17 +101,18 @@ namespace SFMSSolution.Application.Services.Admin
             var user = await _userManager.FindByIdAsync(request.UserId.ToString());
             if (user == null) return false;
 
-            var roleExists = await _roleManager.RoleExistsAsync(request.Role);
+            var roleName = request.Role.ToString(); // Chuyển enum thành string
+
+            var roleExists = await _roleManager.RoleExistsAsync(roleName);
             if (!roleExists) return false;
 
             var currentRoles = await _userManager.GetRolesAsync(user);
             var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
             if (!removeResult.Succeeded) return false;
 
-            var addResult = await _userManager.AddToRoleAsync(user, request.Role);
+            var addResult = await _userManager.AddToRoleAsync(user, roleName);
             return addResult.Succeeded;
         }
-
         public async Task<UserDto> GetUserProfileAsync()
         {
             var userId = _httpContextAccessor.HttpContext?.User?.FindFirst("sub")?.Value;
@@ -135,8 +136,14 @@ namespace SFMSSolution.Application.Services.Admin
         public async Task<bool> DisableUserAsync(Guid userId)
         {
             var user = await _unitOfWork.AdminRepository.GetUserByIdWithRolesAsync(userId);
-            if (user == null || user.Status == EntityStatus.Inactive)
+            if (user == null)
                 return false;
+
+            if (user.Status == EntityStatus.Inactive)
+            {
+                // User is already disabled → no action needed, return true
+                return true;
+            }
 
             user.Status = EntityStatus.Inactive;
             await _unitOfWork.AdminRepository.UpdateAsync(user);
@@ -148,8 +155,14 @@ namespace SFMSSolution.Application.Services.Admin
         public async Task<bool> ActivateUserAsync(Guid userId)
         {
             var user = await _unitOfWork.AdminRepository.GetUserByIdWithRolesAsync(userId);
-            if (user == null || user.Status == EntityStatus.Active)
+            if (user == null)
                 return false;
+
+            if (user.Status == EntityStatus.Active)
+            {
+                // User is already active → no action needed, return true
+                return true;
+            }
 
             user.Status = EntityStatus.Active;
             await _unitOfWork.AdminRepository.UpdateAsync(user);

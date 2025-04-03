@@ -1,8 +1,10 @@
-﻿using System;
+﻿using SFMSSolution.Application.Extensions;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace SFMSSolution.Application.DataTransferObjects.Event.Request
@@ -18,9 +20,10 @@ namespace SFMSSolution.Application.DataTransferObjects.Event.Request
         public string Address { get; set; } = string.Empty;
 
         [Required]
+        [JsonConverter(typeof(JsonDateOnlyConverter))]
         public DateTime StartTime { get; set; }
 
-        [Required]
+        [JsonConverter(typeof(JsonDateOnlyConverter))]
         public DateTime EndTime { get; set; }
 
         [Required]

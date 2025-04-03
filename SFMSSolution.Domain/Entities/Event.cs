@@ -20,7 +20,7 @@ namespace SFMSSolution.Domain.Entities
         public string EventType { get; set; }
 
         public Guid OwnerId { get; set; }                      // FK
-        public User Owner { get; set; }
+        public User? Owner { get; set; }
 
         // Trạng thái của event, ví dụ: "Scheduled", "Ongoing", "Completed", "Cancelled"
         public string Status { get; set; } = "Scheduled";

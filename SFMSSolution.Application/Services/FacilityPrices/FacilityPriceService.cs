@@ -24,7 +24,8 @@ namespace SFMSSolution.Application.Services
             var facility = await _unitOfWork.FacilityRepository.GetByIdAsync(request.FacilityId);
             if (facility == null)
                 return new ApiResponse<string>("Facility not found.");
-
+            if (request.StartDate > request.EndDate)
+                return new ApiResponse<string>("StartDate cannot be after EndDate.");
             // ✅ Parse giờ từ string sang TimeSpan
             if (!TimeSpan.TryParse(request.StartTime, out var parsedStartTime) ||
                 !TimeSpan.TryParse(request.EndTime, out var parsedEndTime))
@@ -65,7 +66,33 @@ namespace SFMSSolution.Application.Services
             return new ApiResponse<string>("Facility price created successfully.");
         }
 
+        public async Task<ApiResponse<string>> UpdatePriceAsync(FacilityPriceUpdateRequestDto request)
+        {
+            if (request.StartDate > request.EndDate)
+            {
+                return new ApiResponse<string>("StartDate cannot be after EndDate.");
+            }
 
+            var entity = await _unitOfWork.FacilityPriceRepository.GetByIdWithTimeSlotAsync(request.Id);
+            if (entity == null)
+                return new ApiResponse<string>("Facility price not found.");
+
+            entity.BasePrice = request.BasePrice;
+            entity.Coefficient = request.Coefficient;
+            entity.FinalPrice = request.BasePrice * request.Coefficient;
+            entity.UpdatedDate = DateTime.UtcNow;
+
+            entity.FacilityTimeSlot.StartTime = TimeSpan.Parse(request.StartTime);
+            entity.FacilityTimeSlot.EndTime = TimeSpan.Parse(request.EndTime);
+            entity.FacilityTimeSlot.StartDate = request.StartDate;
+            entity.FacilityTimeSlot.EndDate = request.EndDate;
+            entity.FacilityTimeSlot.UpdatedDate = DateTime.UtcNow;
+
+            await _unitOfWork.FacilityPriceRepository.UpdateAsync(entity);
+            await _unitOfWork.CompleteAsync();
+
+            return new ApiResponse<string>($"Facility price updated successfully for Facility ID: {entity.FacilityId}, Slot ID: {entity.FacilityTimeSlotId}.");
+        }
         public async Task<(IEnumerable<FacilityPriceDto> Prices, int TotalCount)> GetAllAsync(string? facilityName, int pageNumber, int pageSize)
         {
             var (prices, total) = await _unitOfWork.FacilityPriceRepository.GetAllWithTimeSlotAndFacilityAsync(pageNumber, pageSize);

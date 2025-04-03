@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SFMSSolution.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,6 @@ namespace SFMSSolution.Application.DataTransferObjects.Admin.Request
     public class ChangeUserRoleRequestDto
     {
         public Guid UserId { get; set; }
-        public string Role { get; set; }
+        public Role Role { get; set; }
     }
 }

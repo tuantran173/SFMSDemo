@@ -103,11 +103,7 @@ namespace SFMS.Infrastructure.Repositories
         // ✅ Lấy theo tên
         public async Task<IEnumerable<T>> GetByNameAsync(string name, int? pageNumber = null, int? pageSize = null)
         {
-            var propertyInfo = typeof(T).GetProperty("Name");
-            if (propertyInfo == null)
-            {
-                throw new InvalidOperationException($"Entity {typeof(T).Name} does not have a property named 'Name'.");
-            }
+            var propertyInfo = typeof(T).GetProperty("Name") ?? throw new InvalidOperationException($"Entity {typeof(T).Name} does not have a property named 'Name'.");
 
             // Tạo biểu thức tìm kiếm theo tên (sử dụng Reflection)
             var parameter = Expression.Parameter(typeof(T), "e");
@@ -137,12 +133,7 @@ namespace SFMS.Infrastructure.Repositories
 
         public async Task<int> CountByNameAsync(string name)
         {
-            var propertyInfo = typeof(T).GetProperty("Name");
-            if (propertyInfo == null)
-            {
-                throw new InvalidOperationException($"Entity {typeof(T).Name} does not have a property named 'Name'.");
-            }
-
+            var propertyInfo = typeof(T).GetProperty("Name") ?? throw new InvalidOperationException($"Entity {typeof(T).Name} does not have a property named 'Name'.");
             var parameter = Expression.Parameter(typeof(T), "e");
             var property = Expression.Property(parameter, propertyInfo);
             var value = Expression.Constant(name);
