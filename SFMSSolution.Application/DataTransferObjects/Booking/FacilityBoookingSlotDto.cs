@@ -15,6 +15,8 @@ namespace SFMSSolution.Application.DataTransferObjects.Booking
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public SlotStatus Status { get; set; }
+        public string? Note { get; set; }
+        public decimal FinalPrice { get; set; }
     }
 
 }
