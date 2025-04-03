@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using SFMSSolution.Application.DataTransferObjects.FacilityPrice.Request;
 using SFMSSolution.Application.DataTransferObjects.FacilityPrice;
+using SFMSSolution.Application.DataTransferObjects.FacilityPrice.Request;
 using SFMSSolution.Application.Services.FacilityPrices;
 using SFMSSolution.Domain.Entities;
 using SFMSSolution.Infrastructure.Implements.UnitOfWorks;
@@ -30,6 +30,27 @@ namespace SFMSSolution.Application.Services
 
             if (request.StartTime >= request.EndTime)
                 return new ApiResponse<string>("StartTime must be before EndTime.");
+
+            var existingTimeSlots = await _unitOfWork.FacilityTimeSlotRepository.GetByFacilityIdAsync(request.FacilityId);
+            bool hasOverlap = existingTimeSlots.Any(slot =>
+                slot.StartDate <= request.EndDate &&
+                slot.EndDate >= request.StartDate &&
+                slot.StartTime < request.EndTime &&
+                slot.EndTime > request.StartTime
+            );
+            if (hasOverlap)
+                return new ApiResponse<string>("Time slot overlaps with existing slot for this facility.");
+
+            bool isExactDuplicate = existingTimeSlots.Any(slot =>
+                slot.StartDate == request.StartDate &&
+                slot.EndDate == request.EndDate &&
+                slot.StartTime == request.StartTime &&
+                slot.EndTime == request.EndTime
+            );
+
+            if (isExactDuplicate)
+                return new ApiResponse<string>("A time slot with the exact same time already exists.");
+
 
             var newTimeSlot = new FacilityTimeSlot
             {
@@ -75,6 +96,17 @@ namespace SFMSSolution.Application.Services
             var entity = await _unitOfWork.FacilityPriceRepository.GetByIdWithTimeSlotAsync(request.Id);
             if (entity == null)
                 return new ApiResponse<string>("Facility price not found.");
+
+            var existingTimeSlots = await _unitOfWork.FacilityTimeSlotRepository.GetByFacilityIdAsync(entity.FacilityId);
+            bool hasOverlap = existingTimeSlots.Any(slot =>
+                slot.Id != entity.FacilityTimeSlotId &&
+                slot.StartDate <= request.EndDate &&
+                slot.EndDate >= request.StartDate &&
+                slot.StartTime < request.EndTime &&
+                slot.EndTime > request.StartTime
+            );
+            if (hasOverlap)
+                return new ApiResponse<string>("Time slot overlaps with existing slot for this facility.");
 
             entity.BasePrice = request.BasePrice;
             entity.Coefficient = request.Coefficient;
