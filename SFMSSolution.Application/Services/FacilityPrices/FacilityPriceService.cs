@@ -21,58 +21,23 @@ namespace SFMSSolution.Application.Services
 
         public async Task<ApiResponse<string>> CreatePriceAsync(FacilityPriceCreateRequestDto request)
         {
-            var facility = await _unitOfWork.FacilityRepository.GetByIdAsync(request.FacilityId);
-            if (facility == null)
-                return new ApiResponse<string>("Facility not found.");
+            // Kiểm tra slot tồn tại
+            var slot = await _unitOfWork.FacilityTimeSlotRepository.GetByIdAsync(request.FacilityTimeSlotId);
+            if (slot == null)
+                return new ApiResponse<string>("Time slot not found.");
 
-            if (request.StartDate > request.EndDate)
-                return new ApiResponse<string>("StartDate cannot be after EndDate.");
-
-            if (request.StartTime >= request.EndTime)
-                return new ApiResponse<string>("StartTime must be before EndTime.");
-
-            var existingTimeSlots = await _unitOfWork.FacilityTimeSlotRepository.GetByFacilityIdAsync(request.FacilityId);
-            bool hasOverlap = existingTimeSlots.Any(slot =>
-                slot.StartDate <= request.EndDate &&
-                slot.EndDate >= request.StartDate &&
-                slot.StartTime < request.EndTime &&
-                slot.EndTime > request.StartTime
-            );
-            if (hasOverlap)
-                return new ApiResponse<string>("Time slot overlaps with existing slot for this facility.");
-
-            bool isExactDuplicate = existingTimeSlots.Any(slot =>
-                slot.StartDate == request.StartDate &&
-                slot.EndDate == request.EndDate &&
-                slot.StartTime == request.StartTime &&
-                slot.EndTime == request.EndTime
-            );
-
-            if (isExactDuplicate)
-                return new ApiResponse<string>("A time slot with the exact same time already exists.");
-
-
-            var newTimeSlot = new FacilityTimeSlot
-            {
-                Id = Guid.NewGuid(),
-                FacilityId = request.FacilityId,
-                StartTime = request.StartTime,
-                EndTime = request.EndTime,
-                StartDate = request.StartDate,
-                EndDate = request.EndDate,
-                IsWeekend = false,
-                CreatedDate = DateTime.UtcNow
-            };
-
-            await _unitOfWork.FacilityTimeSlotRepository.AddAsync(newTimeSlot);
+            // Kiểm tra đã có giá cho slot này chưa
+            var existing = await _unitOfWork.FacilityPriceRepository.GetByTimeSlotIdAsync(request.FacilityTimeSlotId);
+            if (existing != null)
+                return new ApiResponse<string>("Price already exists for this time slot.");
 
             var finalPrice = request.BasePrice * request.Coefficient;
 
             var facilityPrice = new FacilityPrice
             {
                 Id = Guid.NewGuid(),
-                FacilityId = request.FacilityId,
-                FacilityTimeSlotId = newTimeSlot.Id,
+                FacilityId = slot.FacilityId,
+                FacilityTimeSlotId = slot.Id,
                 BasePrice = request.BasePrice,
                 Coefficient = request.Coefficient,
                 FinalPrice = finalPrice,
@@ -84,6 +49,7 @@ namespace SFMSSolution.Application.Services
 
             return new ApiResponse<string>(facilityPrice.Id.ToString(), "Facility price created successfully.");
         }
+
 
         public async Task<ApiResponse<string>> UpdatePriceAsync(FacilityPriceUpdateRequestDto request)
         {
@@ -97,33 +63,48 @@ namespace SFMSSolution.Application.Services
             if (entity == null)
                 return new ApiResponse<string>("Facility price not found.");
 
-            var existingTimeSlots = await _unitOfWork.FacilityTimeSlotRepository.GetByFacilityIdAsync(entity.FacilityId);
-            bool hasOverlap = existingTimeSlots.Any(slot =>
-                slot.Id != entity.FacilityTimeSlotId &&
-                slot.StartDate <= request.EndDate &&
-                slot.EndDate >= request.StartDate &&
-                slot.StartTime < request.EndTime &&
-                slot.EndTime > request.StartTime
-            );
-            if (hasOverlap)
-                return new ApiResponse<string>("Time slot overlaps with existing slot for this facility.");
+            var timeSlot = entity.FacilityTimeSlot;
 
+            // Nếu thời gian thực sự thay đổi thì mới kiểm tra trùng
+            bool isTimeChanged =
+                timeSlot.StartDate != request.StartDate ||
+                timeSlot.EndDate != request.EndDate ||
+                timeSlot.StartTime != request.StartTime ||
+                timeSlot.EndTime != request.EndTime;
+
+            if (isTimeChanged)
+            {
+                var existingTimeSlots = await _unitOfWork.FacilityTimeSlotRepository.GetByFacilityIdAsync(entity.FacilityId);
+                bool hasOverlap = existingTimeSlots.Any(slot =>
+                    slot.Id != timeSlot.Id &&
+                    slot.StartDate <= request.EndDate &&
+                    slot.EndDate >= request.StartDate &&
+                    slot.StartTime < request.EndTime &&
+                    slot.EndTime > request.StartTime
+                );
+                if (hasOverlap)
+                    return new ApiResponse<string>("Time slot overlaps with existing slot for this facility.");
+            }
+
+            // Update giá
             entity.BasePrice = request.BasePrice;
             entity.Coefficient = request.Coefficient;
             entity.FinalPrice = request.BasePrice * request.Coefficient;
             entity.UpdatedDate = DateTime.UtcNow;
 
-            entity.FacilityTimeSlot.StartDate = request.StartDate;
-            entity.FacilityTimeSlot.EndDate = request.EndDate;
-            entity.FacilityTimeSlot.StartTime = request.StartTime;
-            entity.FacilityTimeSlot.EndTime = request.EndTime;
-            entity.FacilityTimeSlot.UpdatedDate = DateTime.UtcNow;
+            //// Update thời gian nếu có thay đổi
+            //timeSlot.StartDate = request.StartDate;
+            //timeSlot.EndDate = request.EndDate;
+            //timeSlot.StartTime = request.StartTime;
+            //timeSlot.EndTime = request.EndTime;
+            //timeSlot.UpdatedDate = DateTime.UtcNow;
 
             await _unitOfWork.FacilityPriceRepository.UpdateAsync(entity);
             await _unitOfWork.CompleteAsync();
 
             return new ApiResponse<string>("Facility price updated successfully.");
         }
+
 
         public async Task<(IEnumerable<FacilityPriceDto> Prices, int TotalCount)> GetAllAsync(string? facilityName, int pageNumber, int pageSize)
         {

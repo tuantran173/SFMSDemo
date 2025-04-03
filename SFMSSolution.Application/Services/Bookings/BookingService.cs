@@ -135,29 +135,32 @@ namespace SFMSSolution.Application.Services.Bookings
             for (int day = 0; day < futureDays; day++)
             {
                 var currentDate = today.AddDays(day);
-                for (var time = startHour; time < endHour; time += slotDuration)
+
+                foreach (var slot in timeSlots)
                 {
-                    var slotEnd = time + slotDuration;
-                    var slot = timeSlots.FirstOrDefault(s =>
-                        s.StartDate <= currentDate && s.EndDate >= currentDate &&
-                        Math.Abs((s.StartTime - time).TotalMinutes) < 1 &&
-                        Math.Abs((s.EndTime - slotEnd).TotalMinutes) < 1);
-
-                    var booking = bookings.FirstOrDefault(b => b.FacilityTimeSlotId == slot?.Id && b.BookingDate.Date == currentDate);
-
-                    var status = booking != null
-                        ? SlotStatus.Booked
-                        : slot != null ? SlotStatus.Available : SlotStatus.Closed;
-
-                    calendarItems.Add(new FacilityBookingSlotDto
+                    // Slot này có áp dụng cho ngày hiện tại không?
+                    if (slot.StartDate <= currentDate && slot.EndDate >= currentDate)
                     {
-                        SlotId = slot?.Id ?? Guid.Empty,
-                        StartTime = time,
-                        EndTime = slotEnd,
-                        StartDate = currentDate,
-                        EndDate = currentDate,
-                        Status = status
-                    });
+                        var booking = bookings.FirstOrDefault(b =>
+                            b.FacilityTimeSlotId == slot.Id &&
+                            b.BookingDate.Date == currentDate);
+
+                        var status = booking != null
+                            ? SlotStatus.Booked
+                            : slot.Status == SlotStatus.Closed
+                                ? SlotStatus.Closed
+                                : SlotStatus.Available;
+
+                        calendarItems.Add(new FacilityBookingSlotDto
+                        {
+                            SlotId = slot.Id,
+                            StartTime = slot.StartTime,
+                            EndTime = slot.EndTime,
+                            StartDate = currentDate,
+                            EndDate = currentDate,
+                            Status = status
+                        });
+                    }
                 }
             }
 
