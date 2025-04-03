@@ -4,20 +4,30 @@
     {
         public bool Success { get; set; }
         public string Message { get; set; }
-        public T Data { get; set; }
+        public T? Data { get; set; }
 
-        public ApiResponse(T data, string message = null)
+        // Constructor thành công (truyền data)
+        public ApiResponse(T data, string message = "Request successful")
         {
             Success = true;
-            Message = message ?? "Request successful";
+            Message = message;
             Data = data;
         }
 
+        // Constructor thất bại (truyền lỗi)
         public ApiResponse(string message)
         {
             Success = false;
             Message = message;
             Data = default;
+        }
+
+        // Constructor toàn quyền kiểm soát
+        public ApiResponse(bool success, string message, T? data = default)
+        {
+            Success = success;
+            Message = message;
+            Data = data;
         }
     }
 }

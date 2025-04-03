@@ -23,11 +23,9 @@ namespace SFMSSolution.Application.DataTransferObjects.Event.Request
         public string Address { get; set; } = string.Empty;
 
         [Required]
-        [JsonConverter(typeof(JsonDateOnlyConverter))]
         public DateTime StartTime { get; set; }
 
         [Required]
-        [JsonConverter(typeof(JsonDateOnlyConverter))]
         public DateTime EndTime { get; set; }
 
         [Required]

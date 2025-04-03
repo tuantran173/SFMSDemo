@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Validation.AspNetCore;
 using SFMSSolution.API.Hubs;
+using SFMSSolution.Application.Extensions;
 using SFMSSolution.Application.Extensions.Exceptions;
 using SFMSSolution.Application.Mapping;
 using SFMSSolution.Domain.Entities;
@@ -109,7 +110,11 @@ builder.Services.AddControllers()
     .AddFluentValidation(fv =>
     {
         fv.RegisterValidatorsFromAssemblyContaining<Program>();
-    });
+    })
+.AddJsonOptions(options =>
+ {
+     options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter());
+ });
 builder.Services.AddInfrastructure();
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 builder.Services.AddAuthorizationBuilder()
