@@ -11,7 +11,6 @@ namespace SFMSSolution.Application.DataTransferObjects.FacilityPrice.Request
     public class FacilityPriceCreateRequestDto
     {
         public Guid FacilityId { get; set; }                    // ID của sân
-        public Guid FacilityTimeSlotId { get; set; }
         [JsonConverter(typeof(TimeSpanToStringConverter))]
         public TimeSpan StartTime { get; set; } // Format: "HH:mm"
         [JsonConverter(typeof(TimeSpanToStringConverter))]

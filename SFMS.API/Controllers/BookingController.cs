@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SFMSSolution.Application.DataTransferObjects.Booking.Request;
 using SFMSSolution.Application.Services.Bookings;
-using SFMSSolution.Domain.Enums;
 
 namespace SFMSSolution.API.Controllers
 {
@@ -124,24 +123,13 @@ namespace SFMSSolution.API.Controllers
             return Ok(result.Data);
         }
 
-        // GET: api/booking/calendar/slot-detail
-        [HttpGet("calendar/slot-detail")]
-        [Authorize]
-        public async Task<IActionResult> GetCalendarSlotDetail([FromQuery] Guid slotId, [FromQuery] DateTime date)
+        [HttpGet("slot-detail/{slotId:Guid}")]
+        public async Task<IActionResult> GetSlotDetail(Guid slotId)
         {
-            var result = await _bookingService.GetCalendarSlotDetailAsync(slotId, date);
+            var result = await _bookingService.GetBookingSlotDetailAsync(slotId);
             if (!result.Success)
-                return NotFound(result);
-            return Ok(result);
-        }
-
-        // PUT: api/booking/calendar/slot-status
-        [HttpPut("calendar/update-slot-status")]
-        [Authorize(Policy = "Owner")]
-        public async Task<IActionResult> UpdateSlotStatus([FromQuery] Guid slotId, [FromQuery] SlotStatus newStatus)
-        {
-            var result = await _bookingService.UpdateCalendarSlotStatusAsync(slotId, newStatus);
-            return result.Success ? Ok(result) : BadRequest(result);
+                return NotFound(result.Message);
+            return Ok(result.Data);
         }
     }
 }

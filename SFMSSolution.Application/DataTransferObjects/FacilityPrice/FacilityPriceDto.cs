@@ -13,6 +13,7 @@ namespace SFMSSolution.Application.DataTransferObjects.FacilityPrice
         public Guid Id { get; set; }
 
         // Thông tin sân
+        public Guid FacilityId { get; set; }
         public string FacilityName { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
         public string ImageUrl { get; set; } = string.Empty;

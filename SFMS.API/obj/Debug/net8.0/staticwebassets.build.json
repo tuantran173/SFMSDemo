@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Eo1P0z1HpZxQNacZbdA03u9JzUIxuvdoNXJ3jDuoews=",
+  "Hash": "3Ja3leaNiuKo8SPGobvcTHOL6v6VonLf9scJVBaEpwI=",
   "Source": "SFMSSolution.API",
   "BasePath": "_content/SFMSSolution.API",
   "Mode": "Default",
@@ -47,10 +47,10 @@
       "OriginalItemSpec": "C:\\Users\\Asus\\.nuget\\packages\\microsoft.aspnetcore.components.quickgrid\\8.0.12\\staticwebassets\\QuickGrid.razor.js"
     },
     {
-      "Identity": "D:\\SFMSGithub\\SFMS.API\\obj\\Debug\\net8.0\\scopedcss\\bundle\\SFMSSolution.API.styles.css",
+      "Identity": "D:\\SEP490_G46\\SFMS.API\\obj\\Debug\\net8.0\\scopedcss\\bundle\\SFMSSolution.API.styles.css",
       "SourceId": "SFMSSolution.API",
       "SourceType": "Computed",
-      "ContentRoot": "D:\\SFMSGithub\\SFMS.API\\obj\\Debug\\net8.0\\scopedcss\\bundle\\",
+      "ContentRoot": "D:\\SEP490_G46\\SFMS.API\\obj\\Debug\\net8.0\\scopedcss\\bundle\\",
       "BasePath": "_content/SFMSSolution.API",
       "RelativePath": "SFMSSolution.API.styles.css",
       "AssetKind": "All",
@@ -63,7 +63,7 @@
       "AssetTraitValue": "ApplicationBundle",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "D:\\SFMSGithub\\SFMS.API\\obj\\Debug\\net8.0\\scopedcss\\bundle\\SFMSSolution.API.styles.css"
+      "OriginalItemSpec": "D:\\SEP490_G46\\SFMS.API\\obj\\Debug\\net8.0\\scopedcss\\bundle\\SFMSSolution.API.styles.css"
     }
   ]
 }

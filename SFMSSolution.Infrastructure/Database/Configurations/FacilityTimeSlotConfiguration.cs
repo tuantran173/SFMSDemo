@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SFMSSolution.Domain.Enums;
 
 namespace SFMSSolution.Infrastructure.Database.Configurations
 {
@@ -33,10 +32,6 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
             builder.Property(ft => ft.EndDate)
                    .HasColumnType("date")
                    .IsRequired();
-
-            builder.Property(f => f.Status)
-                  .IsRequired()
-                  .HasDefaultValue(SlotStatus.Available);
 
             builder.HasOne(ft => ft.Facility)
                    .WithMany()
