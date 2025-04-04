@@ -73,6 +73,13 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
             b.BookingDate.Date == date.Date &&
             b.Status != BookingStatus.Canceled);
         }
+
+        public async Task<Booking?> GetBookingBySlotAndDateAsync(Guid slotId, DateTime date)
+        {
+            return await _context.Bookings
+                .Include(b => b.FacilityTimeSlot)
+                .FirstOrDefaultAsync(b => b.FacilityTimeSlotId == slotId && b.BookingDate.Date == date.Date);
+        }
     }
 }
 

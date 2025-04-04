@@ -1,4 +1,5 @@
 ﻿using SFMSSolution.Domain.Entities.Base;
+using SFMSSolution.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,7 @@ namespace SFMSSolution.Domain.Entities
         public DateTime EndDate { get; set; }    // Ngày kết thúc áp dụng
  
         public bool IsWeekend { get; set; }  // Có phải cuối tuần không (true = cuối tuần)
+        public SlotStatus Status { get; set; }
 
     }
 }

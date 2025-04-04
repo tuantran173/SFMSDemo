@@ -16,5 +16,7 @@ namespace SFMSSolution.Infrastructure.Implements.Interfaces
             params Expression<Func<FacilityTimeSlot, object>>[] includes);
 
         Task<List<FacilityTimeSlot>> GetByFacilityIdAsync(Guid facilityId);
+
+
     }
 }

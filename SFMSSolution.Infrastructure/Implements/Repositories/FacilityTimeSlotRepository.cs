@@ -38,5 +38,6 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
                 .Where(t => t.FacilityId == facilityId)
                 .ToListAsync();
         }
+        
     }
 }

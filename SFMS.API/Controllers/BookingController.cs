@@ -123,13 +123,24 @@ namespace SFMSSolution.API.Controllers
             return Ok(result.Data);
         }
 
-        [HttpGet("slot-detail/{slotId:Guid}")]
-        public async Task<IActionResult> GetSlotDetail(Guid slotId)
+        [HttpGet("calendar/slot-detail")]
+        public async Task<IActionResult> GetCalendarSlotDetail(Guid slotId, DateTime date)
         {
-            var result = await _bookingService.GetBookingSlotDetailAsync(slotId);
+            var result = await _bookingService.GetCalendarSlotDetailAsync(slotId, date);
             if (!result.Success)
-                return NotFound(result.Message);
-            return Ok(result.Data);
+                return NotFound(result);
+            return Ok(result);
         }
+
+        [HttpPut("calendar/update-slot")]
+        public async Task<IActionResult> UpdateCalendarSlot(Guid slotId, DateTime newStartDate, DateTime newEndDate)
+        {
+            var result = await _bookingService.UpdateCalendarSlotAsync(slotId, newStartDate, newEndDate);
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            return Ok(result.Message);
+        }
+
     }
 }
