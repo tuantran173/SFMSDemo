@@ -115,6 +115,7 @@ namespace SFMSSolution.API.Controllers
         }
 
         [HttpGet("calendar/{facilityId:Guid}")]
+
         public async Task<IActionResult> GetCalendar(Guid facilityId)
         {
             var result = await _bookingService.GetFacilityCalendarAsync(facilityId);
@@ -124,15 +125,17 @@ namespace SFMSSolution.API.Controllers
         }
 
         [HttpGet("calendar/slot-detail")]
-        public async Task<IActionResult> GetCalendarSlotDetail(Guid slotId, DateTime date)
+        [Authorize]
+        public async Task<IActionResult> GetCalendarSlotDetail(Guid slotId, DateTime date, TimeSpan startTime, TimeSpan endTime)
         {
-            var result = await _bookingService.GetCalendarSlotDetailAsync(slotId, date);
+            var result = await _bookingService.GetCalendarSlotDetailAsync(slotId, date, startTime, endTime);
             if (!result.Success)
-                return NotFound(result);
+                return BadRequest(result);
             return Ok(result);
         }
 
         [HttpPut("calendar/update-slot")]
+        [Authorize(Policy = "Owner")]
         public async Task<IActionResult> UpdateCalendarSlot(Guid slotId, DateTime newStartDate, DateTime newEndDate)
         {
             var result = await _bookingService.UpdateCalendarSlotAsync(slotId, newStartDate, newEndDate);

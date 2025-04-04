@@ -193,11 +193,14 @@ namespace SFMSSolution.Application.Services.Bookings
         }
 
 
-        public async Task<ApiResponse<FacilityBookingSlotDto>> GetCalendarSlotDetailAsync(Guid slotId, DateTime date)
+        public async Task<ApiResponse<FacilityBookingSlotDto>> GetCalendarSlotDetailAsync(Guid slotId, DateTime date, TimeSpan startTime, TimeSpan endTime)
         {
             var slot = await _unitOfWork.FacilityTimeSlotRepository.GetByIdAsync(slotId);
             if (slot == null)
                 return new ApiResponse<FacilityBookingSlotDto>("Slot not found.");
+
+            if (slot.StartTime != startTime || slot.EndTime != endTime)
+                return new ApiResponse<FacilityBookingSlotDto>("Time range doesn't match the slot.");
 
             var booking = await _unitOfWork.BookingRepository.GetBookingBySlotAndDateAsync(slotId, date);
             var price = await _unitOfWork.FacilityPriceRepository.GetByTimeSlotIdAsync(slotId);
