@@ -1,8 +1,10 @@
-﻿using SFMSSolution.Domain.Enums;
+﻿using SFMSSolution.Application.Extensions;
+using SFMSSolution.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace SFMSSolution.Application.DataTransferObjects.Booking
@@ -10,7 +12,9 @@ namespace SFMSSolution.Application.DataTransferObjects.Booking
     public class FacilityBookingSlotDto
     {
         public Guid SlotId { get; set; }
+        [JsonConverter(typeof(TimeSpanToStringConverter))]
         public TimeSpan StartTime { get; set; }
+        [JsonConverter(typeof(TimeSpanToStringConverter))]
         public TimeSpan EndTime { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
