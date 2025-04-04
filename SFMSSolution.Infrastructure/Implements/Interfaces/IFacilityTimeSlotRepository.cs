@@ -17,6 +17,7 @@ namespace SFMSSolution.Infrastructure.Implements.Interfaces
 
         Task<List<FacilityTimeSlot>> GetByFacilityIdAsync(Guid facilityId);
 
+        Task AddRangeAsync(IEnumerable<FacilityTimeSlot> slots);
 
     }
 }

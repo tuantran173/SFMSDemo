@@ -114,6 +114,17 @@ namespace SFMSSolution.API.Controllers
             return Ok(result);
         }
 
+        [HttpPost("generate-default-slots")]
+        [Authorize(Policy ="Owner")]
+        public async Task<IActionResult> GenerateDefaultSlots(Guid facilityId, DateTime fromDate, DateTime toDate)
+        {
+            var result = await _bookingService.GenerateDefaultSlotsAsync(facilityId, fromDate, toDate);
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            return Ok(result.Message);
+        }
+
         [HttpGet("calendar/{facilityId:Guid}")]
 
         public async Task<IActionResult> GetCalendar(Guid facilityId)

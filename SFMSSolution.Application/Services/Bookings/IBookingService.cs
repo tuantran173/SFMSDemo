@@ -26,5 +26,6 @@ namespace SFMSSolution.Application.Services.Bookings
         Task<ApiResponse<FacilityBookingCalendarDto>> GetFacilityCalendarAsync(Guid facilityId);
         Task<ApiResponse<FacilityBookingSlotDto>> GetCalendarSlotDetailAsync(Guid slotId, DateTime date, TimeSpan startTime, TimeSpan endTime);
         Task<ApiResponse<string>> UpdateCalendarSlotAsync(Guid slotId, DateTime newStartDate, DateTime newEndDate);
+        Task<ApiResponse<string>> GenerateDefaultSlotsAsync(Guid facilityId, DateTime fromDate, DateTime toDate);
     }
 }

@@ -38,6 +38,10 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
                 .Where(t => t.FacilityId == facilityId)
                 .ToListAsync();
         }
-        
+        public async Task AddRangeAsync(IEnumerable<FacilityTimeSlot> slots)
+        {
+            await _context.FacilityTimeSlots.AddRangeAsync(slots);
+        }
+
     }
 }
