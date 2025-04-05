@@ -80,6 +80,17 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
                 .Include(b => b.FacilityTimeSlot)
                 .FirstOrDefaultAsync(b => b.FacilityTimeSlotId == slotId && b.BookingDate.Date == date.Date);
         }
+
+        public async Task<Booking?> GetBookingBySlotAndDateAndTimeAsync(Guid slotId, DateTime date, TimeSpan startTime, TimeSpan endTime)
+        {
+            return await _context.Bookings
+                .FirstOrDefaultAsync(b =>
+                    b.FacilityTimeSlotId == slotId &&
+                    b.BookingDate.Date == date.Date &&
+                    b.StartTime == startTime &&
+                    b.EndTime == endTime);
+        }
+
     }
 }
 

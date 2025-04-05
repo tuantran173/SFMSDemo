@@ -20,6 +20,7 @@ namespace SFMSSolution.Infrastructure.Implements.Interfaces
 
         Task<bool> IsTimeSlotBooked(Guid facilityTimeSlotId, DateTime date);
         Task<Booking?> GetBookingBySlotAndDateAsync(Guid slotId, DateTime date);
+        Task<Booking?> GetBookingBySlotAndDateAndTimeAsync(Guid slotId, DateTime date, TimeSpan startTime, TimeSpan endTime);
 
     }
 }

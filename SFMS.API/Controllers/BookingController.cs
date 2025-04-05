@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SFMSSolution.Application.DataTransferObjects.Booking;
 using SFMSSolution.Application.DataTransferObjects.Booking.Request;
 using SFMSSolution.Application.Services.Bookings;
 
@@ -155,17 +156,24 @@ namespace SFMSSolution.API.Controllers
 
         //    return Ok(result.Message);
         //}
-        [HttpPut("calendar/update-slot")]
-        public async Task<IActionResult> UpdateCalendarSlot([FromBody] CalendarSlotUpdateDto dto)
+        [HttpPut("calendar/update-slot-detail")]
+        [Authorize(Policy = "Owner")]
+        public async Task<IActionResult> UpdateCalendarSlotDetail([FromBody] UpdateSlotDetailRequestDto request)
         {
-            var result = await _bookingService.UpdateCalendarSlotAsync(
-                dto.SlotId,
-                dto.FinalPrice,
-                dto.Description,
-                dto.Status
+            var result = await _bookingService.UpdateCalendarSlotDetailAsync(
+                request.SlotId,
+                request.Date,
+                request.StartTime,
+                request.EndTime,
+                request.Status.Value,
+                request.Note,
+                request.FinalPrice
             );
 
-            return result.Success ? Ok(result) : BadRequest(result);
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
         }
     }
 }

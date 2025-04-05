@@ -77,6 +77,73 @@ namespace SFMSSolution.Application.Services
         //    return new ApiResponse<string>(true,"Created 12 slots and assigned prices successfully.");
         //}
 
+        //public async Task<ApiResponse<string>> CreatePriceAsync(FacilityPriceCreateRequestDto request)
+        //{
+        //    var facility = await _unitOfWork.FacilityRepository.GetByIdAsync(request.FacilityId);
+        //    if (facility == null)
+        //        return new ApiResponse<string>("Facility not found.");
+
+        //    if (request.StartDate > request.EndDate)
+        //        return new ApiResponse<string>("StartDate cannot be after EndDate.");
+
+        //    if (request.StartTime >= request.EndTime)
+        //        return new ApiResponse<string>("StartTime must be before EndTime.");
+
+        //    var slotDuration = TimeSpan.FromMinutes(90);
+        //    var openTime = new TimeSpan(5, 0, 0);
+        //    var closeTime = new TimeSpan(23, 0, 0);
+
+        //    var timeSlots = new List<FacilityTimeSlot>();
+        //    var prices = new List<FacilityPrice>();
+
+        //    for (var time = openTime; time + slotDuration <= closeTime; time += slotDuration)
+        //    {
+        //        var endTime = time + slotDuration;
+
+        //        // ✅ Chỉ tạo slot nằm trong khoảng yêu cầu
+        //        if (time < request.StartTime || endTime > request.EndTime)
+        //            continue;
+
+        //        var newSlot = new FacilityTimeSlot
+        //        {
+        //            Id = Guid.NewGuid(),
+        //            FacilityId = request.FacilityId,
+        //            StartTime = time,
+        //            EndTime = endTime,
+        //            StartDate = request.StartDate,
+        //            EndDate = request.EndDate,
+        //            Status = SlotStatus.Available,
+        //            IsWeekend = false,
+        //            CreatedDate = DateTime.UtcNow
+        //        };
+
+        //        var finalPrice = request.BasePrice * (decimal)request.Coefficient;
+
+        //        var price = new FacilityPrice
+        //        {
+        //            Id = Guid.NewGuid(),
+        //            FacilityId = request.FacilityId,
+        //            FacilityTimeSlotId = newSlot.Id,
+        //            BasePrice = request.BasePrice,
+        //            Coefficient = request.Coefficient,
+        //            FinalPrice = finalPrice,
+        //            CreatedDate = DateTime.UtcNow
+        //        };
+
+        //        timeSlots.Add(newSlot);
+        //        prices.Add(price);
+        //    }
+
+        //    if (timeSlots.Count == 0)
+        //        return new ApiResponse<string>("No valid time slots were created based on the time range provided.");
+
+        //    await _unitOfWork.FacilityTimeSlotRepository.AddRangeAsync(timeSlots);
+        //    await _unitOfWork.FacilityPriceRepository.AddRangeAsync(prices);
+        //    await _unitOfWork.CompleteAsync();
+
+        //    return new ApiResponse<string>(true, $"Created {timeSlots.Count} slots and assigned prices successfully.");
+        //}
+
         public async Task<ApiResponse<string>> CreatePriceAsync(FacilityPriceCreateRequestDto request)
         {
             var facility = await _unitOfWork.FacilityRepository.GetByIdAsync(request.FacilityId);
@@ -89,61 +156,40 @@ namespace SFMSSolution.Application.Services
             if (request.StartTime >= request.EndTime)
                 return new ApiResponse<string>("StartTime must be before EndTime.");
 
-            var slotDuration = TimeSpan.FromMinutes(90);
-            var openTime = new TimeSpan(5, 0, 0);
-            var closeTime = new TimeSpan(23, 0, 0);
-
-            var timeSlots = new List<FacilityTimeSlot>();
-            var prices = new List<FacilityPrice>();
-
-            for (var time = openTime; time + slotDuration <= closeTime; time += slotDuration)
+            // 1. Tạo slot duy nhất
+            var newSlot = new FacilityTimeSlot
             {
-                var endTime = time + slotDuration;
+                Id = Guid.NewGuid(),
+                FacilityId = request.FacilityId,
+                StartTime = request.StartTime,  // Ví dụ: 05:00
+                EndTime = request.EndTime,      // Ví dụ: 14:00
+                StartDate = request.StartDate,
+                EndDate = request.EndDate,
+                Status = SlotStatus.Available,
+                CreatedDate = DateTime.UtcNow
+            };
 
-                // ✅ Chỉ tạo slot nằm trong khoảng yêu cầu
-                if (time < request.StartTime || endTime > request.EndTime)
-                    continue;
+            await _unitOfWork.FacilityTimeSlotRepository.AddAsync(newSlot);
 
-                var newSlot = new FacilityTimeSlot
-                {
-                    Id = Guid.NewGuid(),
-                    FacilityId = request.FacilityId,
-                    StartTime = time,
-                    EndTime = endTime,
-                    StartDate = request.StartDate,
-                    EndDate = request.EndDate,
-                    Status = SlotStatus.Available,
-                    IsWeekend = false,
-                    CreatedDate = DateTime.UtcNow
-                };
+            // 2. Tạo giá cho slot đó
+            var finalPrice = request.BasePrice * (decimal)request.Coefficient;
 
-                var finalPrice = request.BasePrice * (decimal)request.Coefficient;
+            var facilityPrice = new FacilityPrice
+            {
+                Id = Guid.NewGuid(),
+                FacilityId = request.FacilityId,
+                FacilityTimeSlotId = newSlot.Id,
+                BasePrice = request.BasePrice,
+                Coefficient = request.Coefficient,
+                FinalPrice = finalPrice,
+                CreatedDate = DateTime.UtcNow
+            };
 
-                var price = new FacilityPrice
-                {
-                    Id = Guid.NewGuid(),
-                    FacilityId = request.FacilityId,
-                    FacilityTimeSlotId = newSlot.Id,
-                    BasePrice = request.BasePrice,
-                    Coefficient = request.Coefficient,
-                    FinalPrice = finalPrice,
-                    CreatedDate = DateTime.UtcNow
-                };
-
-                timeSlots.Add(newSlot);
-                prices.Add(price);
-            }
-
-            if (timeSlots.Count == 0)
-                return new ApiResponse<string>("No valid time slots were created based on the time range provided.");
-
-            await _unitOfWork.FacilityTimeSlotRepository.AddRangeAsync(timeSlots);
-            await _unitOfWork.FacilityPriceRepository.AddRangeAsync(prices);
+            await _unitOfWork.FacilityPriceRepository.AddAsync(facilityPrice);
             await _unitOfWork.CompleteAsync();
 
-            return new ApiResponse<string>(true, $"Created {timeSlots.Count} slots and assigned prices successfully.");
+            return new ApiResponse<string>(true, "Created a time slot and assigned price successfully.");
         }
-
 
         public async Task<ApiResponse<string>> UpdatePriceAsync(FacilityPriceUpdateRequestDto request)
         {

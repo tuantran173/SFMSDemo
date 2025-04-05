@@ -23,6 +23,14 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
             builder.Property(b => b.BookingDate)
                    .IsRequired();
 
+            builder.Property(b => b.StartTime)
+       .HasColumnType("time")
+       .IsRequired(false); // Cho phép null
+
+            builder.Property(b => b.EndTime)
+                   .HasColumnType("time")
+                   .IsRequired(false); // Cho phép null
+
             builder.Property(b => b.Note)
                    .HasMaxLength(1000);
 

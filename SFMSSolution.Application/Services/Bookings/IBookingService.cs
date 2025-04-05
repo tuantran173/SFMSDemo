@@ -1,13 +1,7 @@
-﻿using SFMSSolution.Application.DataTransferObjects.Booking.Request;
-using SFMSSolution.Application.DataTransferObjects.Booking;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SFMSSolution.Response;
+﻿using SFMSSolution.Application.DataTransferObjects.Booking;
+using SFMSSolution.Application.DataTransferObjects.Booking.Request;
 using SFMSSolution.Domain.Enums;
-using SFMSSolution.Domain.Entities;
+using SFMSSolution.Response;
 
 namespace SFMSSolution.Application.Services.Bookings
 {
@@ -27,10 +21,13 @@ namespace SFMSSolution.Application.Services.Bookings
         Task<IEnumerable<BookingDto>> GetBookingHistoryForUserAsync(Guid userId);
         Task<ApiResponse<FacilityBookingCalendarDto>> GetFacilityCalendarAsync(Guid facilityId, Guid? userId = null);
         Task<ApiResponse<FacilityBookingSlotDto>> GetCalendarSlotDetailAsync(Guid slotId, DateTime date, TimeSpan startTime, TimeSpan endTime);
-        Task<ApiResponse<string>> UpdateCalendarSlotAsync(
-    Guid slotId,
-    decimal? newPrice = null,
-    string? newDescription = null,
-    SlotStatus? newStatus = null);
+        Task<ApiResponse<string>> UpdateCalendarSlotDetailAsync(
+        Guid slotId,
+        DateTime date,
+        TimeSpan startTime,
+        TimeSpan endTime,
+        SlotStatus status,
+        string? note = null,
+        decimal? finalPrice = null);
     }
 }
