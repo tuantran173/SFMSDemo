@@ -76,5 +76,10 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
             return await _context.FacilityPrices
                 .FirstOrDefaultAsync(p => p.FacilityTimeSlotId == slotId);
         }
+
+        public async Task AddRangeAsync(IEnumerable<FacilityPrice> prices)
+        {
+            await _context.FacilityPrices.AddRangeAsync(prices);
+        }
     }
 }

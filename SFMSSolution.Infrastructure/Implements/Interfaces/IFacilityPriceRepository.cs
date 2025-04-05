@@ -16,5 +16,6 @@ namespace SFMSSolution.Infrastructure.Implements.Interfaces
         Task<(IEnumerable<FacilityPrice> Prices, int TotalCount)> GetAllWithTimeSlotAndFacilityAsync(int pageNumber, int pageSize);
         Task<FacilityPrice?> GetByIdWithTimeSlotAndFacilityAsync(Guid id);
         Task<FacilityPrice?> GetByTimeSlotIdAsync(Guid slotId);
+        Task AddRangeAsync(IEnumerable<FacilityPrice> prices);
     }
 }

@@ -145,16 +145,27 @@ namespace SFMSSolution.API.Controllers
             return Ok(result);
         }
 
+        //[HttpPut("calendar/update-slot")]
+        //[Authorize(Policy = "Owner")]
+        //public async Task<IActionResult> UpdateCalendarSlot(Guid slotId, DateTime newStartDate, DateTime newEndDate)
+        //{
+        //    var result = await _bookingService.UpdateCalendarSlotAsync(slotId, newStartDate, newEndDate);
+        //    if (!result.Success)
+        //        return BadRequest(result.Message);
+
+        //    return Ok(result.Message);
+        //}
         [HttpPut("calendar/update-slot")]
-        [Authorize(Policy = "Owner")]
-        public async Task<IActionResult> UpdateCalendarSlot(Guid slotId, DateTime newStartDate, DateTime newEndDate)
+        public async Task<IActionResult> UpdateCalendarSlot([FromBody] CalendarSlotUpdateDto dto)
         {
-            var result = await _bookingService.UpdateCalendarSlotAsync(slotId, newStartDate, newEndDate);
-            if (!result.Success)
-                return BadRequest(result.Message);
+            var result = await _bookingService.UpdateCalendarSlotAsync(
+                dto.SlotId,
+                dto.FinalPrice,
+                dto.Description,
+                dto.Status
+            );
 
-            return Ok(result.Message);
+            return result.Success ? Ok(result) : BadRequest(result);
         }
-
     }
 }

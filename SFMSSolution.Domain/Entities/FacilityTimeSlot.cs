@@ -22,5 +22,6 @@ namespace SFMSSolution.Domain.Entities
         public bool IsWeekend { get; set; }  // Có phải cuối tuần không (true = cuối tuần)
         public SlotStatus Status { get; set; }
 
+
     }
 }

@@ -10,6 +10,7 @@ namespace SFMSSolution.Domain.Enums
     {
         Available = 0,
         Booked = 1,
-        Closed = 2
+        Closed = 2,
+         Full = 3
     }
 }
