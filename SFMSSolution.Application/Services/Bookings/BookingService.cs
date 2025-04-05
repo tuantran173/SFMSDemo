@@ -199,7 +199,7 @@ namespace SFMSSolution.Application.Services.Bookings
 
         //    return new ApiResponse<FacilityBookingCalendarDto>(result);
         //}
-        public async Task<ApiResponse<FacilityBookingCalendarDto>> GetGuestCalendarAsync(Guid facilityId, Guid? userId = null)
+        public async Task<ApiResponse<FacilityBookingCalendarDto>> GetCalendarForCustomerAsync(Guid facilityId, Guid? userId)
         {
             var facility = await _unitOfWork.FacilityRepository.GetFacilityByIdAsync(facilityId);
             if (facility == null)
@@ -207,23 +207,21 @@ namespace SFMSSolution.Application.Services.Bookings
 
             var today = DateTime.Today;
             var futureDays = 14;
-            var slotDuration = TimeSpan.FromMinutes(90);
-
-            var slots = await _unitOfWork.FacilityTimeSlotRepository.GetByFacilityIdAsync(facilityId);
+            var timeSlots = await _unitOfWork.FacilityTimeSlotRepository.GetByFacilityIdAsync(facilityId);
             var bookings = await _unitOfWork.BookingRepository.GetBookingsByFacilityAsync(facilityId, DateTime.UtcNow);
 
-            var calendar = new List<FacilityBookingSlotDto>();
+            var calendarItems = new List<FacilityBookingSlotDto>();
+            var slotDuration = TimeSpan.FromMinutes(90);
 
             for (int i = 0; i < futureDays; i++)
             {
                 var date = today.AddDays(i);
 
-                foreach (var slot in slots)
+                foreach (var slot in timeSlots)
                 {
                     if (slot.StartDate <= date && slot.EndDate >= date)
                     {
                         var current = slot.StartTime;
-
                         while (current + slotDuration <= slot.EndTime)
                         {
                             var subStart = current;
@@ -235,21 +233,12 @@ namespace SFMSSolution.Application.Services.Bookings
 
                             var price = await _unitOfWork.FacilityPriceRepository.GetByTimeSlotIdAsync(slot.Id);
 
-                            // 👇 Phân loại trạng thái theo user đăng nhập hay chưa
-                            var status = SlotStatus.Available;
-                            if (booking != null)
-                            {
-                                if (userId.HasValue && booking.UserId == userId.Value)
-                                    status = SlotStatus.Booked;  // chính user đó đã đặt
-                                else
-                                    status = SlotStatus.Full;    // người khác đã đặt
-                            }
-                            else if (slot.Status == SlotStatus.Closed)
-                            {
-                                status = SlotStatus.Closed;
-                            }
+                            // Logic phân biệt guest vs customer
+                            var status = booking != null
+                                ? (userId.HasValue && booking.UserId == userId.Value ? SlotStatus.Booked : SlotStatus.Full)
+                                : slot.Status == SlotStatus.Closed ? SlotStatus.Closed : SlotStatus.Available;
 
-                            calendar.Add(new FacilityBookingSlotDto
+                            calendarItems.Add(new FacilityBookingSlotDto
                             {
                                 SlotId = slot.Id,
                                 StartTime = subStart,
@@ -273,10 +262,57 @@ namespace SFMSSolution.Application.Services.Bookings
                 Name = facility.Name,
                 Address = facility.Address,
                 ImageUrl = facility.ImageUrl,
-                Calendar = calendar
+                Calendar = calendarItems
             };
 
             return new ApiResponse<FacilityBookingCalendarDto>(result);
+        }
+
+
+        public async Task<ApiResponse<List<FacilityBookingSlotDto>>> GetCalendarForGuestAsync(Guid facilityId)
+        {
+            var facility = await _unitOfWork.FacilityRepository.GetFacilityByIdAsync(facilityId);
+            if (facility == null)
+                return new ApiResponse<List<FacilityBookingSlotDto>>("Facility not found.");
+
+            var today = DateTime.Today;
+            var futureDays = 14;
+            var slotDuration = TimeSpan.FromMinutes(90);
+            var slots = await _unitOfWork.FacilityTimeSlotRepository.GetByFacilityIdAsync(facilityId);
+            var bookings = await _unitOfWork.BookingRepository.GetBookingsByFacilityAsync(facilityId, today);
+
+            var result = new List<FacilityBookingSlotDto>();
+
+            foreach (var day in Enumerable.Range(0, futureDays))
+            {
+                var date = today.AddDays(day);
+                foreach (var slot in slots)
+                {
+                    if (slot.StartDate > date || slot.EndDate < date) continue;
+
+                    for (var time = slot.StartTime; time + slotDuration <= slot.EndTime; time += slotDuration)
+                    {
+                        var booking = bookings.FirstOrDefault(b => b.BookingDate.Date == date && b.FacilityTimeSlotId == slot.Id);
+                        var price = await _unitOfWork.FacilityPriceRepository.GetByTimeSlotIdAsync(slot.Id);
+
+                        var status = booking != null ? SlotStatus.Full : (slot.Status == SlotStatus.Closed ? SlotStatus.Closed : SlotStatus.Available);
+
+                        result.Add(new FacilityBookingSlotDto
+                        {
+                            SlotId = slot.Id,
+                            StartTime = time,
+                            EndTime = time + slotDuration,
+                            StartDate = date,
+                            EndDate = date,
+                            Status = status,
+                            Note = booking?.Note ?? string.Empty,
+                            FinalPrice = price?.FinalPrice ?? 0
+                        });
+                    }
+                }
+            }
+
+            return new ApiResponse<List<FacilityBookingSlotDto>>(result);
         }
 
         public async Task<ApiResponse<FacilityBookingCalendarDto>> GetFacilityCalendarAsync(Guid facilityId, Guid? userId = null)

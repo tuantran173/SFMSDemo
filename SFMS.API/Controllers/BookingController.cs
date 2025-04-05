@@ -166,11 +166,31 @@ namespace SFMSSolution.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("customer-calendar/{facilityId}")]
-        public async Task<IActionResult> GetGuestCalendar(Guid facilityId)
+
+        [HttpGet("calendar/customer/{facilityId}")]
+        [Authorize]
+        public async Task<IActionResult> GetCalendarForCustomer(Guid facilityId)
         {
-            var result = await _bookingService.GetGuestCalendarAsync(facilityId);
+            // Nếu user đã đăng nhập → lấy userId từ token
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type == "id");
+            Guid? userId = null;
+            if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out var parsedId))
+            {
+                userId = parsedId;
+            }
+
+            var result = await _bookingService.GetCalendarForCustomerAsync(facilityId, userId);
             return Ok(result);
         }
+
+
+
+        [HttpGet("guest-calendar")]
+        public async Task<IActionResult> GetGuestCalendar(Guid facilityId)
+        {
+            var result = await _bookingService.GetCalendarForGuestAsync(facilityId);
+            return Ok(result);
+        }
+
     }
 }
