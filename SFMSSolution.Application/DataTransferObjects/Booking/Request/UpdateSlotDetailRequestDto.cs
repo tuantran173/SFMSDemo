@@ -12,16 +12,14 @@ namespace SFMSSolution.Application.DataTransferObjects.Booking.Request
     public class UpdateSlotDetailRequestDto
     {
         public Guid SlotId { get; set; }
-
-        public DateTime Date { get; set; }            // Ngày cụ thể
+        public DateTime Date { get; set; }
         [JsonConverter(typeof(TimeSpanToStringConverter))]
-        public TimeSpan StartTime { get; set; }       // Bắt đầu slot nhỏ
+        public TimeSpan StartTime { get; set; }
         [JsonConverter(typeof(TimeSpanToStringConverter))]
-        public TimeSpan EndTime { get; set; }         // Kết thúc slot nhỏ
-        public Guid FacilityTimeSlotId { get; set; }  // Slot lớn
+        public TimeSpan EndTime { get; set; }
 
-        public SlotStatus? Status { get; set; }
         public string? Note { get; set; }
         public decimal? FinalPrice { get; set; }
+        public SlotStatus? Status { get; set; }
     }
 }

@@ -42,6 +42,8 @@ namespace SFMSSolution.Application.Services.Bookings
             return _mapper.Map<IEnumerable<BookingDto>>(bookings);
         }
 
+
+
         public async Task<bool> CreateBookingAsync(BookingCreateRequestDto request)
         {
             var isBooked = await _unitOfWork.BookingRepository.IsTimeSlotBooked(request.FacilityTimeSlotId, request.BookingDate);
@@ -197,6 +199,85 @@ namespace SFMSSolution.Application.Services.Bookings
 
         //    return new ApiResponse<FacilityBookingCalendarDto>(result);
         //}
+        public async Task<ApiResponse<FacilityBookingCalendarDto>> GetGuestCalendarAsync(Guid facilityId, Guid? userId = null)
+        {
+            var facility = await _unitOfWork.FacilityRepository.GetFacilityByIdAsync(facilityId);
+            if (facility == null)
+                return new ApiResponse<FacilityBookingCalendarDto>("Facility not found.");
+
+            var today = DateTime.Today;
+            var futureDays = 14;
+            var slotDuration = TimeSpan.FromMinutes(90);
+
+            var slots = await _unitOfWork.FacilityTimeSlotRepository.GetByFacilityIdAsync(facilityId);
+            var bookings = await _unitOfWork.BookingRepository.GetBookingsByFacilityAsync(facilityId, DateTime.UtcNow);
+
+            var calendar = new List<FacilityBookingSlotDto>();
+
+            for (int i = 0; i < futureDays; i++)
+            {
+                var date = today.AddDays(i);
+
+                foreach (var slot in slots)
+                {
+                    if (slot.StartDate <= date && slot.EndDate >= date)
+                    {
+                        var current = slot.StartTime;
+
+                        while (current + slotDuration <= slot.EndTime)
+                        {
+                            var subStart = current;
+                            var subEnd = current + slotDuration;
+
+                            var booking = bookings.FirstOrDefault(b =>
+                                b.FacilityTimeSlotId == slot.Id &&
+                                b.BookingDate.Date == date);
+
+                            var price = await _unitOfWork.FacilityPriceRepository.GetByTimeSlotIdAsync(slot.Id);
+
+                            // 👇 Phân loại trạng thái theo user đăng nhập hay chưa
+                            var status = SlotStatus.Available;
+                            if (booking != null)
+                            {
+                                if (userId.HasValue && booking.UserId == userId.Value)
+                                    status = SlotStatus.Booked;  // chính user đó đã đặt
+                                else
+                                    status = SlotStatus.Full;    // người khác đã đặt
+                            }
+                            else if (slot.Status == SlotStatus.Closed)
+                            {
+                                status = SlotStatus.Closed;
+                            }
+
+                            calendar.Add(new FacilityBookingSlotDto
+                            {
+                                SlotId = slot.Id,
+                                StartTime = subStart,
+                                EndTime = subEnd,
+                                StartDate = date,
+                                EndDate = date,
+                                Status = status,
+                                Note = booking?.Note ?? string.Empty,
+                                FinalPrice = price?.FinalPrice ?? 0
+                            });
+
+                            current += slotDuration;
+                        }
+                    }
+                }
+            }
+
+            var result = new FacilityBookingCalendarDto
+            {
+                FacilityId = facility.Id,
+                Name = facility.Name,
+                Address = facility.Address,
+                ImageUrl = facility.ImageUrl,
+                Calendar = calendar
+            };
+
+            return new ApiResponse<FacilityBookingCalendarDto>(result);
+        }
 
         public async Task<ApiResponse<FacilityBookingCalendarDto>> GetFacilityCalendarAsync(Guid facilityId, Guid? userId = null)
         {
@@ -269,118 +350,6 @@ namespace SFMSSolution.Application.Services.Bookings
             return new ApiResponse<FacilityBookingCalendarDto>(result);
         }
 
-        //public async Task<ApiResponse<FacilityBookingCalendarDto>> GetFacilityCalendarAsync(Guid facilityId)
-        //{
-        //    var facility = await _unitOfWork.FacilityRepository.GetFacilityByIdAsync(facilityId);
-        //    if (facility == null)
-        //        return new ApiResponse<FacilityBookingCalendarDto>("Facility not found.");
-
-        //    var today = DateTime.Today;
-        //    var futureDays = 14;
-        //    var startHour = new TimeSpan(5, 0, 0);
-        //    var endHour = new TimeSpan(23, 30, 0);
-        //    var slotDuration = TimeSpan.FromMinutes(90);
-
-        //    var timeSlots = await _unitOfWork.FacilityTimeSlotRepository.GetByFacilityIdAsync(facilityId);
-        //    var bookings = await _unitOfWork.BookingRepository.GetBookingsByFacilityAsync(facilityId, DateTime.UtcNow);
-
-        //    var calendarItems = new List<FacilityBookingSlotDto>();
-
-        //    for (int day = 0; day < futureDays; day++)
-        //    {
-        //        var currentDate = today.AddDays(day);
-
-        //        for (var time = startHour; time < endHour; time += slotDuration)
-        //        {
-        //            var slotEnd = time + slotDuration;
-
-        //            // Tìm slot đúng giờ hiện tại và áp dụng cho ngày đó
-        //            var matchedSlot = timeSlots.FirstOrDefault(s =>
-        //                s.StartTime == time &&
-        //                s.EndTime == slotEnd &&
-        //                s.StartDate <= currentDate &&
-        //                s.EndDate >= currentDate);
-
-        //            var booking = matchedSlot != null
-        //                ? bookings.FirstOrDefault(b => b.FacilityTimeSlotId == matchedSlot.Id && b.BookingDate.Date == currentDate)
-        //                : null;
-
-        //            var price = matchedSlot != null
-        //                ? await _unitOfWork.FacilityPriceRepository.GetByTimeSlotIdAsync(matchedSlot.Id)
-        //                : null;
-
-        //            var status = booking != null
-        //                ? SlotStatus.Booked
-        //                : matchedSlot == null || matchedSlot.Status == SlotStatus.Closed
-        //                    ? SlotStatus.Closed
-        //                    : SlotStatus.Available;
-
-        //            calendarItems.Add(new FacilityBookingSlotDto
-        //            {
-        //                SlotId = matchedSlot?.Id ?? Guid.NewGuid(), // Nếu không có slot trong DB vẫn trả ID ảo
-        //                StartTime = time,
-        //                EndTime = slotEnd,
-        //                StartDate = currentDate,
-        //                EndDate = currentDate,
-        //                Status = status,
-        //                Note = booking?.Note ?? string.Empty,
-        //                FinalPrice = price?.FinalPrice ?? 0
-        //            });
-        //        }
-        //    }
-
-        //    var result = new FacilityBookingCalendarDto
-        //    {
-        //        FacilityId = facility.Id,
-        //        Name = facility.Name,
-        //        Address = facility.Address,
-        //        ImageUrl = facility.ImageUrl,
-        //        Calendar = calendarItems
-        //    };
-
-        //    return new ApiResponse<FacilityBookingCalendarDto>(result);
-        //}
-
-
-        //public async Task<ApiResponse<string>> GenerateDefaultSlotsAsync(Guid facilityId, DateTime fromDate, DateTime toDate)
-        //{
-        //    var facility = await _unitOfWork.FacilityRepository.GetByIdAsync(facilityId);
-        //    if (facility == null)
-        //        return new ApiResponse<string>("Facility not found.");
-
-        //    if (fromDate > toDate)
-        //        return new ApiResponse<string>("Start date must be before end date.");
-
-        //    var startHour = new TimeSpan(5, 0, 0);
-        //    var endHour = new TimeSpan(23, 30, 0);
-        //    var slotDuration = TimeSpan.FromMinutes(90);
-
-        //    var slotList = new List<FacilityTimeSlot>();
-
-        //    for (var time = startHour; time < endHour; time += slotDuration)
-        //    {
-        //        var slot = new FacilityTimeSlot
-        //        {
-        //            Id = Guid.NewGuid(),
-        //            FacilityId = facilityId,
-        //            StartTime = time,
-        //            EndTime = time + slotDuration,
-        //            StartDate = fromDate.Date,
-        //            EndDate = toDate.Date,
-        //            IsWeekend = false,
-        //            Status = SlotStatus.Available,
-        //            CreatedDate = DateTime.UtcNow
-        //        };
-
-        //        slotList.Add(slot);
-        //    }
-
-        //    await _unitOfWork.FacilityTimeSlotRepository.AddRangeAsync(slotList);
-        //    await _unitOfWork.CompleteAsync();
-
-        //    return new ApiResponse<string>(true, $"{slotList.Count} slots created successfully.");
-        //}
-
         public async Task<ApiResponse<FacilityBookingSlotDto>> GetCalendarSlotDetailAsync(
             Guid slotId,
             DateTime date,
@@ -423,97 +392,50 @@ namespace SFMSSolution.Application.Services.Bookings
         }
 
 
-        //public async Task<ApiResponse<string>> UpdateCalendarSlotAsync(Guid slotId, DateTime newStartDate, DateTime newEndDate, SlotStatus? newStatus = null)
-        //{
-        //    var slot = await _unitOfWork.FacilityTimeSlotRepository.GetByIdAsync(slotId);
-        //    if (slot == null)
-        //        return new ApiResponse<string>("Slot not found.");
 
-        //    if (newStartDate > newEndDate)
-        //        return new ApiResponse<string>("Start date must be before end date.");
-
-        //    var existingSlots = await _unitOfWork.FacilityTimeSlotRepository.GetByFacilityIdAsync(slot.FacilityId);
-        //    bool isOverlap = existingSlots.Any(s =>
-        //        s.Id != slot.Id &&
-        //        s.StartTime == slot.StartTime &&
-        //        s.EndTime == slot.EndTime &&
-        //        s.StartDate <= newEndDate &&
-        //        s.EndDate >= newStartDate);
-
-        //    if (isOverlap)
-        //        return new ApiResponse<string>("This update overlaps with another time slot.");
-
-        //    // ✅ Cập nhật thời gian
-        //    slot.StartDate = newStartDate;
-        //    slot.EndDate = newEndDate;
-
-        //    // ✅ Cập nhật status nếu truyền vào
-        //    if (newStatus.HasValue)
-        //        slot.Status = newStatus.Value;
-
-        //    slot.UpdatedDate = DateTime.UtcNow;
-
-        //    await _unitOfWork.FacilityTimeSlotRepository.UpdateAsync(slot);
-        //    await _unitOfWork.CompleteAsync();
-
-        //    return new ApiResponse<string>(true, "Slot updated successfully.");
-        //}
-
-        public async Task<ApiResponse<string>> UpdateCalendarSlotDetailAsync(
-    Guid slotId,
-    DateTime date,
-    TimeSpan startTime,
-    TimeSpan endTime,
-    SlotStatus status,
-    string? note = null,
-    decimal? finalPrice = null)
+        public async Task<ApiResponse<string>> UpdateCalendarSlotDetailAsync(UpdateSlotDetailRequestDto request)
         {
-            var slot = await _unitOfWork.FacilityTimeSlotRepository.GetByIdAsync(slotId);
+            var slot = await _unitOfWork.FacilityTimeSlotRepository.GetByIdAsync(request.SlotId);
             if (slot == null)
                 return new ApiResponse<string>("Slot not found.");
 
-            // 🔍 Validate date within slot range
-            if (date.Date < slot.StartDate.Date || date.Date > slot.EndDate.Date)
-                return new ApiResponse<string>("Date is outside the active range of this slot.");
+            // Check time range
+            if (request.StartTime < slot.StartTime || request.EndTime > slot.EndTime)
+                return new ApiResponse<string>("Time range is outside the defined slot.");
 
-            // 🔍 Validate time range
-            var expectedDuration = TimeSpan.FromMinutes(90);
-            if (startTime < slot.StartTime || endTime > slot.EndTime || (endTime - startTime) != expectedDuration)
-                return new ApiResponse<string>("Invalid time range. Must be within the slot and exactly 90 minutes.");
+            var booking = await _unitOfWork.BookingRepository
+                .GetBookingBySlotAndDateAndTimeAsync(request.SlotId, request.Date, request.StartTime, request.EndTime);
 
-            // ✅ Update slot status
-            slot.Status = status;
-            slot.UpdatedDate = DateTime.UtcNow;
-            await _unitOfWork.FacilityTimeSlotRepository.UpdateAsync(slot);
-
-            // ✅ Update Booking if exists
-            var booking = await _unitOfWork.BookingRepository.GetBookingBySlotAndDateAsync(slotId, date);
-            if (booking != null)
+            // ✅ Update note if exists
+            if (booking != null && !string.IsNullOrWhiteSpace(request.Note))
             {
-                if (!string.IsNullOrWhiteSpace(note))
-                {
-                    booking.Note = note;
-                    booking.UpdatedDate = DateTime.UtcNow;
-                    await _unitOfWork.BookingRepository.UpdateAsync(booking);
-                }
+                booking.Note = request.Note;
+                booking.UpdatedDate = DateTime.UtcNow;
+                await _unitOfWork.BookingRepository.UpdateAsync(booking);
             }
 
-            // ✅ Update Price if exists and finalPrice is provided
-            if (finalPrice.HasValue)
+            // ✅ Update price
+            if (request.FinalPrice.HasValue)
             {
-                var price = await _unitOfWork.FacilityPriceRepository.GetByTimeSlotIdAsync(slotId);
+                var price = await _unitOfWork.FacilityPriceRepository.GetByTimeSlotIdAsync(request.SlotId);
                 if (price != null)
                 {
-                    price.FinalPrice = finalPrice.Value;
+                    price.FinalPrice = request.FinalPrice.Value;
                     price.UpdatedDate = DateTime.UtcNow;
                     await _unitOfWork.FacilityPriceRepository.UpdateAsync(price);
                 }
             }
 
+            if (request.Status.HasValue)
+            {
+                slot.Status = request.Status.Value;
+                slot.UpdatedDate = DateTime.UtcNow;
+                await _unitOfWork.FacilityTimeSlotRepository.UpdateAsync(slot);
+            }
+
             await _unitOfWork.CompleteAsync();
             return new ApiResponse<string>(true, "Slot detail updated successfully.");
         }
-
 
 
     }

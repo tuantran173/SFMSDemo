@@ -19,15 +19,10 @@ namespace SFMSSolution.Application.Services.Bookings
         Task<IEnumerable<BookingDto>> GetBookingsByUserAsync(Guid userId);
         Task<bool> UpdateBookingStatusAsync(Guid bookingId, BookingStatusUpdateRequestDto request);
         Task<IEnumerable<BookingDto>> GetBookingHistoryForUserAsync(Guid userId);
+        Task<ApiResponse<FacilityBookingCalendarDto>> GetGuestCalendarAsync(Guid facilityId, Guid? userId = null);
         Task<ApiResponse<FacilityBookingCalendarDto>> GetFacilityCalendarAsync(Guid facilityId, Guid? userId = null);
         Task<ApiResponse<FacilityBookingSlotDto>> GetCalendarSlotDetailAsync(Guid slotId, DateTime date, TimeSpan startTime, TimeSpan endTime);
-        Task<ApiResponse<string>> UpdateCalendarSlotDetailAsync(
-        Guid slotId,
-        DateTime date,
-        TimeSpan startTime,
-        TimeSpan endTime,
-        SlotStatus status,
-        string? note = null,
-        decimal? finalPrice = null);
-    }
+        Task<ApiResponse<string>> UpdateCalendarSlotDetailAsync(UpdateSlotDetailRequestDto request);
+        
+        }
 }

@@ -22,6 +22,7 @@ namespace SFMSSolution.Domain.Entities
         public User Owner { get; set; }                        // Navigation property
 
         public ICollection<FacilityTimeSlot> FacilityTimeSlots { get; set; } = new List<FacilityTimeSlot>();
+
     }
 
 }

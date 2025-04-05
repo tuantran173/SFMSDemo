@@ -127,7 +127,7 @@ namespace SFMSSolution.API.Controllers
         //}
 
         [HttpGet("calendar/{facilityId:Guid}")]
-
+        [Authorize(Policy ="Owner")]
         public async Task<IActionResult> GetCalendar(Guid facilityId)
         {
             var result = await _bookingService.GetFacilityCalendarAsync(facilityId);
@@ -158,21 +158,18 @@ namespace SFMSSolution.API.Controllers
         //}
         [HttpPut("calendar/update-slot-detail")]
         [Authorize(Policy = "Owner")]
-        public async Task<IActionResult> UpdateCalendarSlotDetail([FromBody] UpdateSlotDetailRequestDto request)
+        public async Task<IActionResult> UpdateSlotDetail([FromBody] UpdateSlotDetailRequestDto request)
         {
-            var result = await _bookingService.UpdateCalendarSlotDetailAsync(
-                request.SlotId,
-                request.Date,
-                request.StartTime,
-                request.EndTime,
-                request.Status.Value,
-                request.Note,
-                request.FinalPrice
-            );
-
+            var result = await _bookingService.UpdateCalendarSlotDetailAsync(request);
             if (!result.Success)
                 return BadRequest(result);
+            return Ok(result);
+        }
 
+        [HttpGet("customer-calendar/{facilityId}")]
+        public async Task<IActionResult> GetGuestCalendar(Guid facilityId)
+        {
+            var result = await _bookingService.GetGuestCalendarAsync(facilityId);
             return Ok(result);
         }
     }
