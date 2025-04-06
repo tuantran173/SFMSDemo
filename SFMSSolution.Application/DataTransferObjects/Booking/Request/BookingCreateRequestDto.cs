@@ -16,6 +16,9 @@ namespace SFMSSolution.Application.DataTransferObjects.Booking.Request
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
 
+        public string OwnerFullName { get; set; }
+        public string OwnerPhone { get; set; }
+
         public string CustomerName { get; set; }
         public string CustomerPhone { get; set; }
         public string PaymentMethod { get; set; } // Tiền mặt, VNPay, v.v.

@@ -10,7 +10,8 @@ namespace SFMSSolution.Application.DataTransferObjects.Booking
     {
         public Guid Id { get; set; }
         public DateTime BookingDate { get; set; }
-
+        public TimeSpan StartTime { get; set; }
+        public TimeSpan EndTime { get; set; }
         public string Note { get; set; } = string.Empty;
 
         public string Status { get; set; } = string.Empty;
@@ -21,7 +22,5 @@ namespace SFMSSolution.Application.DataTransferObjects.Booking
         public Guid UserId { get; set; }
         public string UserFullName { get; set; } = string.Empty;
 
-        public TimeSpan StartTime { get; set; }
-        public TimeSpan EndTime { get; set; }
     }
 }

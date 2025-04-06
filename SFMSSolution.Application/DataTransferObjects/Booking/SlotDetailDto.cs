@@ -1,15 +1,13 @@
-﻿using SFMSSolution.Application.Extensions;
-using SFMSSolution.Domain.Enums;
+﻿using SFMSSolution.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace SFMSSolution.Application.DataTransferObjects.Booking
 {
-    public class FacilityBookingSlotDto
+    public class SlotDetailDto
     {
         public Guid SlotId { get; set; }
 
@@ -25,6 +23,14 @@ namespace SFMSSolution.Application.DataTransferObjects.Booking
 
         public decimal FinalPrice { get; set; }
 
-    }
+        // ✅ Thông tin sân
+        public string FacilityName { get; set; }
+        public string FacilityAddress { get; set; }
+        public string FacilityImageUrl { get; set; }
 
+        // ✅ Thông tin chủ sân
+        public string OwnerFullName { get; set; }
+        public string OwnerUserName { get; set; }
+        public string OwnerPhone { get; set; }
+    }
 }
