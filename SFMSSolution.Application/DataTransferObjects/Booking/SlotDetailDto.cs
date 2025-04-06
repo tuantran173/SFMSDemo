@@ -21,7 +21,10 @@ namespace SFMSSolution.Application.DataTransferObjects.Booking
 
         public string Note { get; set; }
 
+        public decimal BasePrice { get; set; }
+        public decimal Coefficient { get; set; }
         public decimal FinalPrice { get; set; }
+        public decimal Deposit { get; set; }
 
         // ✅ Thông tin sân
         public string FacilityName { get; set; }

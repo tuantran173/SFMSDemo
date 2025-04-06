@@ -482,6 +482,10 @@ namespace SFMSSolution.Application.Services.Bookings
                 EndDate = date,
                 Status = status,
                 Note = booking?.Note ?? string.Empty,
+
+                BasePrice = price?.BasePrice ?? 0,
+                Coefficient = price?.Coefficient ?? 1,
+                Deposit = (price?.FinalPrice ?? 0) * 0.3m,
                 FinalPrice = price?.FinalPrice ?? 0,
 
                 // Thông tin sân và chủ sân
