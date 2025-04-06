@@ -58,11 +58,15 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<Booking>> GetBookingsByFacilityAsync(Guid facilityId, DateTime date)
+        public async Task<List<Booking>> GetBookingsByFacilityAsync(Guid facilityId, DateTime fromDate)
         {
+            var toDate = fromDate.Date.AddDays(14);
+
             return await _context.Bookings
                 .Include(b => b.FacilityTimeSlot)
-                .Where(b => b.FacilityId == facilityId && b.BookingDate.Date == date.Date)
+                .Where(b => b.FacilityId == facilityId &&
+                            b.BookingDate.Date >= fromDate.Date &&
+                            b.BookingDate.Date < toDate)
                 .ToListAsync();
         }
 

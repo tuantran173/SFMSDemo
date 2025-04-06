@@ -35,14 +35,63 @@ namespace SFMSSolution.Application.Services.Bookings
         public async Task<(IEnumerable<BookingDto> Bookings, int TotalCount)> GetAllBookingsAsync(string? name, int pageNumber, int pageSize)
         {
             var (bookings, totalCount) = await _unitOfWork.BookingRepository.GetAllBookingsWithDetailsAsync(name, pageNumber, pageSize);
-            var bookingDtos = _mapper.Map<IEnumerable<BookingDto>>(bookings);
+
+            var bookingDtos = bookings.Select(b => new BookingDto
+            {
+                Id = b.Id,
+                FacilityId = b.FacilityId,
+                FacilityName = b.Facility?.Name ?? "",
+                FacilityAddress = b.Facility?.Address ?? "",
+                BookingDate = b.BookingDate,
+                StartTime = b.StartTime ?? TimeSpan.Zero,
+                EndTime = b.EndTime ?? TimeSpan.Zero,
+                FinalPrice = b.FinalPrice,
+                OwnerFullName = b.Facility?.Owner?.FullName ?? "",
+                OwnerPhone = b.Facility?.Owner?.Phone ?? "",
+                PaymentMethod = b.PaymentMethod,
+                Note = b.Note
+            });
+
             return (bookingDtos, totalCount);
         }
+
 
         public async Task<IEnumerable<BookingDto>> GetBookingsByUserAsync(Guid userId)
         {
             var bookings = await _unitOfWork.BookingRepository.GetBookingsByUserAsync(userId);
-            return _mapper.Map<IEnumerable<BookingDto>>(bookings);
+
+            var result = new List<BookingDto>();
+
+            foreach (var booking in bookings)
+            {
+                var facility = booking.Facility;
+                var timeSlot = booking.FacilityTimeSlot;
+                var owner = await _userManager.FindByIdAsync(facility.OwnerId.ToString());
+
+                var dto = new BookingDto
+                {
+                    Id = booking.Id,
+                    FacilityId = facility.Id,
+                    FacilityName = facility.Name,
+                    FacilityAddress = facility.Address,
+
+                    BookingDate = booking.BookingDate,
+                    StartTime = booking.StartTime ?? timeSlot.StartTime,
+                    EndTime = booking.EndTime ?? timeSlot.EndTime,
+
+                    FinalPrice = booking.FinalPrice,
+
+                    OwnerFullName = owner?.FullName ?? "",
+                    OwnerPhone = owner?.PhoneNumber ?? "",
+
+                    PaymentMethod = booking.PaymentMethod,
+                    Note = booking.Note
+                };
+
+                result.Add(dto);
+            }
+
+            return result;
         }
 
 
@@ -329,10 +378,8 @@ namespace SFMSSolution.Application.Services.Bookings
                         var price = await _unitOfWork.FacilityPriceRepository.GetByTimeSlotIdAsync(slot.Id);
 
                         var status = booking != null
-                            ? SlotStatus.Full
-                            : slot.Status == SlotStatus.Closed
-                                ? SlotStatus.Closed
-                                : SlotStatus.Available;
+                                 ? SlotStatus.Full
+                                 : slot.Status == SlotStatus.Closed ? SlotStatus.Closed : SlotStatus.Available;
 
                         calendarItems.Add(new FacilityBookingSlotDto
                         {
