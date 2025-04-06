@@ -9,10 +9,19 @@ namespace SFMSSolution.Application.DataTransferObjects.Booking.Request
 {
     public class BookingCreateRequestDto
     {
-        public DateTime BookingDate { get; set; }
         public Guid FacilityId { get; set; }
         public Guid FacilityTimeSlotId { get; set; }
-        public string Note { get; set; } = string.Empty;
-        public Guid UserId { get; set; }  // Có thể set từ Controller hoặc token
+
+        public DateTime BookingDate { get; set; }
+        public TimeSpan StartTime { get; set; }
+        public TimeSpan EndTime { get; set; }
+
+        public string CustomerName { get; set; }
+        public string CustomerPhone { get; set; }
+        public string PaymentMethod { get; set; } // Tiền mặt, VNPay, v.v.
+
+        public string? Note { get; set; }
+        public decimal FinalPrice { get; set; }
     }
+
 }

@@ -66,13 +66,15 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
                 .ToListAsync();
         }
 
-        public async Task<bool> IsTimeSlotBooked(Guid facilityTimeSlotId, DateTime date)
+        public async Task<bool> IsTimeSlotBooked(Guid facilityTimeSlotId, DateTime date, TimeSpan startTime, TimeSpan endTime)
         {
             return await _context.Bookings.AnyAsync(b =>
-            b.FacilityTimeSlotId == facilityTimeSlotId &&
-            b.BookingDate.Date == date.Date &&
-            b.Status != BookingStatus.Canceled);
+                b.FacilityTimeSlotId == facilityTimeSlotId &&
+                b.BookingDate.Date == date.Date &&
+                b.StartTime == startTime &&
+                b.EndTime == endTime);
         }
+
 
         public async Task<Booking?> GetBookingBySlotAndDateAsync(Guid slotId, DateTime date)
         {

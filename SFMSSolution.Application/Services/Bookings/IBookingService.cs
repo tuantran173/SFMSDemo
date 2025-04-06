@@ -11,7 +11,7 @@ namespace SFMSSolution.Application.Services.Bookings
 
         Task<(IEnumerable<BookingDto> Bookings, int TotalCount)> GetAllBookingsAsync(string? name, int pageNumber, int pageSize);
 
-        Task<bool> CreateBookingAsync(BookingCreateRequestDto request);
+        Task<ApiResponse<string>> CreateBookingAsync(BookingCreateRequestDto request, Guid userId);
 
         Task<bool> UpdateBookingAsync(Guid id, BookingUpdateRequestDto request);
 
@@ -23,7 +23,7 @@ namespace SFMSSolution.Application.Services.Bookings
         Task<ApiResponse<FacilityBookingSlotDto>> GetCalendarSlotDetailAsync(Guid slotId, DateTime date, TimeSpan startTime, TimeSpan endTime);
         Task<ApiResponse<string>> UpdateCalendarSlotDetailAsync(UpdateSlotDetailRequestDto request);
         Task<ApiResponse<FacilityBookingCalendarDto>> GetCalendarForCustomerAsync(Guid facilityId, Guid? userId);
-        Task<ApiResponse<List<FacilityBookingSlotDto>>> GetCalendarForGuestAsync(Guid facilityId);
+        Task<ApiResponse<FacilityBookingCalendarDto>> GetCalendarForGuestAsync(Guid facilityId);
 
         }
 }

@@ -1,12 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using SFMSSolution.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SFMSSolution.Domain.Enums;
+using System;
 
 namespace SFMSSolution.Infrastructure.Database.Configurations
 {
@@ -16,25 +12,22 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
         {
             builder.ToTable("Bookings");
 
-            // Primary key
             builder.HasKey(b => b.Id);
 
-            // Required fields
             builder.Property(b => b.BookingDate)
                    .IsRequired();
 
             builder.Property(b => b.StartTime)
-       .HasColumnType("time")
-       .IsRequired(false); // Cho phép null
+                   .HasColumnType("time")
+                   .IsRequired(false);
 
             builder.Property(b => b.EndTime)
                    .HasColumnType("time")
-                   .IsRequired(false); // Cho phép null
+                   .IsRequired(false);
 
             builder.Property(b => b.Note)
                    .HasMaxLength(1000);
 
-            // Booking status enum → string
             builder.Property(b => b.Status)
                    .IsRequired()
                    .HasConversion(
@@ -42,25 +35,37 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
                         v => (BookingStatus)Enum.Parse(typeof(BookingStatus), v))
                    .HasMaxLength(50);
 
-            // Foreign key: Facility
+            builder.Property(b => b.PaymentMethod)
+                   .HasMaxLength(100)
+                   .IsRequired();
+
+            builder.Property(b => b.FinalPrice)
+                   .HasColumnType("decimal(18,2)")
+                   .IsRequired();
+
+            builder.Property(b => b.CustomerName)
+                   .HasMaxLength(200)
+                   .IsRequired();
+
+            builder.Property(b => b.CustomerPhone)
+                   .HasMaxLength(20)
+                   .IsRequired();
+
             builder.HasOne(b => b.Facility)
                    .WithMany()
                    .HasForeignKey(b => b.FacilityId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // Foreign key: User
             builder.HasOne(b => b.User)
                    .WithMany()
                    .HasForeignKey(b => b.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // Foreign key: FacilityTimeSlot
             builder.HasOne(b => b.FacilityTimeSlot)
                    .WithMany()
                    .HasForeignKey(b => b.FacilityTimeSlotId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            // === BaseEntity fields ===
             builder.Property(b => b.CreatedDate)
                    .HasColumnType("datetime(6)")
                    .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");

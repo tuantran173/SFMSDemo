@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SFMSSolution.Domain.Enums;
 
 namespace SFMSSolution.Application.Mapping.MappingProfiles
 {
@@ -14,12 +15,10 @@ namespace SFMSSolution.Application.Mapping.MappingProfiles
     {
         public BookingProfile()
         {
-            CreateMap<Booking, BookingDto>()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-                .ForMember(dest => dest.FacilityName, opt => opt.MapFrom(src => src.Facility.Name))
-                .ForMember(dest => dest.UserFullName, opt => opt.MapFrom(src => src.User.FullName))
-                .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.FacilityTimeSlot.StartTime))
-                .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.FacilityTimeSlot.EndTime));
+            CreateMap<BookingCreateRequestDto, Booking>()
+    .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => BookingStatus.Pending))
+    .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(_ => DateTime.UtcNow));
+
 
             // Mapping từ BookingCreateRequestDto sang Booking entity
             CreateMap<BookingCreateRequestDto, Booking>();

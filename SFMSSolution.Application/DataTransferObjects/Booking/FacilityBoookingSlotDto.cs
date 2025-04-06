@@ -12,15 +12,28 @@ namespace SFMSSolution.Application.DataTransferObjects.Booking
     public class FacilityBookingSlotDto
     {
         public Guid SlotId { get; set; }
-        [JsonConverter(typeof(TimeSpanToStringConverter))]
+
         public TimeSpan StartTime { get; set; }
-        [JsonConverter(typeof(TimeSpanToStringConverter))]
         public TimeSpan EndTime { get; set; }
+
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+
         public SlotStatus Status { get; set; }
-        public string? Note { get; set; }
+
+        public string Note { get; set; }
+
         public decimal FinalPrice { get; set; }
+
+        // ✅ Thông tin sân
+        public string FacilityName { get; set; }
+        public string FacilityAddress { get; set; }
+        public string FacilityImageUrl { get; set; }
+
+        // ✅ Thông tin chủ sân
+        public string OwnerFullName { get; set; }
+        public string OwnerUserName { get; set; }
+        public string OwnerPhone { get; set; }
     }
 
 }

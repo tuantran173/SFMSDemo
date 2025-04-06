@@ -43,5 +43,13 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
             await _context.FacilityTimeSlots.AddRangeAsync(slots);
         }
 
+        public async Task<FacilityTimeSlot?> GetByIdWithFacilityAndOwnerAsync(Guid slotId)
+        {
+            return await _context.FacilityTimeSlots
+                .Include(s => s.Facility)
+                    .ThenInclude(f => f.Owner)
+                .FirstOrDefaultAsync(s => s.Id == slotId);
+        }
+
     }
 }

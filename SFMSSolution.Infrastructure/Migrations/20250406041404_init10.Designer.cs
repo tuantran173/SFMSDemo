@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SFMSSolution.Infrastructure.Database.AppDbContext;
 
@@ -10,9 +11,11 @@ using SFMSSolution.Infrastructure.Database.AppDbContext;
 namespace SFMSSolution.Infrastructure.Migrations
 {
     [DbContext(typeof(SFMSDbContext))]
-    partial class SFMSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250406041404_init10")]
+    partial class init10
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

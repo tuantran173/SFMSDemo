@@ -42,25 +42,27 @@ namespace SFMSSolution.API.Controllers
             });
         }
 
-        [HttpPost("create-booking")]
+        [HttpPost("create")]
         [Authorize]
         public async Task<IActionResult> CreateBooking([FromBody] BookingCreateRequestDto request)
         {
-            var userId = User.FindFirst("sub")?.Value;
-            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+            // Lấy userId từ token
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type == "id");
+            Guid userId = Guid.Empty;
 
-            request.UserId = Guid.Parse(userId);
+            if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out var parsedId))
+            {
+                userId = parsedId;
+            }
 
-            try
-            {
-                var result = await _bookingService.CreateBookingAsync(request);
-                return result ? Ok("Booking created successfully.") : BadRequest("Failed to create booking.");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message); // ví dụ: "Time slot is already booked."
-            }
+            var result = await _bookingService.CreateBookingAsync(request, userId);
+
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
         }
+
 
         [HttpPut("update-booking")]
         [Authorize]
