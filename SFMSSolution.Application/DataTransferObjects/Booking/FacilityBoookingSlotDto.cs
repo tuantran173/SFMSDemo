@@ -12,6 +12,7 @@ namespace SFMSSolution.Application.DataTransferObjects.Booking
     public class FacilityBookingSlotDto
     {
         public Guid SlotId { get; set; }
+        public Guid? UserId { get; set; }
 
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }

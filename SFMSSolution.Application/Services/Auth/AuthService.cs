@@ -123,7 +123,7 @@ namespace SFMSSolution.Application.Services.Auth
                 placeholders: placeholders
             );
 
-            if (!emailSent)
+            if (!emailSent.Success)
                 return new ApiResponse<string>("Registration successful, but failed to send confirmation email.");
 
             return new ApiResponse<string>(string.Empty, "Registration successful. A confirmation email has been sent.");
@@ -179,7 +179,7 @@ namespace SFMSSolution.Application.Services.Auth
                 placeholders: placeholders
             );
 
-            if (!emailSent)
+            if (!emailSent.Success)
                 return new ApiResponse<string>("Failed to send OTP email. Please try again later.");
 
             return new ApiResponse<string>(string.Empty, "If an account with that email exists, an OTP has been sent.");

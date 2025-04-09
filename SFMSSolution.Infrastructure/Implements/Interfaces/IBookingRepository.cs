@@ -16,7 +16,7 @@ namespace SFMSSolution.Infrastructure.Implements.Interfaces
 
         Task<List<Booking>> GetBookingsByUserAsync(Guid userId);
 
-        Task<List<Booking>> GetBookingsByFacilityAsync(Guid facilityId, DateTime date);
+        Task<List<Booking>> GetBookingsByFacilityAsync(Guid facilityId, DateTime fromDate, DateTime toDate);
 
         Task<bool> IsTimeSlotBooked(Guid facilityTimeSlotId, DateTime date, TimeSpan startTime, TimeSpan endTime);
         Task<Booking?> GetBookingBySlotAndDateAsync(Guid slotId, DateTime date);

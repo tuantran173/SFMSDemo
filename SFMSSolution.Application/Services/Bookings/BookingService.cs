@@ -98,21 +98,21 @@ namespace SFMSSolution.Application.Services.Bookings
 
         public async Task<ApiResponse<string>> CreateBookingAsync(BookingCreateRequestDto request, Guid userId)
         {
-            // ✅ Kiểm tra xem slot này đã được đặt chưa
+            // Kiểm tra xem slot đã được đặt chưa
             var isBooked = await _unitOfWork.BookingRepository
                 .IsTimeSlotBooked(request.FacilityTimeSlotId, request.BookingDate, request.StartTime, request.EndTime);
 
             if (isBooked)
                 return new ApiResponse<string>("Time slot is already booked.");
 
-            // ✅ Lấy thông tin sân (Facility) và chủ sân
+            // Lấy thông tin sân
             var facility = await _unitOfWork.FacilityRepository.GetFacilityByIdAsync(request.FacilityId);
             if (facility == null)
                 return new ApiResponse<string>("Facility not found.");
 
             var owner = await _userManager.FindByIdAsync(facility.OwnerId.ToString());
 
-            // ✅ Tạo mới booking
+            // Tạo mới booking
             var booking = new Booking
             {
                 Id = Guid.NewGuid(),
@@ -134,13 +134,13 @@ namespace SFMSSolution.Application.Services.Bookings
             await _unitOfWork.BookingRepository.AddAsync(booking);
             await _unitOfWork.CompleteAsync();
 
-
-            // ✅ Nếu bạn muốn trả thêm thông tin chủ sân hoặc tên sân:
+            // Tóm tắt kết quả
             var summary = $"Đặt sân thành công: {facility.Name}, ngày {booking.BookingDate:dd/MM/yyyy}, " +
                           $"giờ {booking.StartTime:hh\\:mm} - {booking.EndTime:hh\\:mm}. Chủ sân: {owner?.FullName}, SĐT: {owner?.PhoneNumber}.";
 
             return new ApiResponse<string>(true, summary);
         }
+
 
 
         public async Task<bool> UpdateBookingAsync(Guid id, BookingUpdateRequestDto request)
@@ -281,7 +281,8 @@ namespace SFMSSolution.Application.Services.Bookings
             var today = DateTime.Today;
             var futureDays = 14;
             var timeSlots = await _unitOfWork.FacilityTimeSlotRepository.GetByFacilityIdAsync(facilityId);
-            var bookings = await _unitOfWork.BookingRepository.GetBookingsByFacilityAsync(facilityId, DateTime.UtcNow);
+            var bookings = await _unitOfWork.BookingRepository
+    .GetBookingsByFacilityAsync(facilityId, today, today.AddDays(14));
 
             var calendarItems = new List<FacilityBookingSlotDto>();
             var slotDuration = TimeSpan.FromMinutes(90);
@@ -322,7 +323,8 @@ namespace SFMSSolution.Application.Services.Bookings
                                 EndDate = date,
                                 Status = status,
                                 Note = booking?.Note ?? string.Empty,
-                                FinalPrice = price?.FinalPrice ?? 0
+                                FinalPrice = price?.FinalPrice ?? 0,
+                                UserId = booking?.UserId
                             });
 
                             current += slotDuration;
@@ -355,7 +357,8 @@ namespace SFMSSolution.Application.Services.Bookings
             var slotDuration = TimeSpan.FromMinutes(90);
 
             var slots = await _unitOfWork.FacilityTimeSlotRepository.GetByFacilityIdAsync(facilityId);
-            var bookings = await _unitOfWork.BookingRepository.GetBookingsByFacilityAsync(facilityId, today);
+            var bookings = await _unitOfWork.BookingRepository
+    .GetBookingsByFacilityAsync(facilityId, today, today.AddDays(14));
 
             var calendarItems = new List<FacilityBookingSlotDto>();
 
@@ -419,7 +422,8 @@ namespace SFMSSolution.Application.Services.Bookings
             var futureDays = 14;
 
             var timeSlots = await _unitOfWork.FacilityTimeSlotRepository.GetByFacilityIdAsync(facilityId);
-            var bookings = await _unitOfWork.BookingRepository.GetBookingsByFacilityAsync(facilityId, DateTime.UtcNow);
+            var bookings = await _unitOfWork.BookingRepository
+    .GetBookingsByFacilityAsync(facilityId, today, today.AddDays(14));
 
             var calendarItems = new List<FacilityBookingSlotDto>();
 

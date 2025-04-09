@@ -21,8 +21,8 @@ namespace SFMSSolution.API.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<IActionResult> GetAll()
         {
-            var templates = await _emailTemplateService.GetAllTemplatesAsync();
-            return Ok(templates);
+            var response = await _emailTemplateService.GetAllTemplatesAsync();
+            return response.Success ? Ok(response) : BadRequest(response);
         }
 
         // GET: api/email-templates/{id}
@@ -30,10 +30,8 @@ namespace SFMSSolution.API.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var template = await _emailTemplateService.GetByIdAsync(id);
-            if (template == null)
-                return NotFound("Email template not found.");
-            return Ok(template);
+            var response = await _emailTemplateService.GetByIdAsync(id);
+            return response.Success ? Ok(response) : NotFound(response);
         }
 
         // POST: api/email-templates
@@ -41,8 +39,8 @@ namespace SFMSSolution.API.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<IActionResult> Create([FromBody] EmailTemplateCreateRequestDto request)
         {
-            var result = await _emailTemplateService.CreateAsync(request);
-            return result ? Ok("Template created successfully.") : BadRequest("Failed to create template.");
+            var response = await _emailTemplateService.CreateAsync(request);
+            return response.Success ? Ok(response) : BadRequest(response);
         }
 
         // PUT: api/email-templates
@@ -50,8 +48,8 @@ namespace SFMSSolution.API.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<IActionResult> Update([FromBody] EmailTemplateUpdateRequestDto request)
         {
-            var result = await _emailTemplateService.UpdateAsync(request);
-            return result ? Ok("Template updated successfully.") : NotFound("Template not found.");
+            var response = await _emailTemplateService.UpdateAsync(request);
+            return response.Success ? Ok(response) : NotFound(response);
         }
 
         // DELETE: api/email-templates/{id}
@@ -59,8 +57,8 @@ namespace SFMSSolution.API.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _emailTemplateService.DeleteAsync(id);
-            return result ? Ok("Template deleted successfully.") : NotFound("Template not found.");
+            var response = await _emailTemplateService.DeleteAsync(id);
+            return response.Success ? Ok(response) : NotFound(response);
         }
     }
 }
