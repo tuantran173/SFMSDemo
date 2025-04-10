@@ -366,6 +366,7 @@ namespace SFMSSolution.Application.Services.Bookings
                 FacilityId = facility.Id,
                 Name = facility.Name,
                 Address = facility.Address,
+                Description = facility.Description,
                 ImageUrl = facility.ImageUrl,
                 Calendar = calendarItems
             };
@@ -432,6 +433,7 @@ namespace SFMSSolution.Application.Services.Bookings
                 FacilityId = facility.Id,
                 Name = facility.Name,
                 Address = facility.Address,
+                Description = facility.Description,
                 ImageUrl = facility.ImageUrl,
                 Calendar = calendarItems
             };
@@ -515,6 +517,7 @@ namespace SFMSSolution.Application.Services.Bookings
                 FacilityId = facility.Id,
                 Name = facility.Name,
                 Address = facility.Address,
+                Description = facility.Description,
                 ImageUrl = facility.ImageUrl,
                 Calendar = calendarItems
             };
