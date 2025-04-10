@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using SFMSSolution.Application.DataTransferObjects.Booking;
 using SFMSSolution.Application.DataTransferObjects.Booking.Request;
+using SFMSSolution.Application.Services.EmailTemplates;
 using SFMSSolution.Domain.Entities;
 using SFMSSolution.Domain.Enums;
 using SFMSSolution.Infrastructure.Implements.Interfaces;
@@ -18,12 +19,18 @@ namespace SFMSSolution.Application.Services.Bookings
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
+        private readonly IEmailTemplateService _emailTemplateService;
 
-        public BookingService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager)
+        public BookingService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            UserManager<User> userManager,
+            IEmailTemplateService emailTemplateService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
+            _emailTemplateService = emailTemplateService;
         }
 
         public async Task<BookingDto> GetBookingAsync(Guid id)
@@ -137,6 +144,27 @@ namespace SFMSSolution.Application.Services.Bookings
             // Tóm tắt kết quả
             var summary = $"Đặt sân thành công: {facility.Name}, ngày {booking.BookingDate:dd/MM/yyyy}, " +
                           $"giờ {booking.StartTime:hh\\:mm} - {booking.EndTime:hh\\:mm}. Chủ sân: {owner?.FullName}, SĐT: {owner?.PhoneNumber}.";
+
+            //// Gửi email xác nhận cho người dùng
+            //var user = await _userManager.FindByIdAsync(userId.ToString());
+            //var placeholders = new Dictionary<string, string>
+            //            {
+            //                { "UserName", user?.FullName ?? request.CustomerName },
+            //                { "FacilityName", facility.Name },
+            //                { "BookingTime", $"{booking.BookingDate:dd/MM/yyyy} {booking.StartTime:hh\\:mm} - {booking.EndTime:hh\\:mm}" },
+            //                { "Price", booking.FinalPrice.ToString("N0") + " VND" }
+            //            };
+
+            //var emailSent = await _emailTemplateService.SendFromTemplateAsync(
+            //    templateName: "BookingConfirmation", // 👉 bạn cần tạo template này
+            //    toEmail: user.Email,
+            //    placeholders: placeholders
+            //);
+
+            //if (!emailSent.Success)
+            //{
+            //    return new ApiResponse<string>("Booking created but failed to send confirmation email.");
+            //}
 
             return new ApiResponse<string>(true, summary);
         }
