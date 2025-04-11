@@ -54,7 +54,7 @@ namespace SFMSSolution.Application.Services
                 Id = Guid.NewGuid(),
                 FacilityId = request.FacilityId,
                 FacilityTimeSlotId = newSlot.Id,
-                PriceImageUrl = request.PriceImageUrl,
+                ImageUrl = request.PriceImageUrl,
                 BasePrice = request.BasePrice,
                 Coefficient = request.Coefficient,
                 FinalPrice = finalPrice,
@@ -78,7 +78,7 @@ namespace SFMSSolution.Application.Services
             var entity = await _unitOfWork.FacilityPriceRepository.GetByIdWithTimeSlotAsync(request.Id);
             if (entity == null)
                 return new ApiResponse<string>("Facility price not found.");
-            entity.PriceImageUrl = request.PriceImageUrl;
+            entity.ImageUrl = request.PriceImageUrl;
             entity.BasePrice = request.BasePrice;
             entity.Coefficient = request.Coefficient;
             entity.FinalPrice = request.BasePrice * request.Coefficient;
@@ -138,7 +138,7 @@ namespace SFMSSolution.Application.Services
                 EndTime = entity.FacilityTimeSlot.EndTime,
                 StartDate = entity.FacilityTimeSlot.StartDate,
                 EndDate = entity.FacilityTimeSlot.EndDate,
-                PriceImageUrl = entity.PriceImageUrl,
+                PriceImageUrl = entity.ImageUrl,
                 BasePrice = entity.BasePrice,
                 Coefficient = entity.Coefficient,
                 FinalPrice = entity.FinalPrice

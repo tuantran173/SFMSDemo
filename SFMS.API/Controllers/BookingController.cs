@@ -72,6 +72,27 @@ namespace SFMSSolution.API.Controllers
             return Ok(result);
         }
 
+        [HttpPost("confirm/{id}")]
+        [Authorize(Policy = "Onwer")] 
+        public async Task<IActionResult> ConfirmBooking(Guid id)
+        {
+            var result = await _bookingService.ConfirmBookingAsync(id);
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
+        [HttpPost("reject/{id}")]
+        [Authorize(Policy = "Onwer")] // 👈 Chỉ chủ sân được gọi
+        public async Task<IActionResult> RejectBooking(Guid id)
+        {
+            var result = await _bookingService.RejectBookingAsync(id);
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
 
         [HttpPut("update-booking")]
         [Authorize]

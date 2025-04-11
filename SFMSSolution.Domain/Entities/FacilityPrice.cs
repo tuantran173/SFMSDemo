@@ -10,7 +10,6 @@ namespace SFMSSolution.Domain.Entities
         public Guid FacilityId { get; set; }                    // 🔥 Thêm FK đến Facility
         public Facility Facility { get; set; }
         public string ImageUrl { get; set; }
-        public string PriceImageUrl {  get; set; }
         public decimal Coefficient { get; set; }              // Hệ số nhân giá
         public decimal BasePrice { get; set; }                // Giá cơ bản tại thời điểm tạo
         public decimal FinalPrice { get; set; }               // Giá sau khi áp dụng hệ số

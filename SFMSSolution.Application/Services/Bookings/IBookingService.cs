@@ -12,7 +12,8 @@ namespace SFMSSolution.Application.Services.Bookings
         Task<(IEnumerable<BookingDto> Bookings, int TotalCount)> GetAllBookingsAsync(string? name, int pageNumber, int pageSize);
 
         Task<ApiResponse<string>> CreateBookingAsync(BookingCreateRequestDto request, Guid userId);
-
+        Task<ApiResponse<string>> ConfirmBookingAsync(Guid bookingId);
+        Task<ApiResponse<string>> RejectBookingAsync(Guid bookingId);
         Task<bool> UpdateBookingAsync(Guid id, BookingUpdateRequestDto request);
 
         Task<bool> DeleteBookingAsync(Guid id);

@@ -268,8 +268,8 @@ namespace SFMSSolution.Application.Services.Bookings
                     { "Note", string.IsNullOrWhiteSpace(request.Note) ? "Không có ghi chú" : request.Note },
                     { "Price", booking.FinalPrice.ToString("N0") + " VND" },
                     { "PayUrl", string.IsNullOrEmpty(booking.ImageUrl) ? "" : booking.ImageUrl },
-                    { "ConfirmLink", $"https://localhost:4200/booking/confirm/{booking.Id}" },
-                    { "RejectLink", $"https://localhost:4200/booking/reject/{booking.Id}" }
+                    { "ConfirmLink", $"https://localhost:7275/booking/confirm/{booking.Id}" },
+                    { "RejectLink", $"https://localhost:7275/booking/reject/{booking.Id}" }
                 };
 
 
@@ -293,6 +293,41 @@ namespace SFMSSolution.Application.Services.Bookings
             return new ApiResponse<string>(true, summary);
         }
 
+        public async Task<ApiResponse<string>> ConfirmBookingAsync(Guid bookingId)
+        {
+            var booking = await _unitOfWork.BookingRepository.GetByIdAsync(bookingId);
+            if (booking == null)
+                return new ApiResponse<string>("Không tìm thấy đơn đặt sân.");
+
+            if (booking.Status != BookingStatus.Pending)
+                return new ApiResponse<string>("Chỉ có thể xác nhận đơn đang chờ xử lý.");
+
+            booking.Status = BookingStatus.Completed;
+            booking.UpdatedDate = DateTime.UtcNow;
+
+            await _unitOfWork.BookingRepository.UpdateAsync(booking);
+            await _unitOfWork.CompleteAsync();
+
+            return new ApiResponse<string>(true, "Xác nhận đơn đặt sân thành công.");
+        }
+
+        public async Task<ApiResponse<string>> RejectBookingAsync(Guid bookingId)
+        {
+            var booking = await _unitOfWork.BookingRepository.GetByIdAsync(bookingId);
+            if (booking == null)
+                return new ApiResponse<string>("Không tìm thấy đơn đặt sân.");
+
+            if (booking.Status != BookingStatus.Pending)
+                return new ApiResponse<string>("Chỉ có thể từ chối đơn đang chờ xử lý.");
+
+            booking.Status = BookingStatus.Canceled;
+            booking.UpdatedDate = DateTime.UtcNow;
+
+            await _unitOfWork.BookingRepository.UpdateAsync(booking);
+            await _unitOfWork.CompleteAsync();
+
+            return new ApiResponse<string>(true, "Từ chối đơn đặt sân thành công.");
+        }
 
 
         public async Task<bool> UpdateBookingAsync(Guid id, BookingUpdateRequestDto request)
@@ -319,6 +354,7 @@ namespace SFMSSolution.Application.Services.Bookings
             return true;
         }
 
+ 
         public async Task<bool> DeleteBookingAsync(Guid id)
         {
             await _unitOfWork.BookingRepository.DeleteAsync(id);
