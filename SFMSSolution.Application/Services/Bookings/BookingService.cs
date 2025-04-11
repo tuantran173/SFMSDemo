@@ -33,12 +33,6 @@ namespace SFMSSolution.Application.Services.Bookings
             _emailTemplateService = emailTemplateService;
         }
 
-        public async Task<BookingDto> GetBookingAsync(Guid id)
-        {
-            var booking = await _unitOfWork.BookingRepository.GetBookingByIdWithDetailsAsync(id);
-            return _mapper.Map<BookingDto>(booking);
-        }
-
         public async Task<(IEnumerable<BookingDto> Bookings, int TotalCount)> GetAllBookingsAsync(string? name, int pageNumber, int pageSize)
         {
             var (bookings, totalCount) = await _unitOfWork.BookingRepository.GetAllBookingsWithDetailsAsync(name, pageNumber, pageSize);
@@ -62,17 +56,52 @@ namespace SFMSSolution.Application.Services.Bookings
             return (bookingDtos, totalCount);
         }
 
+        public async Task<ApiResponse<BookingDto>> GetBookingDetailAsync(Guid bookingId)
+        {
+            var booking = await _unitOfWork.BookingRepository.GetBookingByIdWithDetailsAsync(bookingId);
+            if (booking == null)
+                return new ApiResponse<BookingDto>("Booking not found.");
+
+            var owner = await _userManager.FindByIdAsync(booking.Facility?.OwnerId.ToString() ?? "");
+
+            var result = new BookingDto
+            {
+                Id = booking.Id,
+                FacilityId = booking.FacilityId,
+                FacilityName = booking.Facility?.Name ?? "",
+                FacilityAddress = booking.Facility?.Address ?? "",
+                OwnerFullName = owner?.FullName ?? "",
+                OwnerEmail = owner?.Email ?? "",
+                OwnerPhone = owner?.Phone ?? "",
+
+                BookingDate = booking.BookingDate,
+                StartTime = booking.StartTime ?? TimeSpan.Zero,
+                EndTime = booking.EndTime ?? TimeSpan.Zero,
+                FinalPrice = booking.FinalPrice,
+
+                CustomerName = booking.CustomerName,
+                CustomerEmail = booking.CustomerEmail,
+                CustomerPhone = booking.CustomerPhone,
+
+                PaymentMethod = booking.PaymentMethod,
+                Note = booking.Note,
+                PayImageUrl = booking.ImageUrl,
+                Status = booking.Status.ToString(),
+
+                CreatedDate = booking.CreatedDate,
+            };
+
+            return new ApiResponse<BookingDto>(result);
+        }
 
         public async Task<IEnumerable<BookingDto>> GetBookingsByUserAsync(Guid userId)
         {
             var bookings = await _unitOfWork.BookingRepository.GetBookingsByUserAsync(userId);
-
             var result = new List<BookingDto>();
 
             foreach (var booking in bookings)
             {
                 var facility = booking.Facility;
-                var timeSlot = booking.FacilityTimeSlot;
                 var owner = await _userManager.FindByIdAsync(facility.OwnerId.ToString());
 
                 var dto = new BookingDto
@@ -82,17 +111,26 @@ namespace SFMSSolution.Application.Services.Bookings
                     FacilityName = facility.Name,
                     FacilityAddress = facility.Address,
 
-                    BookingDate = booking.BookingDate,
-                    StartTime = booking.StartTime ?? timeSlot.StartTime,
-                    EndTime = booking.EndTime ?? timeSlot.EndTime,
+                    OwnerFullName = owner?.FullName ?? "",
+                    OwnerEmail = owner?.Email ?? "",
+                    OwnerPhone = owner?.Phone ?? "",
 
+                    BookingDate = booking.BookingDate,
+                    StartTime = booking.StartTime ?? booking.FacilityTimeSlot?.StartTime ?? TimeSpan.Zero,
+                    EndTime = booking.EndTime ?? booking.FacilityTimeSlot?.EndTime ?? TimeSpan.Zero,
                     FinalPrice = booking.FinalPrice,
 
-                    OwnerFullName = owner?.FullName ?? "",
-                    OwnerPhone = owner?.PhoneNumber ?? "",
+                    CustomerName = booking.CustomerName,
+                    CustomerEmail = booking.CustomerEmail,
+                    CustomerPhone = booking.CustomerPhone,
 
                     PaymentMethod = booking.PaymentMethod,
-                    Note = booking.Note
+                    Note = booking.Note,
+                    PayImageUrl = booking.ImageUrl,
+
+                    Status = booking.Status.ToString(),
+
+                    CreatedDate = booking.CreatedDate,
                 };
 
                 result.Add(dto);
@@ -217,15 +255,23 @@ namespace SFMSSolution.Application.Services.Bookings
             await _unitOfWork.CompleteAsync();
 
             var placeholders = new Dictionary<string, string>
-            {
-                { "OwnerName", owner.FullName },
-                { "CustomerName", request.CustomerName },
-                { "FacilityName", facility.Name },
-                { "BookingTime", $"{booking.BookingDate:dd/MM/yyyy} {booking.StartTime:hh\\:mm} - {booking.EndTime:hh\\:mm}" },
-                { "Price", booking.FinalPrice.ToString("N0") + " VND" },
-                { "ConfirmLink", $"https://yourdomain.com/booking/confirm/{booking.Id}" },
-                { "RejectLink", $"https://yourdomain.com/booking/reject/{booking.Id}" }
-            };
+                {
+                    { "OwnerName", owner.FullName },
+                    { "CustomerName", request.CustomerName },
+                    { "CustomerPhone", request.CustomerPhone },
+                    { "CustomerEmail", request.CustomerEmail },
+                    { "FacilityName", facility.Name },
+                    { "FacilityAddress", facility.Address },
+                    { "BookingDate", booking.BookingDate.ToString("dd/MM/yyyy") },
+                    { "BookingTime", $"{booking.StartTime:hh\\:mm} - {booking.EndTime:hh\\:mm}" },
+                    { "PaymentMethod", request.PaymentMethod == "cash" ? "Tiền mặt" : "VNPay" },
+                    { "Note", string.IsNullOrWhiteSpace(request.Note) ? "Không có ghi chú" : request.Note },
+                    { "Price", booking.FinalPrice.ToString("N0") + " VND" },
+                    { "PayUrl", string.IsNullOrEmpty(booking.ImageUrl) ? "" : booking.ImageUrl },
+                    { "ConfirmLink", $"https://localhost:4200/booking/confirm/{booking.Id}" },
+                    { "RejectLink", $"https://localhost:4200/booking/reject/{booking.Id}" }
+                };
+
 
             Console.WriteLine($"Đang gửi email xác nhận booking đến chủ sân: {owner.Email}");
 

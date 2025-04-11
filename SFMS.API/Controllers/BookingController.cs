@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SFMSSolution.Application.DataTransferObjects.Booking;
 using SFMSSolution.Application.DataTransferObjects.Booking.Request;
 using SFMSSolution.Application.Services.Bookings;
+using SFMSSolution.Response;
 
 namespace SFMSSolution.API.Controllers
 {
@@ -18,14 +19,22 @@ namespace SFMSSolution.API.Controllers
         }
 
         [HttpGet("{id:Guid}/get-booking-by-id")]
+        [Authorize]
         public async Task<IActionResult> GetBooking(Guid id)
         {
-            var booking = await _bookingService.GetBookingAsync(id);
+            var booking = await _bookingService.GetBookingDetailAsync(id);
             if (booking == null) return NotFound("Booking not found.");
             return Ok(booking);
         }
-
+        [HttpGet("user/{userId}")]
+        [Authorize]
+        public async Task<IActionResult> GetBookingsByUser(Guid userId)
+        {
+            var result = await _bookingService.GetBookingsByUserAsync(userId);
+            return Ok(new ApiResponse<IEnumerable<BookingDto>>(result));
+        }
         [HttpGet("get-all-bookings")]
+        [Authorize]
         public async Task<IActionResult> GetAllBookings(
             [FromQuery] string? name,
             [FromQuery] int pageNumber = 1,

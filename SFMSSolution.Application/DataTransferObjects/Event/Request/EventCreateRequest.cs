@@ -27,7 +27,5 @@ namespace SFMSSolution.Application.DataTransferObjects.Event.Request
         [Required]
         public string EventType { get; set; } = string.Empty;
 
-
-        public string Status { get; set; } = "Scheduled";
     }
 }

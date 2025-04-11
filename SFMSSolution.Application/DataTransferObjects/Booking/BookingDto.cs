@@ -26,10 +26,22 @@ namespace SFMSSolution.Application.DataTransferObjects.Booking
         // Chủ sân
         public string OwnerFullName { get; set; }
         public string OwnerPhone { get; set; }
+        public string OwnerEmail { get; set; }
+
+        // Customer
+        public string? CustomerName { get; set; }
+        public string? CustomerEmail { get; set; }
+        public string? CustomerPhone { get; set; }
+
 
         // Thông tin thêm
-        public string PaymentMethod { get; set; } // "Tiền mặt", "VNPay", v.v.
-        public string Note { get; set; }
+        public string? PaymentMethod { get; set; } // "Tiền mặt", "VNPay", v.v.
+        public string? Note { get; set; }
+        public string PayImageUrl { get; set; }
+
+        public string? Status { get; set; }
+
+        public DateTime CreatedDate { get; set; }
 
     }
 }

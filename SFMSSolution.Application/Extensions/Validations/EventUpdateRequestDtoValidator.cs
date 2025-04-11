@@ -33,9 +33,6 @@ namespace SFMSSolution.Application.Extensions.Validations
             RuleFor(x => x.EndTime)
                 .NotEmpty().WithMessage("End time is required.");
 
-            RuleFor(x => x.Status)
-                .Must(s => new[] { "Scheduled", "Ongoing", "Completed", "Cancelled" }.Contains(s))
-                .WithMessage("Invalid status.");
         }
     }
 }

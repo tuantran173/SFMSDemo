@@ -7,7 +7,7 @@ namespace SFMSSolution.Application.Services.Bookings
 {
     public interface IBookingService
     {
-        Task<BookingDto> GetBookingAsync(Guid id);
+        Task<ApiResponse<BookingDto>> GetBookingDetailAsync(Guid bookingId);
 
         Task<(IEnumerable<BookingDto> Bookings, int TotalCount)> GetAllBookingsAsync(string? name, int pageNumber, int pageSize);
 
