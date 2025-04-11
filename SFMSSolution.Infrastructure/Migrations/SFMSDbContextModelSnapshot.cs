@@ -36,6 +36,11 @@ namespace SFMSSolution.Infrastructure.Migrations
                         .HasColumnType("datetime(6)")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
+                    b.Property<string>("CustomerEmail")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
                     b.Property<string>("CustomerName")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -57,6 +62,11 @@ namespace SFMSSolution.Infrastructure.Migrations
 
                     b.Property<decimal>("FinalPrice")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("Note")
                         .IsRequired()
@@ -466,21 +476,21 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("a1234567-1234-1234-1234-1234567890ab"),
-                            CreatedDate = new DateTime(2025, 4, 9, 8, 20, 38, 904, DateTimeKind.Utc).AddTicks(6809),
+                            CreatedDate = new DateTime(2025, 4, 11, 3, 43, 44, 882, DateTimeKind.Utc).AddTicks(9506),
                             Description = "Sân bóng đá 5-a-side, 7-a-side, 11-a-side",
                             Name = "Sân bóng"
                         },
                         new
                         {
                             Id = new Guid("b1234567-1234-1234-1234-1234567890bc"),
-                            CreatedDate = new DateTime(2025, 4, 9, 8, 20, 38, 904, DateTimeKind.Utc).AddTicks(6811),
+                            CreatedDate = new DateTime(2025, 4, 11, 3, 43, 44, 882, DateTimeKind.Utc).AddTicks(9507),
                             Description = "Sân cầu lông đơn và đôi",
                             Name = "Sân cầu lông"
                         },
                         new
                         {
                             Id = new Guid("c1234567-1234-1234-1234-1234567890cd"),
-                            CreatedDate = new DateTime(2025, 4, 9, 8, 20, 38, 904, DateTimeKind.Utc).AddTicks(6812),
+                            CreatedDate = new DateTime(2025, 4, 11, 3, 43, 44, 882, DateTimeKind.Utc).AddTicks(9509),
                             Description = "Sân Pickleball chuẩn quốc tế",
                             Name = "Sân Pickleball"
                         });
@@ -523,9 +533,17 @@ namespace SFMSSolution.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
+                            Id = new Guid("e1111111-2222-3333-4444-555566667777"),
+                            Body = "\r\n                        <html>\r\n                        <body style='font-family: Arial, sans-serif; color: #333;'>\r\n                            <h2>Xin chào {{OwnerName}},</h2>\r\n                            <p>Bạn vừa nhận được một <strong>yêu cầu đặt sân</strong> từ khách hàng <strong>{{CustomerName}}</strong>.</p>\r\n                            <table style='width: 100%; margin: 20px 0;'>\r\n                                <tr><td><strong>Sân:</strong></td><td>{{FacilityName}}</td></tr>\r\n                                <tr><td><strong>Thời gian:</strong></td><td>{{BookingTime}}</td></tr>\r\n                                <tr><td><strong>Giá:</strong></td><td>{{Price}}</td></tr>\r\n                            </table>\r\n                            <p>Vui lòng xác nhận hoặc từ chối yêu cầu:</p>\r\n                            <p>\r\n                                <a href='{{ConfirmLink}}' style='padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none;'>Xác nhận</a>\r\n                                &nbsp;\r\n                                <a href='{{RejectLink}}' style='padding: 10px 20px; background-color: #dc3545; color: white; text-decoration: none;'>Từ chối</a>\r\n                            </p>\r\n                            <p>Trân trọng,<br>SFMS Team</p>\r\n                        </body>\r\n                        </html>",
+                            CreatedDate = new DateTime(2025, 4, 11, 3, 43, 44, 882, DateTimeKind.Utc).AddTicks(9650),
+                            Subject = "Yêu cầu xác nhận đặt sân",
+                            TemplateName = "BookingRequestOwner"
+                        },
+                        new
+                        {
                             Id = new Guid("abcd1234-abcd-1234-abcd-1234567890ab"),
                             Body = "\r\n                            <p>Xin chào {{UserName}},</p>\r\n                            <p>Bạn đã đăng ký tài khoản thành công.</p>\r\n                            <p>Chúc bạn có những trải nghiệm tuyệt vời cùng chúng tôi!</p>\r\n                            <p>Trân trọng,<br>Sport Facility Management Team</p>",
-                            CreatedDate = new DateTime(2025, 4, 9, 8, 20, 38, 904, DateTimeKind.Utc).AddTicks(6919),
+                            CreatedDate = new DateTime(2025, 4, 11, 3, 43, 44, 882, DateTimeKind.Utc).AddTicks(9665),
                             Subject = "Chào mừng đến với 3AT Sport!",
                             TemplateName = "Xác nhận đăng ký thành công"
                         },
@@ -533,7 +551,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         {
                             Id = new Guid("efef5678-efef-5678-efef-1234567890cd"),
                             Body = "\r\n                            <p>Xin chào {{UserName}},</p>\r\n                            <p>Đơn đặt sân của bạn tại {{FacilityName}} vào lúc {{BookingTime}} đã được xác nhận.</p>\r\n                            <p>Chi tiết:</p>\r\n                            <ul>\r\n                                <li>Sân: {{FacilityName}}</li>\r\n                                <li>Thời gian: {{BookingTime}}</li>\r\n                                <li>Giá: {{Price}}</li>\r\n                            </ul>\r\n                             <p>Trân trọng,<br>Sport Facility Management Team</p>",
-                            CreatedDate = new DateTime(2025, 4, 9, 8, 20, 38, 904, DateTimeKind.Utc).AddTicks(6920),
+                            CreatedDate = new DateTime(2025, 4, 11, 3, 43, 44, 882, DateTimeKind.Utc).AddTicks(9667),
                             Subject = "Xác nhận đặt sân thành công!",
                             TemplateName = "Xác nhận đặt sân thành công"
                         },
@@ -541,7 +559,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         {
                             Id = new Guid("dcba4321-dcba-4321-dcba-0987654321ef"),
                             Body = "\r\n                            <p>Xin chào {{UserName}},</p>\r\n                            <p>Mã OTP của bạn để đặt lại mật khẩu là: <strong>{{OTP}}</strong></p>\r\n                            <p>Mã có hiệu lực trong vòng 2 phút.</p>\r\n                            <p>Nếu bạn không yêu cầu thao tác này, vui lòng bỏ qua email.</p>\r\n                            <p>Trân trọng,<br>Sport Facility Management Team</p>",
-                            CreatedDate = new DateTime(2025, 4, 9, 8, 20, 38, 904, DateTimeKind.Utc).AddTicks(6922),
+                            CreatedDate = new DateTime(2025, 4, 11, 3, 43, 44, 882, DateTimeKind.Utc).AddTicks(9668),
                             Subject = "Xác nhận mã OTP đặt lại mật khẩu",
                             TemplateName = "OTPVerification"
                         });
@@ -679,7 +697,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         {
                             Id = new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"),
                             Address = "Thạch Thất, Hòa Lạc",
-                            CreatedDate = new DateTime(2025, 4, 9, 8, 20, 38, 904, DateTimeKind.Utc).AddTicks(6846),
+                            CreatedDate = new DateTime(2025, 4, 11, 3, 43, 44, 882, DateTimeKind.Utc).AddTicks(9578),
                             Description = "Sân bóng đá 5 người",
                             FacilityType = "Football",
                             ImageUrl = "image1.jpg",
@@ -691,7 +709,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         {
                             Id = new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"),
                             Address = "Thạch Thất, Hòa Lạc",
-                            CreatedDate = new DateTime(2025, 4, 9, 8, 20, 38, 904, DateTimeKind.Utc).AddTicks(6849),
+                            CreatedDate = new DateTime(2025, 4, 11, 3, 43, 44, 882, DateTimeKind.Utc).AddTicks(9581),
                             Description = "Sân cầu lông đơn/đôi",
                             FacilityType = "Badminton",
                             ImageUrl = "image2.jpg",
@@ -729,6 +747,15 @@ namespace SFMSSolution.Infrastructure.Migrations
 
                     b.Property<decimal>("FinalPrice")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("PriceImageUrl")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("char(36)");
@@ -801,7 +828,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("1b05b57c-6d02-4c06-b0b5-a96139825346"),
-                            CreatedDate = new DateTime(2025, 4, 9, 8, 20, 38, 904, DateTimeKind.Utc).AddTicks(6879),
+                            CreatedDate = new DateTime(2025, 4, 11, 3, 43, 44, 882, DateTimeKind.Utc).AddTicks(9609),
                             EndDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EndTime = new TimeSpan(0, 9, 30, 0, 0),
                             FacilityId = new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"),
@@ -813,7 +840,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("907b662c-5a2c-4a90-b96b-81b603b27e57"),
-                            CreatedDate = new DateTime(2025, 4, 9, 8, 20, 38, 904, DateTimeKind.Utc).AddTicks(6881),
+                            CreatedDate = new DateTime(2025, 4, 11, 3, 43, 44, 882, DateTimeKind.Utc).AddTicks(9610),
                             EndDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EndTime = new TimeSpan(0, 11, 0, 0, 0),
                             FacilityId = new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"),
@@ -825,7 +852,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("1a2c6a93-97cd-4493-a1fc-9b5819ac6e17"),
-                            CreatedDate = new DateTime(2025, 4, 9, 8, 20, 38, 904, DateTimeKind.Utc).AddTicks(6882),
+                            CreatedDate = new DateTime(2025, 4, 11, 3, 43, 44, 882, DateTimeKind.Utc).AddTicks(9612),
                             EndDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EndTime = new TimeSpan(0, 12, 30, 0, 0),
                             FacilityId = new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"),
@@ -837,7 +864,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("d75d092a-7da6-4cc3-88c9-69ac5c82652c"),
-                            CreatedDate = new DateTime(2025, 4, 9, 8, 20, 38, 904, DateTimeKind.Utc).AddTicks(6884),
+                            CreatedDate = new DateTime(2025, 4, 11, 3, 43, 44, 882, DateTimeKind.Utc).AddTicks(9613),
                             EndDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EndTime = new TimeSpan(0, 15, 30, 0, 0),
                             FacilityId = new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"),
@@ -849,7 +876,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("1b7ea0d1-c743-47d7-b3f1-02860dbd9806"),
-                            CreatedDate = new DateTime(2025, 4, 9, 8, 20, 38, 904, DateTimeKind.Utc).AddTicks(6885),
+                            CreatedDate = new DateTime(2025, 4, 11, 3, 43, 44, 882, DateTimeKind.Utc).AddTicks(9614),
                             EndDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EndTime = new TimeSpan(0, 17, 0, 0, 0),
                             FacilityId = new Guid("f34c777a-fa4b-4ed1-bc22-29570a01d7d9"),
@@ -861,7 +888,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("bb9299e1-518a-4730-9797-6ec37c5dd03f"),
-                            CreatedDate = new DateTime(2025, 4, 9, 8, 20, 38, 904, DateTimeKind.Utc).AddTicks(6887),
+                            CreatedDate = new DateTime(2025, 4, 11, 3, 43, 44, 882, DateTimeKind.Utc).AddTicks(9616),
                             EndDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EndTime = new TimeSpan(0, 9, 30, 0, 0),
                             FacilityId = new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"),
@@ -873,7 +900,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("b03366d1-b1cc-4c0e-8e61-6fff1651755d"),
-                            CreatedDate = new DateTime(2025, 4, 9, 8, 20, 38, 904, DateTimeKind.Utc).AddTicks(6888),
+                            CreatedDate = new DateTime(2025, 4, 11, 3, 43, 44, 882, DateTimeKind.Utc).AddTicks(9618),
                             EndDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EndTime = new TimeSpan(0, 11, 0, 0, 0),
                             FacilityId = new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"),
@@ -885,7 +912,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("ffa61f3b-58a0-4881-ae97-61332f81fc4f"),
-                            CreatedDate = new DateTime(2025, 4, 9, 8, 20, 38, 904, DateTimeKind.Utc).AddTicks(6890),
+                            CreatedDate = new DateTime(2025, 4, 11, 3, 43, 44, 882, DateTimeKind.Utc).AddTicks(9619),
                             EndDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EndTime = new TimeSpan(0, 12, 30, 0, 0),
                             FacilityId = new Guid("9eefd023-7cc3-428f-b96d-3e0430394391"),
@@ -894,6 +921,54 @@ namespace SFMSSolution.Infrastructure.Migrations
                             StartTime = new TimeSpan(0, 11, 0, 0, 0),
                             Status = 0
                         });
+                });
+
+            modelBuilder.Entity("SFMSSolution.Domain.Entities.SlotDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time(6)");
+
+                    b.Property<decimal>("FinalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<Guid>("SlotId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time(6)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SlotId", "Date", "StartTime", "EndTime")
+                        .IsUnique();
+
+                    b.ToTable("SlotDetails");
                 });
 
             modelBuilder.Entity("SFMSSolution.Domain.Entities.User", b =>
@@ -1000,7 +1075,7 @@ namespace SFMSSolution.Infrastructure.Migrations
                             Address = "",
                             AvatarUrl = "",
                             Birthday = new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "997e8298-d194-4519-90c2-d8b94e0a9ea9",
+                            ConcurrencyStamp = "96467c8a-903d-4ee1-a331-e4c978b44250",
                             Email = "owner@example.com",
                             EmailConfirmed = true,
                             FullName = "Facility Owner",
@@ -1173,6 +1248,17 @@ namespace SFMSSolution.Infrastructure.Migrations
                         .HasForeignKey("FacilityId1");
 
                     b.Navigation("Facility");
+                });
+
+            modelBuilder.Entity("SFMSSolution.Domain.Entities.SlotDetail", b =>
+                {
+                    b.HasOne("SFMSSolution.Domain.Entities.FacilityTimeSlot", "FacilityTimeSlot")
+                        .WithMany()
+                        .HasForeignKey("SlotId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FacilityTimeSlot");
                 });
 
             modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreApplication", b =>

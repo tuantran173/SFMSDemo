@@ -18,13 +18,15 @@ namespace SFMSSolution.Application.DataTransferObjects.Booking.Request
 
         //public string OwnerFullName { get; set; }
         //public string OwnerPhone { get; set; }
-
         public string CustomerName { get; set; }
         public string CustomerPhone { get; set; }
+        public string CustomerEmail { get; set; }
         public string PaymentMethod { get; set; } // Tiền mặt, VNPay, v.v.
 
         public string? Note { get; set; }
         public decimal FinalPrice { get; set; }
+        public string PayImageUrl { get; set; }
+
     }
 
 }

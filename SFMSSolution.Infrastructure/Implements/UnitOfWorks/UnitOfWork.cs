@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Polly;
 using SFMSSolution.Domain.Entities;
 using SFMSSolution.Infrastructure.Database.AppDbContext;
 using SFMSSolution.Infrastructure.Implements.Interfaces;
@@ -21,7 +23,7 @@ namespace SFMSSolution.Infrastructure.Implements.UnitOfWorks
         private IFacilityPriceRepository _facilityPriceRepository;
         private IFacilityTimeSlotRepository _facilityTimeSlotRepository;
         private IEmailTemplateRepository _emailTemplateRepository;
-
+        public ISlotDetailRepository _slotDetailRepository;
         public UnitOfWork(SFMSDbContext context, UserManager<User> userManager)
         {
             _context = context;
@@ -48,6 +50,8 @@ namespace SFMSSolution.Infrastructure.Implements.UnitOfWorks
            => _facilityTimeSlotRepository ??= new FacilityTimeSlotRepository(_context);
         public IEmailTemplateRepository EmailTemplateRepository
            => _emailTemplateRepository ??= new EmailTemplateRepository(_context);
+        public ISlotDetailRepository SlotDetailRepository
+           => _slotDetailRepository ??= new SlotDetailRepository(_context);
 
         // Triển khai phương thức CompleteAsync
         public async Task<int> CompleteAsync()

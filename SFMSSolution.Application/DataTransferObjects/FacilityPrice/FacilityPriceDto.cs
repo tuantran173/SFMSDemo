@@ -26,6 +26,7 @@ namespace SFMSSolution.Application.DataTransferObjects.FacilityPrice
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         // Thông tin giá
+        public string PriceImageUrl { get; set; }
         public decimal BasePrice { get; set; }
         public decimal Coefficient { get; set; }
         public decimal FinalPrice { get; set; }

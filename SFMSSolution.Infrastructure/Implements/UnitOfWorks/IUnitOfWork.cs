@@ -18,6 +18,7 @@ namespace SFMSSolution.Infrastructure.Implements.UnitOfWorks
         IFacilityPriceRepository FacilityPriceRepository { get; }
         IFacilityTimeSlotRepository FacilityTimeSlotRepository { get; }
         IEmailTemplateRepository EmailTemplateRepository { get; }
+        ISlotDetailRepository SlotDetailRepository { get; }
 
         // Phương thức commit transaction
         Task<int> CompleteAsync();

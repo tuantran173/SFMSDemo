@@ -16,6 +16,8 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
             builder.ToTable("FacilityPrices");
 
             builder.HasKey(fp => fp.Id);
+            builder.Property(fp => fp.ImageUrl)
+                   .HasMaxLength(500);
 
             builder.Property(fp => fp.Coefficient)
                    .IsRequired()

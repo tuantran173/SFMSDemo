@@ -24,9 +24,13 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
             builder.Property(b => b.EndTime)
                    .HasColumnType("time")
                    .IsRequired(false);
-
+            builder.Property(b => b.CustomerEmail)
+                    .HasMaxLength(255)
+                    .IsRequired();
             builder.Property(b => b.Note)
                    .HasMaxLength(1000);
+            builder.Property(b => b.ImageUrl)
+                   .HasMaxLength(500);
 
             builder.Property(b => b.Status)
                    .IsRequired()

@@ -15,7 +15,7 @@ namespace SFMSSolution.Domain.Entities
         public string Description { get; set; } = string.Empty;
         public string ImageUrl { get; set; } = string.Empty;
 
-        public string FacilityType { get; set; }
+        public string? FacilityType { get; set; }
         public FacilityStatus Status { get; set; } = FacilityStatus.Available;
         // Chủ sân (Facility Owner)
         public Guid OwnerId { get; set; }                      // FK

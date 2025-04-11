@@ -17,6 +17,7 @@ namespace SFMSSolution.Application.DataTransferObjects.FacilityPrice.Request
         public TimeSpan EndTime { get; set; }                 // Giờ kết thúc
         public DateTime StartDate { get; set; }                  // Ngày bắt đầu áp dụng giá
         public DateTime EndDate { get; set; }                    // Ngày kết thúc áp dụng giá
+        public string PriceImageUrl { get; set; }
         public decimal BasePrice { get; set; }                   // Giá gốc
         public decimal Coefficient { get; set; }
     }

@@ -171,7 +171,36 @@ namespace SFMSSolution.Infrastructure.Database.SFMSDbContext
             var emailTemplate1Id = Guid.Parse("abcd1234-abcd-1234-abcd-1234567890ab");
             var emailTemplate2Id = Guid.Parse("efef5678-efef-5678-efef-1234567890cd"); // ✅ hợp lệ
             var emailTemplate3Id = Guid.Parse("dcba4321-dcba-4321-dcba-0987654321ef"); // ✅ hợp lệ
+            var bookingRequestOwnerTemplateId = Guid.Parse("e1111111-2222-3333-4444-555566667777");
 
+            modelBuilder.Entity<EmailTemplate>().HasData(
+                new EmailTemplate
+                {
+                    Id = bookingRequestOwnerTemplateId,
+                    TemplateName = "BookingRequestOwner",
+                    Subject = "Yêu cầu xác nhận đặt sân",
+                    Body = @"
+                        <html>
+                        <body style='font-family: Arial, sans-serif; color: #333;'>
+                            <h2>Xin chào {{OwnerName}},</h2>
+                            <p>Bạn vừa nhận được một <strong>yêu cầu đặt sân</strong> từ khách hàng <strong>{{CustomerName}}</strong>.</p>
+                            <table style='width: 100%; margin: 20px 0;'>
+                                <tr><td><strong>Sân:</strong></td><td>{{FacilityName}}</td></tr>
+                                <tr><td><strong>Thời gian:</strong></td><td>{{BookingTime}}</td></tr>
+                                <tr><td><strong>Giá:</strong></td><td>{{Price}}</td></tr>
+                            </table>
+                            <p>Vui lòng xác nhận hoặc từ chối yêu cầu:</p>
+                            <p>
+                                <a href='{{ConfirmLink}}' style='padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none;'>Xác nhận</a>
+                                &nbsp;
+                                <a href='{{RejectLink}}' style='padding: 10px 20px; background-color: #dc3545; color: white; text-decoration: none;'>Từ chối</a>
+                            </p>
+                            <p>Trân trọng,<br>SFMS Team</p>
+                        </body>
+                        </html>",
+                    CreatedDate = DateTime.UtcNow
+                }
+            );
             modelBuilder.Entity<EmailTemplate>().HasData(
                 new EmailTemplate
                 {

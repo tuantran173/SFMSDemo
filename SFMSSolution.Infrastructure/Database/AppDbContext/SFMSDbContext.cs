@@ -19,6 +19,7 @@ namespace SFMSSolution.Infrastructure.Database.AppDbContext
         public DbSet<FacilityTimeSlot> FacilityTimeSlots { get; set; }
         public DbSet<FacilityPrice> FacilityPrices { get; set; }
         public DbSet<EmailTemplate> EmailTemplates { get; set; }
+        public DbSet<SlotDetail> SlotDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,6 +33,7 @@ namespace SFMSSolution.Infrastructure.Database.AppDbContext
             modelBuilder.ApplyConfiguration(new EventConfiguration());
             modelBuilder.ApplyConfiguration(new FacilityPriceConfiguration());
             modelBuilder.ApplyConfiguration(new FacilityTimeSlotConfiguration());
+            modelBuilder.ApplyConfiguration(new SlotDetailConfiguration());
 
             // Gọi phương thức Seed từ SFMSDbInitializer
             SFMSDbInitializer.Seed(modelBuilder);
