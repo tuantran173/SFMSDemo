@@ -49,7 +49,6 @@ namespace SFMSSolution.Application.Services.Bookings
                 FinalPrice = b.FinalPrice,
                 OwnerFullName = b.Facility?.Owner?.FullName ?? "",
                 OwnerPhone = b.Facility?.Owner?.Phone ?? "",
-                PaymentMethod = b.PaymentMethod,
                 Note = b.Note
             });
 
@@ -83,7 +82,6 @@ namespace SFMSSolution.Application.Services.Bookings
                 CustomerEmail = booking.CustomerEmail,
                 CustomerPhone = booking.CustomerPhone,
 
-                PaymentMethod = booking.PaymentMethod,
                 Note = booking.Note,
                 PayImageUrl = booking.ImageUrl,
                 Status = booking.Status.ToString(),
@@ -124,7 +122,6 @@ namespace SFMSSolution.Application.Services.Bookings
                     CustomerEmail = booking.CustomerEmail,
                     CustomerPhone = booking.CustomerPhone,
 
-                    PaymentMethod = booking.PaymentMethod,
                     Note = booking.Note,
                     PayImageUrl = booking.ImageUrl,
 
@@ -243,7 +240,6 @@ namespace SFMSSolution.Application.Services.Bookings
                 CustomerName = request.CustomerName,
                 CustomerPhone = request.CustomerPhone,
                 CustomerEmail = request.CustomerEmail,
-                PaymentMethod = request.PaymentMethod,
                 Note = request.Note,
                 ImageUrl = request.PayImageUrl,
                 Status = BookingStatus.Pending,
@@ -260,11 +256,10 @@ namespace SFMSSolution.Application.Services.Bookings
                     { "CustomerName", request.CustomerName },
                     { "CustomerPhone", request.CustomerPhone },
                     { "CustomerEmail", request.CustomerEmail },
-                    { "FacilityName", facility.Name },
+                    { "FacilityName", facility.Name },  
                     { "FacilityAddress", facility.Address },
                     { "BookingDate", booking.BookingDate.ToString("dd/MM/yyyy") },
                     { "BookingTime", $"{booking.StartTime:hh\\:mm} - {booking.EndTime:hh\\:mm}" },
-                    { "PaymentMethod", request.PaymentMethod == "cash" ? "Tiền mặt" : "VNPay" },
                     { "Note", string.IsNullOrWhiteSpace(request.Note) ? "Không có ghi chú" : request.Note },
                     { "Price", booking.FinalPrice.ToString("N0") + " VND" },
                     { "PayUrl", string.IsNullOrEmpty(booking.ImageUrl) ? "" : booking.ImageUrl },
@@ -828,16 +823,17 @@ namespace SFMSSolution.Application.Services.Bookings
 
                     BasePrice = price?.BasePrice ?? 0,
                     Coefficient = price?.Coefficient ?? 1,
-                Deposit = (price?.FinalPrice ?? 0) * 0.3m,
-                FinalPrice = price?.FinalPrice ?? 0,
+                    Deposit = (price?.FinalPrice ?? 0) * 0.3m,
+                    FinalPrice = price?.FinalPrice ?? 0,
+                    PriceImageUrl = price?.ImageUrl ?? string.Empty,
 
-                // Thông tin sân và chủ sân
-                FacilityName = facility?.Name ?? string.Empty,
-                FacilityAddress = facility?.Address ?? string.Empty,
-                FacilityImageUrl = facility?.ImageUrl ?? string.Empty,
-                OwnerFullName = owner?.FullName ?? string.Empty,
-                OwnerUserName = owner?.UserName ?? string.Empty,
-                OwnerPhone = owner?.Phone ?? string.Empty
+                    // Thông tin sân và chủ sân
+                    FacilityName = facility?.Name ?? string.Empty,
+                    FacilityAddress = facility?.Address ?? string.Empty,
+                    FacilityImageUrl = facility?.ImageUrl ?? string.Empty,
+                    OwnerFullName = owner?.FullName ?? string.Empty,
+                    OwnerUserName = owner?.UserName ?? string.Empty,
+                    OwnerPhone = owner?.Phone ?? string.Empty
             };
 
             return new ApiResponse<SlotDetailDto>(dto);

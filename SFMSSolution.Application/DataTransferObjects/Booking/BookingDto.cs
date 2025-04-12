@@ -33,10 +33,9 @@ namespace SFMSSolution.Application.DataTransferObjects.Booking
         public string? CustomerEmail { get; set; }
         public string? CustomerPhone { get; set; }
 
-
-        // Thông tin thêm
-        public string? PaymentMethod { get; set; } // "Tiền mặt", "VNPay", v.v.
         public string? Note { get; set; }
+        public string? PriceImageUrl { get; set; }
+
         public string PayImageUrl { get; set; }
 
         public string? Status { get; set; }

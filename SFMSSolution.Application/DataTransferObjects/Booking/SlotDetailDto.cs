@@ -25,6 +25,8 @@ namespace SFMSSolution.Application.DataTransferObjects.Booking
         public decimal Coefficient { get; set; }
         public decimal FinalPrice { get; set; }
         public decimal Deposit { get; set; }
+        public string? PriceImageUrl { get; set; }
+
 
         // ✅ Thông tin sân
         public string FacilityName { get; set; }

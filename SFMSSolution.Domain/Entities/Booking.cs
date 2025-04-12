@@ -20,8 +20,6 @@ public class Booking : BaseEntity
     public string Note { get; set; }
     public BookingStatus Status { get; set; } = BookingStatus.Pending;
     public string ImageUrl { get; set; }
-
-    public string PaymentMethod { get; set; } // "Cash", "VNPay", etc.
     public decimal FinalPrice { get; set; }
 
     public string CustomerName { get; set; }
