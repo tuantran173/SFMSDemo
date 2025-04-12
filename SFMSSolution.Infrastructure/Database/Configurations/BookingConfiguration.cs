@@ -39,10 +39,6 @@ namespace SFMSSolution.Infrastructure.Database.Configurations
                         v => (BookingStatus)Enum.Parse(typeof(BookingStatus), v))
                    .HasMaxLength(50);
 
-            builder.Property(b => b.PaymentMethod)
-                   .HasMaxLength(100)
-                   .IsRequired();
-
             builder.Property(b => b.FinalPrice)
                    .HasColumnType("decimal(18,2)")
                    .IsRequired();

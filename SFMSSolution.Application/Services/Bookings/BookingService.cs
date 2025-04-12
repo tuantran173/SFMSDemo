@@ -136,82 +136,6 @@ namespace SFMSSolution.Application.Services.Bookings
             return result;
         }
 
-
-
-        //public async Task<ApiResponse<string>> CreateBookingAsync(BookingCreateRequestDto request, Guid userId)
-        //{
-        //    // Kiểm tra xem slot đã được đặt chưa
-        //    var isBooked = await _unitOfWork.BookingRepository
-        //        .IsTimeSlotBooked(request.FacilityTimeSlotId, request.BookingDate, request.StartTime, request.EndTime);
-
-        //    if (isBooked)
-        //        return new ApiResponse<string>("Time slot is already booked.");
-
-        //    // Lấy thông tin sân
-        //    var facility = await _unitOfWork.FacilityRepository.GetFacilityByIdAsync(request.FacilityId);
-        //    if (facility == null)
-        //        return new ApiResponse<string>("Facility not found.");
-
-        //    var owner = await _userManager.FindByIdAsync(facility.OwnerId.ToString());
-
-        //    // Tạo mới booking
-        //    var booking = new Booking
-        //    {
-        //        Id = Guid.NewGuid(),
-        //        FacilityId = request.FacilityId,
-        //        FacilityTimeSlotId = request.FacilityTimeSlotId,
-        //        BookingDate = request.BookingDate.Date,
-        //        StartTime = request.StartTime,
-        //        EndTime = request.EndTime,
-        //        FinalPrice = request.FinalPrice,
-        //        CustomerName = request.CustomerName,
-        //        CustomerPhone = request.CustomerPhone,
-        //        CustomerEmail = request.CustomerEmail,
-        //        PaymentMethod = request.PaymentMethod,
-        //        Note = request.Note,
-        //        ImageUrl = request.PayImageUrl,
-        //        Status = BookingStatus.Pending,
-        //        UserId = userId,
-        //        CreatedDate = DateTime.UtcNow
-        //    };
-
-        //    await _unitOfWork.BookingRepository.AddAsync(booking);
-        //    await _unitOfWork.CompleteAsync();
-
-        //    // Tóm tắt kết quả
-        //    var summary = $"Đặt sân thành công: {facility.Name}, ngày {booking.BookingDate:dd/MM/yyyy}, " +
-        //                  $"giờ {booking.StartTime:hh\\:mm} - {booking.EndTime:hh\\:mm}. Chủ sân: {owner?.FullName}, SĐT: {owner?.PhoneNumber}.";
-
-        //    // Gửi email cho chủ sân để xác nhận
-        //    var placeholders = new Dictionary<string, string>
-        //        {
-        //            { "OwnerName", owner.FullName },
-        //            { "CustomerName", request.CustomerName },
-        //            { "FacilityName", facility.Name },
-        //            { "BookingTime", $"{booking.BookingDate:dd/MM/yyyy} {booking.StartTime:hh\\:mm} - {booking.EndTime:hh\\:mm}" },
-        //            { "Price", booking.FinalPrice.ToString("N0") + " VND" },
-        //            { "ConfirmLink", $"https://yourdomain.com/booking/confirm/{booking.Id}" },
-        //            { "RejectLink", $"https://yourdomain.com/booking/reject/{booking.Id}" }
-        //        };
-
-        //    var emailTo = owner.Email;
-        //    Console.WriteLine($"Đang gửi email xác nhận booking đến chủ sân: {emailTo}");
-
-        //    var emailSent = await _emailTemplateService.SendFromTemplateAsync(
-        //        templateName: "BookingRequestOwner",
-        //        toEmail: emailTo,
-        //        placeholders: placeholders
-        //    );
-
-        //    Console.WriteLine($"Kết quả gửi email: {(emailSent.Success ? "Thành công" : "Thất bại")} - {emailSent.Message}");
-        //    if (!emailSent.Success)
-        //    {
-        //        return new ApiResponse<string>(false, $"Đặt sân thành công nhưng gửi email cho chủ sân thất bại: {emailSent.Message}");
-        //    }
-
-        //    return new ApiResponse<string>(true, summary);
-        //}
-
         public async Task<ApiResponse<string>> CreateBookingAsync(BookingCreateRequestDto request, Guid userId)
         {
             var isBooked = await _unitOfWork.BookingRepository
@@ -263,8 +187,8 @@ namespace SFMSSolution.Application.Services.Bookings
                     { "Note", string.IsNullOrWhiteSpace(request.Note) ? "Không có ghi chú" : request.Note },
                     { "Price", booking.FinalPrice.ToString("N0") + " VND" },
                     { "PayUrl", string.IsNullOrEmpty(booking.ImageUrl) ? "" : booking.ImageUrl },
-                    { "ConfirmLink", $"https://localhost:7275/booking/confirm/{booking.Id}" },
-                    { "RejectLink", $"https://localhost:7275/booking/reject/{booking.Id}" }
+                    { "ConfirmLink", $"https://localhost:4200/booking/confirm/{booking.Id}" },
+                    { "RejectLink", $"https://localhost:4200/booking/reject/{booking.Id}" }
                 };
 
 
