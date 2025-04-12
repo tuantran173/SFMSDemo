@@ -33,11 +33,6 @@ namespace SFMSSolution.Application.Extensions.Validations
                 .NotEmpty().WithMessage("Customer phone is required.")
                 .Matches(@"^\d{9,11}$").WithMessage("Customer phone must be 9–11 digits.");
 
-            RuleFor(x => x.PaymentMethod)
-                .NotEmpty().WithMessage("Payment method is required.")
-                .Must(method => method =="VNPay")
-                .WithMessage("Payment method must be 'Tiền mặt' or 'VNPay'.");
-
             RuleFor(x => x.FinalPrice)
                 .GreaterThan(0).WithMessage("Final price must be greater than zero.");
 
