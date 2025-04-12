@@ -212,6 +212,41 @@ namespace SFMSSolution.Application.Services.Bookings
             return new ApiResponse<string>(true, summary);
         }
 
+        // Cancelling Booking 
+        public async Task<ApiResponse<string>> CancelBookingByCustomerAsync(Guid bookingId, Guid userId)
+        {
+            var booking = await _unitOfWork.BookingRepository.GetByIdAsync(bookingId);
+            if (booking == null)
+                return new ApiResponse<string>("Booking not found.");
+
+            if (booking.UserId != userId)
+                return new ApiResponse<string>("You are not authorized to cancel this booking.");
+
+            if (booking.Status != BookingStatus.Pending)
+                return new ApiResponse<string>("Only bookings in pending status can be canceled.");
+
+            // ✅ Check SlotDetail trạng thái phải là Pending
+            var slotDetail = await _unitOfWork.SlotDetailRepository
+                .GetBySlotAndTimeAsync(booking.FacilityTimeSlotId, booking.BookingDate, booking.StartTime.Value, booking.EndTime.Value);
+
+            if (slotDetail == null || slotDetail.Status != SlotStatus.Pending)
+                return new ApiResponse<string>("This slot is not in a cancellable state.");
+
+            // ✅ Tiến hành huỷ booking và reset trạng thái slot
+            booking.Status = BookingStatus.Canceled;
+            booking.UpdatedDate = DateTime.UtcNow;
+
+            slotDetail.Status = SlotStatus.Available;
+            slotDetail.UpdatedDate = DateTime.UtcNow;
+
+            await _unitOfWork.BookingRepository.UpdateAsync(booking);
+            await _unitOfWork.CompleteAsync();
+
+            return new ApiResponse<string>(true, "Booking canceled successfully and slot is now available.");
+        }
+
+
+
         public async Task<ApiResponse<string>> ConfirmBookingAsync(Guid bookingId)
         {
             var booking = await _unitOfWork.BookingRepository.GetByIdAsync(bookingId);
@@ -622,10 +657,8 @@ namespace SFMSSolution.Application.Services.Bookings
             if (request.StartTime < slot.StartTime || request.EndTime > slot.EndTime)
                 return new ApiResponse<string>("Time range is outside the defined slot.");
 
-            var existingBooking = await _unitOfWork.BookingRepository
+            var booking = await _unitOfWork.BookingRepository
                 .GetBookingBySlotAndDateAndTimeAsync(request.SlotId, request.Date, request.StartTime, request.EndTime);
-            if (existingBooking != null)
-                return new ApiResponse<string>("This slot is already booked. You cannot modify it.");
 
             var slotDetail = await _unitOfWork.SlotDetailRepository
                 .GetBySlotAndTimeAsync(request.SlotId, request.Date, request.StartTime, request.EndTime);
@@ -651,7 +684,36 @@ namespace SFMSSolution.Application.Services.Bookings
                 slotDetail.Note = request.Note;
 
             if (request.Status.HasValue)
+            {
+                var oldStatus = slotDetail.Status;
                 slotDetail.Status = request.Status.Value;
+
+                // ✅ Nếu chuyển từ Pending -> Booked → update booking và gửi email cho khách
+                if (oldStatus == SlotStatus.Pending && request.Status.Value == SlotStatus.Booked && booking != null)
+                {
+                    booking.Status = BookingStatus.Completed;
+                    booking.UpdatedDate = DateTime.UtcNow;
+
+                    // Gửi mail xác nhận cho khách
+                    if (!string.IsNullOrWhiteSpace(booking.CustomerEmail))
+                    {
+                        var placeholders = new Dictionary<string, string>
+                {
+                    { "CustomerName", booking.CustomerName },
+                    { "FacilityName", slot.Facility?.Name ?? "" },
+                    { "BookingDate", booking.BookingDate.ToString("dd/MM/yyyy") },
+                    { "BookingTime", $"{booking.StartTime:hh\\:mm} - {booking.EndTime:hh\\:mm}" },
+                    { "Price", booking.FinalPrice.ToString("N0") + " VND" }
+                };
+
+                        await _emailTemplateService.SendFromTemplateAsync(
+                            "BookingConfirmed",
+                            booking.CustomerEmail,
+                            placeholders
+                        );
+                    }
+                }
+            }
 
             slotDetail.UpdatedDate = DateTime.UtcNow;
 
