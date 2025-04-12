@@ -29,5 +29,6 @@ namespace SFMSSolution.Infrastructure.Implements.Repositories
                     x.StartTime == startTime &&
                     x.EndTime == endTime);
         }
+
     }
 }
