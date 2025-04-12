@@ -39,18 +39,40 @@ namespace SFMSSolution.API.Controllers
             return Ok(result.Message);
         }
 
+        //[HttpGet("list-price")]
+        //[Authorize(Policy = "Owner")]
+        //public async Task<IActionResult> GetAll(
+        //    [FromQuery] string? name,
+        //    [FromQuery] int pageNumber = 1,
+        //    [FromQuery] int pageSize = 10)
+        //{
+        //    var (data, total) = await _facilityPriceService.GetAllAsync(name, pageNumber, pageSize);
+        //    return Ok(new
+        //    {
+        //        Data = data,
+        //        TotalCount = total,
+        //        CurrentPage = pageNumber,
+        //        PageSize = pageSize
+        //    });
+        //}
+
         [HttpGet("list-price")]
         [Authorize(Policy = "Owner")]
-        public async Task<IActionResult> GetAll(
-            [FromQuery] string? name,
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetByOwner(
+    [FromQuery] string? facilityName,
+    [FromQuery] int pageNumber = 1,
+    [FromQuery] int pageSize = 10)
         {
-            var (data, total) = await _facilityPriceService.GetAllAsync(name, pageNumber, pageSize);
+            var ownerIdClaim = User.FindFirst("sub")?.Value;
+            if (string.IsNullOrEmpty(ownerIdClaim) || !Guid.TryParse(ownerIdClaim, out var ownerId))
+                return Unauthorized();
+
+            var (prices, totalCount) = await _facilityPriceService.GetByOwnerAsync(ownerId, facilityName, pageNumber, pageSize);
+
             return Ok(new
             {
-                Data = data,
-                TotalCount = total,
+                Data = prices,
+                TotalCount = totalCount,
                 CurrentPage = pageNumber,
                 PageSize = pageSize
             });

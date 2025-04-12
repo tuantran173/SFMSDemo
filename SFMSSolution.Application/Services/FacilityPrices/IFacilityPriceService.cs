@@ -14,6 +14,7 @@ namespace SFMSSolution.Application.Services.FacilityPrices
         Task<ApiResponse<string>> CreatePriceAsync(FacilityPriceCreateRequestDto request);
 
         Task<(IEnumerable<FacilityPriceDto> Prices, int TotalCount)> GetAllAsync(string? facilityName, int pageNumber, int pageSize);
+        Task<(IEnumerable<FacilityPriceDto> Prices, int TotalCount)> GetByOwnerAsync(Guid ownerId, string? facilityName, int pageNumber, int pageSize);
         Task<ApiResponse<string>> UpdatePriceAsync(FacilityPriceUpdateRequestDto request);
 
         Task<FacilityPriceDto?> GetByIdAsync(Guid id);

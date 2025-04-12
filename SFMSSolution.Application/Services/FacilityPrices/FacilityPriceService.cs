@@ -123,6 +123,38 @@ namespace SFMSSolution.Application.Services
             return (dtos, total);
         }
 
+        public async Task<(IEnumerable<FacilityPriceDto> Prices, int TotalCount)> GetByOwnerAsync(Guid ownerId, string? facilityName, int pageNumber, int pageSize)
+        {
+            var (prices, total) = await _unitOfWork.FacilityPriceRepository.GetAllWithTimeSlotAndFacilityAsync(pageNumber, pageSize);
+
+            // Lọc theo ownerId
+            var filtered = prices.Where(p => p.Facility != null && p.Facility.OwnerId == ownerId);
+
+            // Lọc theo tên sân nếu có
+            if (!string.IsNullOrWhiteSpace(facilityName))
+            {
+                filtered = filtered.Where(p => p.Facility.Name.Contains(facilityName, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var dtos = filtered.Select(p => new FacilityPriceDto
+            {
+                Id = p.Id,
+                FacilityId = p.FacilityId,
+                ImageUrl = p.Facility?.ImageUrl,
+                FacilityName = p.Facility?.Name,
+                StartTime = p.FacilityTimeSlot.StartTime,
+                EndTime = p.FacilityTimeSlot.EndTime,
+                StartDate = p.FacilityTimeSlot.StartDate,
+                EndDate = p.FacilityTimeSlot.EndDate,
+                PriceImageUrl = p.ImageUrl,
+                BasePrice = p.BasePrice,
+                Coefficient = p.Coefficient,
+                FinalPrice = p.FinalPrice
+            });
+
+            return (dtos, dtos.Count()); // count sau khi filter
+        }
+
         public async Task<FacilityPriceDto?> GetByIdAsync(Guid id)
         {
             var entity = await _unitOfWork.FacilityPriceRepository.GetByIdWithTimeSlotAndFacilityAsync(id);

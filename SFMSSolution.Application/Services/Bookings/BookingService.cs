@@ -226,7 +226,7 @@ namespace SFMSSolution.Application.Services.Bookings
                 return new ApiResponse<string>("Only bookings in pending status can be canceled.");
 
             // ✅ Check SlotDetail trạng thái phải là Pending
-            var slotDetail = await _unitOfWork.SlotDetailRepository
+            var slotDetail  = await _unitOfWork.SlotDetailRepository
                 .GetBySlotAndTimeAsync(booking.FacilityTimeSlotId, booking.BookingDate, booking.StartTime.Value, booking.EndTime.Value);
 
             if (slotDetail == null || slotDetail.Status != SlotStatus.Pending)
@@ -383,21 +383,39 @@ namespace SFMSSolution.Application.Services.Bookings
                                 b.StartTime == subStart &&
                                 b.EndTime == subEnd);
 
+                            var slotDetail = await _unitOfWork.SlotDetailRepository
+                                .GetBySlotAndTimeAsync(slot.Id, date, subStart, subEnd);
+
                             var price = await _unitOfWork.FacilityPriceRepository.GetByTimeSlotIdAsync(slot.Id);
 
+                            // 📌 Xác định trạng thái dựa trên booking hoặc slotDetail
                             SlotStatus status;
                             if (booking != null)
                             {
                                 if (booking.Status == BookingStatus.Pending)
-                                    status = SlotStatus.Pending;
+                                {
+                                    if (userId.HasValue && booking.UserId == userId.Value)
+                                    {
+                                        status = SlotStatus.Pending; // Chỉ người đặt mới thấy Pending
+                                    }
+                                    else
+                                    {
+                                        status = SlotStatus.Full; // Người khác chỉ thấy Full
+                                    }
+                                }
                                 else if (userId.HasValue && booking.UserId == userId.Value)
+                                {
                                     status = SlotStatus.Booked;
+                                }
                                 else
+                                {
                                     status = SlotStatus.Full;
+                                }
                             }
                             else
                             {
-                                status = slot.Status == SlotStatus.Closed ? SlotStatus.Closed : SlotStatus.Available;
+                                // Nếu không có booking thì lấy status từ slotDetail (nếu có)
+                                status = slotDetail?.Status ?? (slot.Status == SlotStatus.Closed ? SlotStatus.Closed : SlotStatus.Available);
                             }
 
                             calendarItems.Add(new FacilityBookingSlotDto
@@ -408,8 +426,8 @@ namespace SFMSSolution.Application.Services.Bookings
                                 StartDate = date,
                                 EndDate = date,
                                 Status = status,
-                                Note = booking?.Note ?? string.Empty,
-                                FinalPrice = price?.FinalPrice ?? 0,
+                                Note = slotDetail?.Note ?? booking?.Note ?? "",
+                                FinalPrice = slotDetail?.FinalPrice ?? price?.FinalPrice ?? 0,
                                 UserId = booking?.UserId
                             });
 
@@ -431,6 +449,7 @@ namespace SFMSSolution.Application.Services.Bookings
 
             return new ApiResponse<FacilityBookingCalendarDto>(result);
         }
+
 
         public async Task<ApiResponse<FacilityBookingCalendarDto>> GetCalendarForGuestAsync(Guid facilityId)
         {
@@ -514,9 +533,10 @@ namespace SFMSSolution.Application.Services.Bookings
 
             var timeSlots = await _unitOfWork.FacilityTimeSlotRepository.GetByFacilityIdAsync(facilityId);
             var bookings = await _unitOfWork.BookingRepository
-                .GetBookingsByFacilityAsync(facilityId, today, today.AddDays(14));
+                .GetBookingsByFacilityAsync(facilityId, today, today.AddDays(futureDays));
 
             var calendarItems = new List<FacilityBookingSlotDto>();
+            var slotDuration = TimeSpan.FromMinutes(90);
 
             for (int i = 0; i < futureDays; i++)
             {
@@ -527,7 +547,6 @@ namespace SFMSSolution.Application.Services.Bookings
                     if (slot.StartDate <= date && slot.EndDate >= date)
                     {
                         var current = slot.StartTime;
-                        var slotDuration = TimeSpan.FromMinutes(90);
 
                         while (current + slotDuration <= slot.EndTime)
                         {
@@ -540,9 +559,14 @@ namespace SFMSSolution.Application.Services.Bookings
                                 b.StartTime == subStart &&
                                 b.EndTime == subEnd);
 
+                            var slotDetail = await _unitOfWork.SlotDetailRepository
+                                .GetBySlotAndTimeAsync(slot.Id, date, subStart, subEnd);
+
                             var price = await _unitOfWork.FacilityPriceRepository.GetByTimeSlotIdAsync(slot.Id);
 
+                            // Quy tắc xác định status
                             SlotStatus status;
+
                             if (booking != null)
                             {
                                 if (booking.Status == BookingStatus.Pending)
@@ -554,7 +578,8 @@ namespace SFMSSolution.Application.Services.Bookings
                             }
                             else
                             {
-                                status = slot.Status == SlotStatus.Closed ? SlotStatus.Closed : SlotStatus.Available;
+                                // Nếu có slotDetail thì ưu tiên lấy trạng thái từ đó
+                                status = slotDetail?.Status ?? (slot.Status == SlotStatus.Closed ? SlotStatus.Closed : SlotStatus.Available);
                             }
 
                             calendarItems.Add(new FacilityBookingSlotDto
@@ -565,8 +590,9 @@ namespace SFMSSolution.Application.Services.Bookings
                                 StartDate = date,
                                 EndDate = date,
                                 Status = status,
-                                Note = booking?.Note ?? "",
-                                FinalPrice = price?.FinalPrice ?? 0
+                                Note = slotDetail?.Note ?? booking?.Note ?? "",
+                                FinalPrice = slotDetail?.FinalPrice ?? price?.FinalPrice ?? 0,
+                                UserId = booking?.UserId
                             });
 
                             current += slotDuration;
@@ -587,7 +613,6 @@ namespace SFMSSolution.Application.Services.Bookings
 
             return new ApiResponse<FacilityBookingCalendarDto>(result);
         }
-
         public async Task<ApiResponse<SlotDetailDto>> GetCalendarSlotDetailAsync(
         Guid slotId,
         DateTime date,
