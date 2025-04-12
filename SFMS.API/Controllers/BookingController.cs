@@ -72,28 +72,6 @@ namespace SFMSSolution.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost("confirm/{id}")]
-        [Authorize(Policy = "Onwer")] 
-        public async Task<IActionResult> ConfirmBooking(Guid id)
-        {
-            var result = await _bookingService.ConfirmBookingAsync(id);
-            if (!result.Success)
-                return BadRequest(result);
-
-            return Ok(result);
-        }
-
-        [HttpPost("reject/{id}")]
-        [Authorize(Policy = "Onwer")] // 👈 Chỉ chủ sân được gọi
-        public async Task<IActionResult> RejectBooking(Guid id)
-        {
-            var result = await _bookingService.RejectBookingAsync(id);
-            if (!result.Success)
-                return BadRequest(result);
-
-            return Ok(result);
-        }
-
         [HttpPut("update-booking")]
         [Authorize]
         public async Task<IActionResult> UpdateBooking([FromBody] BookingUpdateRequestDto request)
@@ -134,83 +112,6 @@ namespace SFMSSolution.API.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
-
-        [HttpGet("my-bookings/history")]
-        [Authorize]
-        public async Task<IActionResult> GetBookingHistory()
-        {
-            var userId = User.FindFirst("sub")?.Value;
-            if (string.IsNullOrEmpty(userId)) return Unauthorized();
-
-            var result = await _bookingService.GetBookingHistoryForUserAsync(Guid.Parse(userId));
-            return Ok(result);
-        }
-
-        [HttpGet("calendar/{facilityId:Guid}")]
-        [Authorize(Policy ="Owner")]
-        public async Task<IActionResult> GetCalendar(Guid facilityId)
-        {
-            var result = await _bookingService.GetFacilityCalendarAsync(facilityId);
-            if (!result.Success)
-                return NotFound(result.Message);
-            return Ok(result.Data);
-        }
-
-        [HttpGet("calendar/slot-detail")]
-        [Authorize]
-        public async Task<IActionResult> GetCalendarSlotDetail(Guid slotId, DateTime date, TimeSpan startTime, TimeSpan endTime)
-        {
-            var result = await _bookingService.GetCalendarSlotDetailAsync(slotId, date, startTime, endTime);
-            if (!result.Success)
-                return BadRequest(result);
-            return Ok(result);
-        }
-
-        //[HttpPut("calendar/update-slot")]
-        //[Authorize(Policy = "Owner")]
-        //public async Task<IActionResult> UpdateCalendarSlot(Guid slotId, DateTime newStartDate, DateTime newEndDate)
-        //{
-        //    var result = await _bookingService.UpdateCalendarSlotAsync(slotId, newStartDate, newEndDate);
-        //    if (!result.Success)
-        //        return BadRequest(result.Message);
-
-        //    return Ok(result.Message);
-        //}
-        [HttpPut("calendar/update-slot-detail")]
-        [Authorize(Policy = "Owner")]
-        public async Task<IActionResult> UpdateSlotDetail([FromBody] UpdateSlotDetailRequestDto request)
-        {
-            var result = await _bookingService.UpdateCalendarSlotDetailAsync(request);
-            if (!result.Success)
-                return BadRequest(result);
-            return Ok(result);
-        }
-
-
-        [HttpGet("calendar/customer/{facilityId}")]
-        [Authorize]
-        public async Task<IActionResult> GetCalendarForCustomer(Guid facilityId)
-        {
-            // Nếu user đã đăng nhập → lấy userId từ token
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type == "id");
-            Guid? userId = null;
-            if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out var parsedId))
-            {
-                userId = parsedId;
-            }
-
-            var result = await _bookingService.GetCalendarForCustomerAsync(facilityId, userId);
-            return Ok(result);
-        }
-
-
-
-        [HttpGet("guest-calendar")]
-        public async Task<IActionResult> GetGuestCalendar(Guid facilityId)
-        {
-            var result = await _bookingService.GetCalendarForGuestAsync(facilityId);
-            return Ok(result);
         }
 
     }
