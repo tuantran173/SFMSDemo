@@ -18,8 +18,6 @@ namespace SFMSSolution.Application.DataTransferObjects.Booking.Request
         [JsonConverter(typeof(TimeSpanToStringConverter))]
         public TimeSpan EndTime { get; set; }
 
-        public string? Note { get; set; }
-        public decimal? FinalPrice { get; set; }
-        public SlotStatus? Status { get; set; }
+        public SlotStatus Status { get; set; }
     }
 }

@@ -173,23 +173,21 @@ namespace SFMSSolution.Application.Services.Bookings
 
             await _unitOfWork.BookingRepository.AddAsync(booking);
             await _unitOfWork.CompleteAsync();
-
             var placeholders = new Dictionary<string, string>
-                {
-                    { "OwnerName", owner.FullName },
-                    { "CustomerName", request.CustomerName },
-                    { "CustomerPhone", request.CustomerPhone },
-                    { "CustomerEmail", request.CustomerEmail },
-                    { "FacilityName", facility.Name },  
-                    { "FacilityAddress", facility.Address },
-                    { "BookingDate", booking.BookingDate.ToString("dd/MM/yyyy") },
-                    { "BookingTime", $"{booking.StartTime:hh\\:mm} - {booking.EndTime:hh\\:mm}" },
-                    { "Note", string.IsNullOrWhiteSpace(request.Note) ? "Không có ghi chú" : request.Note },
-                    { "Price", booking.FinalPrice.ToString("N0") + " VND" },
-                    { "PayUrl", string.IsNullOrEmpty(booking.ImageUrl) ? "" : booking.ImageUrl },
-                    { "ConfirmLink", $"https://localhost:4200/booking/confirm/{booking.Id}" },
-                    { "RejectLink", $"https://localhost:4200/booking/reject/{booking.Id}" }
-                };
+            {
+                { "OwnerName", owner.FullName },
+                { "CustomerName", request.CustomerName },
+                { "CustomerPhone", request.CustomerPhone },
+                { "CustomerEmail", request.CustomerEmail },
+                { "FacilityName", facility.Name },
+                { "FacilityAddress", facility.Address },
+                { "BookingDate", booking.BookingDate.ToString("dd/MM/yyyy") },
+                { "BookingTime", $"{booking.StartTime:hh\\:mm} - {booking.EndTime:hh\\:mm}" },
+                { "Note", string.IsNullOrWhiteSpace(request.Note) ? "Không có ghi chú" : request.Note },
+                { "Price", booking.FinalPrice.ToString("N0") + " VND" },
+                { "PayUrl", string.IsNullOrEmpty(booking.ImageUrl) ? "" : booking.ImageUrl },
+                { "ManageLink", $"http://localhost:4200/shedule-owner/book/{booking.Id}" } // ✅ link đến chi tiết lịch
+            };
 
 
             Console.WriteLine($"Đang gửi email xác nhận booking đến chủ sân: {owner.Email}");
@@ -358,7 +356,7 @@ namespace SFMSSolution.Application.Services.Bookings
             var futureDays = 14;
             var timeSlots = await _unitOfWork.FacilityTimeSlotRepository.GetByFacilityIdAsync(facilityId);
             var bookings = await _unitOfWork.BookingRepository
-                .GetBookingsByFacilityAsync(facilityId, today, today.AddDays(14));
+                .GetBookingsByFacilityAsync(facilityId, today, today.AddDays(futureDays));
 
             var calendarItems = new List<FacilityBookingSlotDto>();
             var slotDuration = TimeSpan.FromMinutes(90);
@@ -388,20 +386,20 @@ namespace SFMSSolution.Application.Services.Bookings
 
                             var price = await _unitOfWork.FacilityPriceRepository.GetByTimeSlotIdAsync(slot.Id);
 
-                            // 📌 Xác định trạng thái dựa trên booking hoặc slotDetail
                             SlotStatus status;
-                            if (booking != null)
+
+                            if (slotDetail != null)
+                            {
+                                status = slotDetail.Status;
+                            }
+                            else if (booking != null)
                             {
                                 if (booking.Status == BookingStatus.Pending)
                                 {
                                     if (userId.HasValue && booking.UserId == userId.Value)
-                                    {
-                                        status = SlotStatus.Pending; // Chỉ người đặt mới thấy Pending
-                                    }
+                                        status = SlotStatus.Pending;
                                     else
-                                    {
-                                        status = SlotStatus.Full; // Người khác chỉ thấy Full
-                                    }
+                                        status = SlotStatus.Full;
                                 }
                                 else if (userId.HasValue && booking.UserId == userId.Value)
                                 {
@@ -414,8 +412,7 @@ namespace SFMSSolution.Application.Services.Bookings
                             }
                             else
                             {
-                                // Nếu không có booking thì lấy status từ slotDetail (nếu có)
-                                status = slotDetail?.Status ?? (slot.Status == SlotStatus.Closed ? SlotStatus.Closed : SlotStatus.Available);
+                                status = slot.Status == SlotStatus.Closed ? SlotStatus.Closed : SlotStatus.Available;
                             }
 
                             calendarItems.Add(new FacilityBookingSlotDto
@@ -449,6 +446,7 @@ namespace SFMSSolution.Application.Services.Bookings
 
             return new ApiResponse<FacilityBookingCalendarDto>(result);
         }
+
 
 
         public async Task<ApiResponse<FacilityBookingCalendarDto>> GetCalendarForGuestAsync(Guid facilityId)
@@ -564,10 +562,14 @@ namespace SFMSSolution.Application.Services.Bookings
 
                             var price = await _unitOfWork.FacilityPriceRepository.GetByTimeSlotIdAsync(slot.Id);
 
-                            // Quy tắc xác định status
                             SlotStatus status;
 
-                            if (booking != null)
+                            // ✅ Ưu tiên SlotDetail.Status nếu có
+                            if (slotDetail != null)
+                            {
+                                status = slotDetail.Status;
+                            }
+                            else if (booking != null)
                             {
                                 if (booking.Status == BookingStatus.Pending)
                                     status = SlotStatus.Pending;
@@ -578,8 +580,7 @@ namespace SFMSSolution.Application.Services.Bookings
                             }
                             else
                             {
-                                // Nếu có slotDetail thì ưu tiên lấy trạng thái từ đó
-                                status = slotDetail?.Status ?? (slot.Status == SlotStatus.Closed ? SlotStatus.Closed : SlotStatus.Available);
+                                status = slot.Status == SlotStatus.Closed ? SlotStatus.Closed : SlotStatus.Available;
                             }
 
                             calendarItems.Add(new FacilityBookingSlotDto
@@ -613,138 +614,211 @@ namespace SFMSSolution.Application.Services.Bookings
 
             return new ApiResponse<FacilityBookingCalendarDto>(result);
         }
+
+
+
         public async Task<ApiResponse<SlotDetailDto>> GetCalendarSlotDetailAsync(
-        Guid slotId,
-        DateTime date,
-        TimeSpan startTime,
-        TimeSpan endTime)
+    Guid slotId,
+    DateTime date,
+    TimeSpan startTime,
+    TimeSpan endTime)
+        {
+            var slot = await _unitOfWork.FacilityTimeSlotRepository.GetByIdWithFacilityAndOwnerAsync(slotId);
+            if (slot == null)
+                return new ApiResponse<SlotDetailDto>("Slot not found.");
+
+            if (startTime < slot.StartTime || endTime > slot.EndTime)
+                return new ApiResponse<SlotDetailDto>("Time range doesn't belong to this slot.");
+
+            // Lấy slot detail trước để ưu tiên trạng thái từ chủ sân
+            var slotDetail = await _unitOfWork.SlotDetailRepository
+                .GetBySlotAndTimeAsync(slot.Id, date, startTime, endTime);
+
+            var booking = await _unitOfWork.BookingRepository
+                .GetBookingBySlotAndDateAndTimeAsync(slotId, date, startTime, endTime);
+
+            var price = await _unitOfWork.FacilityPriceRepository.GetByTimeSlotIdAsync(slotId);
+
+            var facility = slot.Facility;
+            var owner = await _userManager.FindByIdAsync(facility.OwnerId.ToString());
+
+            // ✅ Ưu tiên SlotDetail.Status nếu có
+            SlotStatus status;
+            if (slotDetail != null)
             {
-                // Lấy slot có kèm Facility và User chủ sân
-                var slot = await _unitOfWork.FacilityTimeSlotRepository.GetByIdWithFacilityAndOwnerAsync(slotId);
-                if (slot == null)
-                    return new ApiResponse<SlotDetailDto>("Slot not found.");
+                status = slotDetail.Status;
+            }
+            else if (booking != null)
+            {
+                if (booking.Status == BookingStatus.Completed)
+                    status = SlotStatus.Booked;
+                else if (booking.Status == BookingStatus.Pending)
+                    status = SlotStatus.Pending;
+                else
+                    status = slot.Status;
+            }
+            else
+            {
+                status = slot.Status;
+            }
 
-                // Kiểm tra thời gian nằm trong khung slot tổng
-                if (startTime < slot.StartTime || endTime > slot.EndTime)
-                    return new ApiResponse<SlotDetailDto>("Time range doesn't belong to this slot.");
+            var dto = new SlotDetailDto
+            {
+                SlotId = slot.Id,
+                StartTime = startTime,
+                EndTime = endTime,
+                StartDate = date,
+                EndDate = date,
+                Status = status,
+                Note = slotDetail?.Note ?? booking?.Note ?? string.Empty,
 
-                // Lấy thông tin booking nếu có cho slot con cụ thể
-                var booking = await _unitOfWork.BookingRepository
-                    .GetBookingBySlotAndDateAndTimeAsync(slotId, date, startTime, endTime);
+                BasePrice = price?.BasePrice ?? 0,
+                Coefficient = price?.Coefficient ?? 1,
+                Deposit = (price?.FinalPrice ?? 0) * 0.3m,
+                FinalPrice = slotDetail?.FinalPrice ?? price?.FinalPrice ?? 0,
+                PriceImageUrl = price?.ImageUrl ?? string.Empty,
 
-                // Lấy giá
-                var price = await _unitOfWork.FacilityPriceRepository.GetByTimeSlotIdAsync(slotId);
-
-                // Lấy thông tin chủ sân
-                var facility = slot.Facility;
-                var owner = await _userManager.FindByIdAsync(facility.OwnerId.ToString());
-
-                // Xác định trạng thái
-                var status = booking != null ? SlotStatus.Booked : slot.Status;
-
-                // Trả về chi tiết slot nhỏ
-                var dto = new SlotDetailDto
-                {
-                    SlotId = slot.Id,
-                    StartTime = startTime,
-                    EndTime = endTime,
-                    StartDate = date,
-                    EndDate = date,
-                    Status = status,
-                    Note = booking?.Note ?? string.Empty,
-
-                    BasePrice = price?.BasePrice ?? 0,
-                    Coefficient = price?.Coefficient ?? 1,
-                    Deposit = (price?.FinalPrice ?? 0) * 0.3m,
-                    FinalPrice = price?.FinalPrice ?? 0,
-                    PriceImageUrl = price?.ImageUrl ?? string.Empty,
-
-                    // Thông tin sân và chủ sân
-                    FacilityName = facility?.Name ?? string.Empty,
-                    FacilityAddress = facility?.Address ?? string.Empty,
-                    FacilityImageUrl = facility?.ImageUrl ?? string.Empty,
-                    OwnerFullName = owner?.FullName ?? string.Empty,
-                    OwnerUserName = owner?.UserName ?? string.Empty,
-                    OwnerPhone = owner?.Phone ?? string.Empty
+                FacilityName = facility?.Name ?? string.Empty,
+                FacilityAddress = facility?.Address ?? string.Empty,
+                FacilityImageUrl = facility?.ImageUrl ?? string.Empty,
+                OwnerFullName = owner?.FullName ?? string.Empty,
+                OwnerUserName = owner?.UserName ?? string.Empty,
+                OwnerPhone = owner?.Phone ?? string.Empty
             };
 
             return new ApiResponse<SlotDetailDto>(dto);
         }
 
 
+        //public async Task<ApiResponse<string>> UpdateSlotStatusByOwnerAsync(Guid slotId, DateTime date, TimeSpan startTime, TimeSpan endTime, SlotStatus status)
+        //{
+        //    var slot = await _unitOfWork.FacilityTimeSlotRepository.GetByIdAsync(slotId);
+        //    if (slot == null)
+        //        return new ApiResponse<string>("Slot not found.");
 
-        public async Task<ApiResponse<string>> UpdateCalendarSlotDetailAsync(UpdateSlotDetailRequestDto request)
+        //    if (startTime < slot.StartTime || endTime > slot.EndTime)
+        //        return new ApiResponse<string>("Time range is outside the defined slot.");
+
+        //    var slotDetail = await _unitOfWork.SlotDetailRepository
+        //        .GetBySlotAndTimeAsync(slotId, date, startTime, endTime);
+
+        //    // ❌ Nếu slot đang ở trạng thái Booked thì không được update
+        //    if (slotDetail != null && slotDetail.Status == SlotStatus.Booked)
+        //        return new ApiResponse<string>("This slot is already booked and cannot be updated.");
+
+        //    if (slotDetail == null)
+        //    {
+        //        slotDetail = new SlotDetail
+        //        {
+        //            Id = Guid.NewGuid(),
+        //            SlotId = slotId,
+        //            Date = date,
+        //            StartTime = startTime,
+        //            EndTime = endTime,
+        //            Status = status,
+        //            CreatedDate = DateTime.UtcNow
+        //        };
+        //        await _unitOfWork.SlotDetailRepository.AddAsync(slotDetail);
+        //    }
+        //    else
+        //    {
+        //        slotDetail.Status = status;
+        //        slotDetail.UpdatedDate = DateTime.UtcNow;
+        //    }
+
+        //    await _unitOfWork.CompleteAsync();
+        //    return new ApiResponse<string>(true, "Slot status updated successfully.");
+        //}
+        public async Task<ApiResponse<string>> UpdateSlotStatusByOwnerAsync(
+    Guid slotId, DateTime date, TimeSpan startTime, TimeSpan endTime, SlotStatus status)
         {
-            var slot = await _unitOfWork.FacilityTimeSlotRepository.GetByIdAsync(request.SlotId);
+            var slot = await _unitOfWork.FacilityTimeSlotRepository.GetByIdAsync(slotId);
             if (slot == null)
                 return new ApiResponse<string>("Slot not found.");
 
-            if (request.StartTime < slot.StartTime || request.EndTime > slot.EndTime)
+            if (startTime < slot.StartTime || endTime > slot.EndTime)
                 return new ApiResponse<string>("Time range is outside the defined slot.");
 
-            var booking = await _unitOfWork.BookingRepository
-                .GetBookingBySlotAndDateAndTimeAsync(request.SlotId, request.Date, request.StartTime, request.EndTime);
-
             var slotDetail = await _unitOfWork.SlotDetailRepository
-                .GetBySlotAndTimeAsync(request.SlotId, request.Date, request.StartTime, request.EndTime);
+                .GetBySlotAndTimeAsync(slotId, date, startTime, endTime);
+
+            bool isChangedToBooked = false;
 
             if (slotDetail == null)
             {
                 slotDetail = new SlotDetail
                 {
                     Id = Guid.NewGuid(),
-                    SlotId = request.SlotId,
-                    Date = request.Date,
-                    StartTime = request.StartTime,
-                    EndTime = request.EndTime,
-                    CreatedDate = DateTime.UtcNow
+                    SlotId = slotId,
+                    Date = date,
+                    StartTime = startTime,
+                    EndTime = endTime,
+                    Status = status,
+                    CreatedDate = DateTime.UtcNow,
+                    UpdatedDate = DateTime.UtcNow
                 };
                 await _unitOfWork.SlotDetailRepository.AddAsync(slotDetail);
+
+                if (status == SlotStatus.Booked)
+                    isChangedToBooked = true;
+            }
+            else
+            {
+                if (slotDetail.Status == SlotStatus.Pending && status == SlotStatus.Booked)
+                    isChangedToBooked = true;
+
+                slotDetail.Status = status;
+                slotDetail.UpdatedDate = DateTime.UtcNow;
+                await _unitOfWork.SlotDetailRepository.UpdateAsync(slotDetail);
             }
 
-            if (request.FinalPrice.HasValue)
-                slotDetail.FinalPrice = request.FinalPrice.Value;
-
-            if (!string.IsNullOrWhiteSpace(request.Note))
-                slotDetail.Note = request.Note;
-
-            if (request.Status.HasValue)
+            // ✅ Nếu chuyển sang Booked thì xử lý booking + gửi mail
+            if (isChangedToBooked)
             {
-                var oldStatus = slotDetail.Status;
-                slotDetail.Status = request.Status.Value;
+                var booking = await _unitOfWork.BookingRepository
+                    .GetBookingBySlotAndDateAndTimeAsync(slotId, date, startTime, endTime);
 
-                // ✅ Nếu chuyển từ Pending -> Booked → update booking và gửi email cho khách
-                if (oldStatus == SlotStatus.Pending && request.Status.Value == SlotStatus.Booked && booking != null)
+                if (booking != null && booking.Status == BookingStatus.Pending)
                 {
                     booking.Status = BookingStatus.Completed;
                     booking.UpdatedDate = DateTime.UtcNow;
+                    await _unitOfWork.BookingRepository.UpdateAsync(booking);
 
-                    // Gửi mail xác nhận cho khách
-                    if (!string.IsNullOrWhiteSpace(booking.CustomerEmail))
+                    var customer = await _userManager.FindByIdAsync(booking.UserId.ToString());
+                    var facility = await _unitOfWork.FacilityRepository.GetFacilityByIdAsync(slot.FacilityId);
+
+                    if (customer != null && !string.IsNullOrEmpty(customer.Email))
                     {
                         var placeholders = new Dictionary<string, string>
                 {
-                    { "CustomerName", booking.CustomerName },
-                    { "FacilityName", slot.Facility?.Name ?? "" },
-                    { "BookingDate", booking.BookingDate.ToString("dd/MM/yyyy") },
-                    { "BookingTime", $"{booking.StartTime:hh\\:mm} - {booking.EndTime:hh\\:mm}" },
-                    { "Price", booking.FinalPrice.ToString("N0") + " VND" }
+                    { "CustomerName", customer.FullName },
+                    { "FacilityName", facility?.Name ?? "Sân thể thao" },
+                    { "FacilityAddress", facility?.Address ?? "Địa chỉ chưa cập nhật" },
+                    { "BookingDate", date.ToString("dd/MM/yyyy") },
+                    { "BookingTime", $"{startTime:hh\\:mm} - {endTime:hh\\:mm}" },
+                    { "Price", booking.FinalPrice.ToString("N0") + " VND" },
+                    { "Note", string.IsNullOrWhiteSpace(booking.Note) ? "Không có ghi chú" : booking.Note },
+                    { "PayUrl", string.IsNullOrEmpty(booking.ImageUrl) ? "" : booking.ImageUrl }
                 };
 
-                        await _emailTemplateService.SendFromTemplateAsync(
-                            "BookingConfirmed",
-                            booking.CustomerEmail,
-                            placeholders
+                        Console.WriteLine($"Gửi email xác nhận đặt sân thành công đến: {customer.Email}");
+
+                        var emailSent = await _emailTemplateService.SendFromTemplateAsync(
+                            templateName: "BookingConfirmed",
+                            toEmail: customer.Email,
+                            placeholders: placeholders
                         );
+
+                        Console.WriteLine($"Gửi mail xác nhận cho khách: {(emailSent.Success ? "✅ Thành công" : "❌ Thất bại")} - {emailSent.Message}");
                     }
                 }
             }
 
-            slotDetail.UpdatedDate = DateTime.UtcNow;
-
             await _unitOfWork.CompleteAsync();
-            return new ApiResponse<string>(true, "Slot detail updated successfully.");
+            return new ApiResponse<string>(true, "Slot status updated successfully.");
         }
+
+
 
     }
 }

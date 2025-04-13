@@ -59,14 +59,24 @@ namespace SFMSSolution.API.Controllers
             return Ok(result);
         }
 
+        //[HttpPut("calendar/update-slot-detail")]
+        //[Authorize(Policy = "Owner")]
+        //public async Task<IActionResult> UpdateSlotDetail([FromBody] UpdateSlotDetailRequestDto request)
+        //{
+        //    var result = await _bookingService.UpdateCalendarSlotDetailAsync(request);
+        //    if (!result.Success)
+        //        return BadRequest(result);
+        //    return Ok(result);
+        //}
+
         [HttpPut("calendar/update-slot-detail")]
         [Authorize(Policy = "Owner")]
-        public async Task<IActionResult> UpdateSlotDetail([FromBody] UpdateSlotDetailRequestDto request)
+        public async Task<IActionResult> UpdateSlotStatus([FromBody] UpdateSlotDetailRequestDto request)
         {
-            var result = await _bookingService.UpdateCalendarSlotDetailAsync(request);
-            if (!result.Success)
-                return BadRequest(result);
-            return Ok(result);
+            var result = await _bookingService.UpdateSlotStatusByOwnerAsync(
+                request.SlotId, request.Date, request.StartTime, request.EndTime, request.Status);
+
+            return result.Success ? Ok(result) : BadRequest(result);
         }
     }
 }
