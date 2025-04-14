@@ -25,6 +25,7 @@ namespace SFMSSolution.Application.Services.Admin
            EntityStatus? status = null,
            string? role = null);
         Task<UserDto?> GetUserByIdAsync(Guid userId);
+        Task<ApiResponse<string>> UpdateUserProfileAsync(Guid userId, UpdateUserProfileRequestDto request);
         Task<bool> UpdateUserAsync(Guid userId, UpdateUserRequestDto request);
         Task<bool> UpdateAccountAsync(ChangeUserRoleRequestDto request);
         Task<UserDto> GetUserProfileAsync();

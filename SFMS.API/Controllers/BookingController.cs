@@ -80,6 +80,24 @@ namespace SFMSSolution.API.Controllers
             return result ? Ok("Booking updated successfully.") : NotFound("Booking not found or update failed.");
         }
 
+        [HttpPost("cancel/{bookingId}")]
+        [Authorize]
+        public async Task<IActionResult> CancelBooking(Guid bookingId)
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type == "id");
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return Unauthorized("User ID not found in token.");
+            }
+
+            var result = await _bookingService.CancelBookingByCustomerAsync(bookingId, userId);
+
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
         [HttpDelete("delete-booking/{id:Guid}")]
         [Authorize]
         public async Task<IActionResult> DeleteBooking(Guid id)

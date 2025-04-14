@@ -30,6 +30,17 @@ namespace SFMSSolution.API.Controllers
             return Ok(user);
         }
 
+        [HttpPut("update/{userId}")]
+        public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UpdateUserProfileRequestDto request)
+        {
+            var result = await _adminService.UpdateUserProfileAsync(userId, request);
+
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
         [Authorize(Policy = "Admin")]
         [HttpGet("get-all-users")]
         public async Task<IActionResult> GetAllUsers(

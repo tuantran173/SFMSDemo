@@ -23,6 +23,6 @@ namespace SFMSSolution.Application.Services.Bookings
         Task<ApiResponse<FacilityBookingCalendarDto>> GetCalendarForCustomerAsync(Guid facilityId, Guid? userId);
         Task<ApiResponse<FacilityBookingCalendarDto>> GetCalendarForGuestAsync(Guid facilityId);
         Task<ApiResponse<string>> UpdateSlotStatusByOwnerAsync(Guid slotId, DateTime date, TimeSpan startTime, TimeSpan endTime, SlotStatus status);
-
+        Task<ApiResponse<string>> CancelBookingByCustomerAsync(Guid bookingId, Guid userId);
         }
 }
