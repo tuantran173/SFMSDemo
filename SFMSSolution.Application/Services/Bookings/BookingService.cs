@@ -210,27 +210,26 @@ namespace SFMSSolution.Application.Services.Bookings
             return new ApiResponse<string>(true, summary);
         }
 
-        // Cancelling Booking 
-        public async Task<ApiResponse<string>> CancelBookingByCustomerAsync(Guid bookingId, Guid userId)
+        public async Task<ApiResponse<string>> CancelBookingBySlotAsync(CancelBookingRequestDto request, Guid userId)
         {
-            var booking = await _unitOfWork.BookingRepository.GetByIdAsync(bookingId);
+            // Tìm booking tương ứng với slot + thời gian
+            var booking = await _unitOfWork.BookingRepository
+                .GetBookingBySlotAndDateAndTimeAsync(request.SlotId, request.Date, request.StartTime, request.EndTime);
+
             if (booking == null)
-                return new ApiResponse<string>("Booking not found.");
+                return new ApiResponse<string>("Booking not found for this slot.");
 
             if (booking.UserId != userId)
                 return new ApiResponse<string>("You are not authorized to cancel this booking.");
 
-            if (booking.Status != BookingStatus.Pending)
-                return new ApiResponse<string>("Only bookings in pending status can be canceled.");
-
-            // ✅ Check SlotDetail trạng thái phải là Pending
-            var slotDetail  = await _unitOfWork.SlotDetailRepository
-                .GetBySlotAndTimeAsync(booking.FacilityTimeSlotId, booking.BookingDate, booking.StartTime.Value, booking.EndTime.Value);
+            // Lấy SlotDetail
+            var slotDetail = await _unitOfWork.SlotDetailRepository
+                .GetBySlotAndTimeAsync(request.SlotId, request.Date, request.StartTime, request.EndTime);
 
             if (slotDetail == null || slotDetail.Status != SlotStatus.Pending)
-                return new ApiResponse<string>("This slot is not in a cancellable state.");
+                return new ApiResponse<string>("Slot is not in a cancelable state.");
 
-            // ✅ Tiến hành huỷ booking và reset trạng thái slot
+            // Tiến hành huỷ
             booking.Status = BookingStatus.Canceled;
             booking.UpdatedDate = DateTime.UtcNow;
 
@@ -238,9 +237,10 @@ namespace SFMSSolution.Application.Services.Bookings
             slotDetail.UpdatedDate = DateTime.UtcNow;
 
             await _unitOfWork.BookingRepository.UpdateAsync(booking);
+            await _unitOfWork.SlotDetailRepository.UpdateAsync(slotDetail);
             await _unitOfWork.CompleteAsync();
 
-            return new ApiResponse<string>(true, "Booking canceled successfully and slot is now available.");
+            return new ApiResponse<string>(true, "Booking canceled successfully.");
         }
 
 

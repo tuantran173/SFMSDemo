@@ -6,6 +6,7 @@ namespace SFMSSolution.Application.DataTransferObjects.User
     public class UserDto
     {
         public Guid Id { get; set; }
+        public string AvatarUrl { get; set; }
         public string FullName { get; set; } = string.Empty;
         public Gender Gender { get; set; }
         public DateTime? Birthday { set; get; } = DateTime.MinValue;

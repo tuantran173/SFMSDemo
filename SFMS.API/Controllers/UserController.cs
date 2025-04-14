@@ -31,6 +31,7 @@ namespace SFMSSolution.API.Controllers
         }
 
         [HttpPut("update-profile")]
+        [Authorize]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserProfileRequestDto request)
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type == "id");
