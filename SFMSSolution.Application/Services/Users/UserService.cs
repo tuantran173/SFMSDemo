@@ -89,19 +89,18 @@ namespace SFMSSolution.Application.Services.Admin
             if (user == null)
                 return new ApiResponse<string>("User not found.");
 
-            // Cập nhật thông tin cá nhân
+            // ✅ Cập nhật thông tin cá nhân (nếu có thay đổi)
             user.FullName = request.FullName ?? user.FullName;
             user.Phone = request.Phone ?? user.Phone;
             user.Gender = request.Gender ?? user.Gender;
             user.Address = request.Address ?? user.Address;
             user.Birthday = request.Birthday ?? user.Birthday;
             user.AvatarUrl = request.AvatarUrl ?? user.AvatarUrl;
-            user.Status = request.Status ?? user.Status;
 
             await _unitOfWork.AdminRepository.UpdateAsync(user);
             await _unitOfWork.CompleteAsync();
 
-            return new ApiResponse<string>(true, "User updated successfully.");
+            return new ApiResponse<string>(true, "User profile updated successfully.");
         }
 
 

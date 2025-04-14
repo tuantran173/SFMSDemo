@@ -30,9 +30,15 @@ namespace SFMSSolution.API.Controllers
             return Ok(user);
         }
 
-        [HttpPut("update/{userId}")]
-        public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UpdateUserProfileRequestDto request)
+        [HttpPut("update-profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserProfileRequestDto request)
         {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type == "id");
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return Unauthorized("User is not authenticated.");
+            }
+
             var result = await _adminService.UpdateUserProfileAsync(userId, request);
 
             if (!result.Success)
