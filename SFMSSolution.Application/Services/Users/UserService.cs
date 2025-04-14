@@ -89,7 +89,6 @@ namespace SFMSSolution.Application.Services.Admin
             if (user == null)
                 return new ApiResponse<string>("User not found.");
 
-            // ✅ Cập nhật thông tin cá nhân (nếu có thay đổi)
             user.FullName = request.FullName ?? user.FullName;
             user.Phone = request.Phone ?? user.Phone;
             user.Gender = request.Gender ?? user.Gender;
